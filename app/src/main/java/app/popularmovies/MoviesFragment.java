@@ -13,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.popularmovies.model.Movie;
+import app.popularmovies.model.MoviesSearch;
 import info.movito.themoviedbapi.TmdbApi;
 import info.movito.themoviedbapi.TmdbMovies;
 import info.movito.themoviedbapi.model.MovieDb;
@@ -44,7 +46,15 @@ public class MoviesFragment extends Fragment {
     private OnListFragmentInteractionListener mListener;
 
     MyItemRecyclerViewAdapter myAdapter;
-    private List<Movie> moviesList;
+
+    private MoviesSearch searchCriteria;
+
+    private List<Movie> moviesList = new ArrayList<>();
+
+    /**
+     * indicates no connection on the last fetch attempt
+     */
+    private boolean noConnection = true;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -53,8 +63,7 @@ public class MoviesFragment extends Fragment {
     public MoviesFragment() {
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
+
     public static MoviesFragment newInstance(int columnCount) {
         MoviesFragment fragment = new MoviesFragment();
         Bundle args = new Bundle();
@@ -68,16 +77,34 @@ public class MoviesFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         //sample data
-
+        /*
         moviesList = new ArrayList<>();
         moviesList.add(new Movie(1,"Filme1"));
-        moviesList.add(new Movie(2,"Filme2"));
+        moviesList.add(new Movie(2,"Filme2"));*/
+
+        searchCriteria = new MoviesSearch();
+
+        if (savedInstanceState != null && savedInstanceState.containsKey("sorting")) {
+            searchCriteria.setSortBy(MoviesSearch.Sorting.valueOf(
+                    savedInstanceState.getString("sorting")));
+        }
 
         setHasOptionsMenu(true);
 
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        //prefs.getBoolean(getString(R.string.pref_key_sync_on_start),false);
+        //TODO test if should load on start
+
+       // updateMovies();
     }
 
     @Override
@@ -94,14 +121,42 @@ public class MoviesFragment extends Fragment {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
 
-            log.debug("refreshing...");
-
-            FetchMoviesTask task = new FetchMoviesTask();
-            task.execute("");
+            updateMovies();
 
             return true;
+
+        } else if (id == R.id.action_sort_by_popularity) {
+
+            searchCriteria.setSortBy(MoviesSearch.Sorting.POPULARITY);
+            updateMovies();
+            return true;
+
+        } else if (id == R.id.action_sort_by_rating) {
+
+            searchCriteria.setSortBy(MoviesSearch.Sorting.RATING);
+            updateMovies();
+            return true;
         }
-        return super.onOptionsItemSelected(item);
+
+            return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString("sorting",searchCriteria.getSortBy().name());
+
+    }
+
+    private void updateMovies() {
+        log.debug("updating movies...");
+
+        FetchMoviesTask task = new FetchMoviesTask();
+
+
+
+        task.execute(searchCriteria);
     }
 
     @Override
@@ -155,32 +210,46 @@ public class MoviesFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onListFragmentInteraction(Movie item);
     }
 
 
-    public class FetchMoviesTask extends AsyncTask<String,Void,List<Movie>> {
+    public class FetchMoviesTask extends AsyncTask<MoviesSearch,Void,List<Movie>> {
 
         //private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
         //private static MoviesJsonParser parser = new MoviesJsonParser();
 
         @Override
-        protected List<Movie> doInBackground(String... params) {
+        protected List<Movie> doInBackground(MoviesSearch... params) {
 
             List<Movie> myMovies = new ArrayList<>();
 
             if (!isOnline()) {
 
                 log.error("no internet access.");
+
+                noConnection = true;
+
                 return myMovies;
 
             }
 
+            noConnection = false;
+
             TmdbMovies movies = new TmdbApi(BuildConfig.MOVIESDB_API_KEY).getMovies();
 
-            MovieResultsPage res = movies.getTopRatedMovies("en", 1);
+            MovieResultsPage res = null;
+
+            switch (searchCriteria.getSortBy()) {
+                case POPULARITY:
+                    res = movies.getPopularMovies(searchCriteria.getLanguage(),1);
+                case RATING:
+                    res = movies.getTopRatedMovies(searchCriteria.getLanguage(), 1);
+            }
+
+            int limit = 5;//TODO PREFS
+
 
 
             for (MovieDb md : res.getResults()) {
@@ -196,6 +265,8 @@ public class MoviesFragment extends Fragment {
                 myMovies.add(m);
             }
 
+
+
             return myMovies;
 
         }
@@ -208,6 +279,11 @@ public class MoviesFragment extends Fragment {
             //update adapter
             myAdapter.updateMovies(movies);
 
+            if (noConnection) {
+
+                Toast.makeText(getActivity(),getString(R.string.no_internet_connection),Toast.LENGTH_LONG).show();
+
+            }
 
         }
     }

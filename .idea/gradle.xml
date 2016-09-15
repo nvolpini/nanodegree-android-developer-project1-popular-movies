@@ -8,14 +8,14 @@
         <option name="gradleHome" value="$APPLICATION_HOME_DIR$/gradle/gradle-2.14.1" />
         <option name="modules">
           <set>
-            <option value="/data/neimar/devel/projects/android/nanodegree-android-developer/project1-popular-movies-app" />
-            <option value="/data/neimar/devel/projects/android/nanodegree-android-developer/project1-popular-movies-app/app" />
+            <option value="$PROJECT_DIR$/../../../../../neimar/devel/projects/android/nanodegree-android-developer/project1-popular-movies-app" />
+            <option value="$PROJECT_DIR$/../../../../../neimar/devel/projects/android/nanodegree-android-developer/project1-popular-movies-app/app" />
           </set>
         </option>
         <option name="myModules">
           <set>
-            <option value="/data/neimar/devel/projects/android/nanodegree-android-developer/project1-popular-movies-app" />
-            <option value="/data/neimar/devel/projects/android/nanodegree-android-developer/project1-popular-movies-app/app" />
+            <option value="$PROJECT_DIR$/../../../../../neimar/devel/projects/android/nanodegree-android-developer/project1-popular-movies-app" />
+            <option value="$PROJECT_DIR$/../../../../../neimar/devel/projects/android/nanodegree-android-developer/project1-popular-movies-app/app" />
           </set>
         </option>
       </GradleProjectSettings>

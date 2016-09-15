@@ -22,7 +22,10 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new MoviesFragment())
+                    .add(R.id.container
+                            //, new MoviesFragment()
+                            ,MoviesFragment.newInstance(2)
+                    )
                     .commit();
         }
     }

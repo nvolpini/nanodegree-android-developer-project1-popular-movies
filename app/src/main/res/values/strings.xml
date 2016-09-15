@@ -19,11 +19,11 @@
     <string name="pref_title_movies_language">MoviesDB language</string>
     <string-array name="pref_titles_movies_language">
         <item>English</item>
-        <item>Portuguese Brazilian</item>
+        <item>Portuguese</item>
     </string-array>
     <string-array name="pref_values_movies_language">
         <item>en</item>
-        <item>pt_BR</item>
+        <item>pt</item>
     </string-array>
 
     <!-- Example settings for Data & Sync -->
@@ -54,6 +54,7 @@
     </string-array>
 
     <string name="pref_title_system_sync_settings">System sync settings</string>
+    <string name="action_clear">Clear</string>
 
 
 </resources>

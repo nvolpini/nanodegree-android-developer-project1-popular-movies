@@ -1,8 +1,10 @@
 package app.popularmovies;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,7 +27,9 @@ import java.util.List;
 import app.popularmovies.model.Movie;
 import app.popularmovies.model.MoviesSearch;
 import info.movito.themoviedbapi.TmdbApi;
+import info.movito.themoviedbapi.TmdbDiscover;
 import info.movito.themoviedbapi.TmdbMovies;
+import info.movito.themoviedbapi.model.Discover;
 import info.movito.themoviedbapi.model.MovieDb;
 import info.movito.themoviedbapi.model.core.MovieResultsPage;
 
@@ -85,8 +89,7 @@ public class MoviesFragment extends Fragment {
         searchCriteria = new MoviesSearch();
 
         if (savedInstanceState != null && savedInstanceState.containsKey("sorting")) {
-            searchCriteria.setSortBy(MoviesSearch.Sorting.valueOf(
-                    savedInstanceState.getString("sorting")));
+            //searchCriteria.setSortBy(MoviesSearch.Sorting.valueOf(savedInstanceState.getString("sorting")));
         }
 
         setHasOptionsMenu(true);
@@ -136,6 +139,12 @@ public class MoviesFragment extends Fragment {
             searchCriteria.setSortBy(MoviesSearch.Sorting.RATING);
             updateMovies();
             return true;
+
+        } else if (id == R.id.action_clear) {
+
+            moviesList.clear();
+            myAdapter.updateMovies(moviesList);
+
         }
 
             return super.onOptionsItemSelected(item);
@@ -145,7 +154,7 @@ public class MoviesFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putString("sorting",searchCriteria.getSortBy().name());
+        //outState.putString("sorting",searchCriteria.getSortBy().name());
 
     }
 
@@ -237,16 +246,41 @@ public class MoviesFragment extends Fragment {
 
             noConnection = false;
 
-            TmdbMovies movies = new TmdbApi(BuildConfig.MOVIESDB_API_KEY).getMovies();
 
-            MovieResultsPage res = null;
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            searchCriteria.setLanguage(prefs.getString(getString(R.string.pref_key_movies_language),"en"));
 
-            switch (searchCriteria.getSortBy()) {
-                case POPULARITY:
-                    res = movies.getPopularMovies(searchCriteria.getLanguage(),1);
-                case RATING:
-                    res = movies.getTopRatedMovies(searchCriteria.getLanguage(), 1);
+            log.debug("search crit: {}",searchCriteria);
+
+            TmdbApi moviesApi = new TmdbApi(BuildConfig.MOVIESDB_API_KEY);
+
+            TmdbMovies movies = moviesApi.getMovies();
+
+            //TmdbSearch seach = moviesApi.getSearch();
+            //seach.searchMovie("",2016,searchCriteria.getLanguage(),false,1);
+
+            TmdbDiscover search = moviesApi.getDiscover();
+
+            Discover discover = new Discover();
+            discover.language(searchCriteria.getLanguage());
+            discover.year(2016);
+            //discover.primaryReleaseYear(2016);
+            //discover.getParams().put("primary_release_date.gte","2014-01-01");
+            discover.page(1);
+            //discover.includeAdult(false);
+
+            if (searchCriteria.getSortBy() == MoviesSearch.Sorting.POPULARITY) {
+                discover.sortBy("popularity.desc");
+            } else {
+                discover.sortBy("vote_average.desc");
             }
+
+
+
+            MovieResultsPage res = search.getDiscover(discover);
+
+
+
 
             int limit = 5;//TODO PREFS
 

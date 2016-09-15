@@ -30,4 +30,12 @@ public class MoviesSearch {
         this.language = language;
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("MoviesSearch{");
+        sb.append("language='").append(language).append('\'');
+        sb.append(", sortBy=").append(sortBy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

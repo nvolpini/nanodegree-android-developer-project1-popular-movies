@@ -47,7 +47,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         Movie movie = mValues.get(position);
 
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).getId()+"");//TODO REVER
+        holder.mIdView.setText(mValues.get(position).getId()+" - "+movie.getVoteAverage());//TODO REVER
         holder.mContentView.setText(mValues.get(position).getOriginalTitle());
 
         String imageUrl="http://image.tmdb.org/t/p/w185/%s"; //TODO PREFS

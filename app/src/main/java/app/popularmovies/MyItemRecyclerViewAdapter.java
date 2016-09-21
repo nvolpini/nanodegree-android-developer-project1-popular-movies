@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -16,6 +15,7 @@ import java.util.List;
 
 import app.popularmovies.MoviesFragment.OnListFragmentInteractionListener;
 import app.popularmovies.model.Movie;
+import app.popularmovies.service.MoviesService;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Movie} and makes a call to the
@@ -47,12 +47,25 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         Movie movie = mValues.get(position);
 
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).getId()+" - "+movie.getVoteAverage());//TODO REVER
-        holder.mContentView.setText(mValues.get(position).getOriginalTitle());
+        //holder.mIdView.setText(mValues.get(position).getId()+" - "+movie.getVoteAverage());//TODO REVER
+        //holder.mContentView.setText(mValues.get(position).getOriginalTitle());
 
-        String imageUrl="http://image.tmdb.org/t/p/w185/%s"; //TODO PREFS
+        if (movie.getPosterPath()==null) {
 
-        Picasso.with(holder.mView.getContext()).load(String.format(imageUrl,movie.getPosterPath())).into(holder.mImageView);
+            Picasso.with(holder.mView.getContext())
+                    .load(R.mipmap.ic_launcher) //TODO no poster image
+                    .into(holder.mImageView);
+
+        } else {
+
+            String imageUrl = MoviesService.get().getMoviePosterUrl(movie);
+
+            Picasso.with(holder.mView.getContext())
+                    .load(imageUrl)
+                    .placeholder(R.mipmap.ic_launcher)  //TODO
+                    .error(R.mipmap.ic_launcher) //TODO
+                    .into(holder.mImageView);
+        }
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,22 +92,22 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
+        //public final TextView mIdView;
+        //public final TextView mContentView;
         public final ImageView mImageView;
         public Movie mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.id);
-            mContentView = (TextView) view.findViewById(R.id.content);
+            //mIdView = (TextView) view.findViewById(R.id.id);
+            //mContentView = (TextView) view.findViewById(R.id.content);
             mImageView = (ImageView) view.findViewById(R.id.imageView);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            return super.toString() + " '" + mItem.getTitle() + "'";
         }
     }
 }

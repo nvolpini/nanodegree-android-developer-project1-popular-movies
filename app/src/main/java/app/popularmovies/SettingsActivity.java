@@ -181,6 +181,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // updated to reflect the new value, per the Android Design
             // guidelines.
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_movies_language)));
+            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_default_sorting)));
+
         }
 
         @Override
@@ -213,6 +215,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // updated to reflect the new value, per the Android Design
             // guidelines.
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_sync_frequency)));
+
             //bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_sync_on_start)));
         }
 

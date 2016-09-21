@@ -6,11 +6,7 @@ import org.junit.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
-import app.popularmovies.model.Movie;
-
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -48,11 +44,6 @@ public class MoviesJsonParserTest {
     @Test
     public void testParsing() throws Exception {
 
-        MoviesJsonParser parser = new MoviesJsonParser();
 
-        List<Movie> movies = parser.parse(sampleJson);
-
-
-        assertEquals(10, movies.size());
     }
 }

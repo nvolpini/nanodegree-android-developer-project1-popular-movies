@@ -25,13 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.popularmovies.model.Movie;
-import app.popularmovies.model.MoviesSearch;
-import info.movito.themoviedbapi.TmdbApi;
-import info.movito.themoviedbapi.TmdbDiscover;
-import info.movito.themoviedbapi.TmdbMovies;
-import info.movito.themoviedbapi.model.Discover;
-import info.movito.themoviedbapi.model.MovieDb;
-import info.movito.themoviedbapi.model.core.MovieResultsPage;
+import app.popularmovies.model.SearchParams;
+import app.popularmovies.service.IMovieSearch;
+import app.popularmovies.service.MoviesService;
 
 /**
  * A fragment representing a list of Items.
@@ -45,15 +41,17 @@ public class MoviesFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
+    public static final String MOVIES_PARCELABLE_KEY = "moviesList";
+    public static final String SEARCH_PARAMS_KEY = "searchParams";
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
 
     MyItemRecyclerViewAdapter myAdapter;
 
-    private MoviesSearch searchCriteria;
+    private SearchParams searchParams;
 
-    private List<Movie> moviesList = new ArrayList<>();
+    private ArrayList<Movie> moviesList = new ArrayList<>();
 
     /**
      * indicates no connection on the last fetch attempt
@@ -67,11 +65,11 @@ public class MoviesFragment extends Fragment {
     public MoviesFragment() {
     }
 
-
-    public static MoviesFragment newInstance(int columnCount) {
+    public static MoviesFragment newInstance(int columnCount, SearchParams searchParams) {
         MoviesFragment fragment = new MoviesFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
+        args.putParcelable(MoviesFragment.SEARCH_PARAMS_KEY, searchParams);
         fragment.setArguments(args);
         return fragment;
     }
@@ -80,28 +78,76 @@ public class MoviesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //sample data
-        /*
-        moviesList = new ArrayList<>();
-        moviesList.add(new Movie(1,"Filme1"));
-        moviesList.add(new Movie(2,"Filme2"));*/
-
-        searchCriteria = new MoviesSearch();
-
-        if (savedInstanceState != null && savedInstanceState.containsKey("sorting")) {
-            //searchCriteria.setSortBy(MoviesSearch.Sorting.valueOf(savedInstanceState.getString("sorting")));
-        }
+        log.debug("onCreate");
 
         setHasOptionsMenu(true);
 
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+            searchParams = getArguments().getParcelable(SEARCH_PARAMS_KEY);
         }
+
+        if (savedInstanceState == null) {
+
+            log.debug("new moviesList...");
+            moviesList = new ArrayList<>(); //???
+
+            if (searchParams == null) {
+                log.debug("no search params passed as argument. Getting default...");
+                searchParams = MoviesService.get().newSearchParams();
+            }
+
+            //auto sync on start
+            if(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(getString(R.string.pref_key_sync_on_start),false)) {
+                log.debug("sync on start...");
+                updateMovies();
+            }
+
+        } else {
+
+            if (savedInstanceState.containsKey(MOVIES_PARCELABLE_KEY)) {
+                log.debug("restoring moviesList from state...");
+                moviesList = savedInstanceState.getParcelableArrayList(MOVIES_PARCELABLE_KEY);
+            }
+
+            if (savedInstanceState.containsKey(SEARCH_PARAMS_KEY)) {
+                log.debug("restoring params from state...");
+                searchParams = savedInstanceState.getParcelable(SEARCH_PARAMS_KEY);
+            }
+
+        }
+
+
+
+
     }
+
+
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+
+        log.debug("saving moviesList...");
+
+        outState.putParcelableArrayList(MOVIES_PARCELABLE_KEY, moviesList);
+
+        outState.putParcelable(SEARCH_PARAMS_KEY, searchParams);
+
+        super.onSaveInstanceState(outState);
+
+
+    }
+
+
+
 
     @Override
     public void onStart() {
         super.onStart();
+
+        log.debug("onStart()");
+
 
         //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         //prefs.getBoolean(getString(R.string.pref_key_sync_on_start),false);
@@ -109,6 +155,28 @@ public class MoviesFragment extends Fragment {
 
        // updateMovies();
     }
+
+    @Override
+    public void onPause() {
+        log.debug("onPause()");
+
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        log.debug("onResume()");
+
+        super.onResume();
+    }
+
+    @Override
+    public void onDestroy() {
+        log.debug("onDestroy()");
+
+        super.onDestroy();
+    }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -130,13 +198,16 @@ public class MoviesFragment extends Fragment {
 
         } else if (id == R.id.action_sort_by_popularity) {
 
-            searchCriteria.setSortBy(MoviesSearch.Sorting.POPULARITY);
+
+            searchParams.setSortBy(MoviesService.SORT_BY_POPULARITY);
+
             updateMovies();
             return true;
 
         } else if (id == R.id.action_sort_by_rating) {
 
-            searchCriteria.setSortBy(MoviesSearch.Sorting.RATING);
+            searchParams.setSortBy(MoviesService.SORT_BY_RATING);
+
             updateMovies();
             return true;
 
@@ -150,22 +221,27 @@ public class MoviesFragment extends Fragment {
             return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+    private void saveSorting(String sorting) {
 
-        //outState.putString("sorting",searchCriteria.getSortBy().name());
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+        prefs.edit().putString(getString(R.string.pref_key_default_sorting),sorting);
+
+
+    }
+
+    private String getSorting() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+        return prefs.getString(getString(R.string.pref_key_default_sorting), MoviesService.SORT_BY_POPULARITY);
 
     }
 
     private void updateMovies() {
-        log.debug("updating movies...");
+        log.debug("updating movies, params: {}",searchParams);
 
         FetchMoviesTask task = new FetchMoviesTask();
-
-
-
-        task.execute(searchCriteria);
+        task.execute();
     }
 
     @Override
@@ -223,14 +299,11 @@ public class MoviesFragment extends Fragment {
     }
 
 
-    public class FetchMoviesTask extends AsyncTask<MoviesSearch,Void,List<Movie>> {
+    public class FetchMoviesTask extends AsyncTask<Void,Void,List<Movie>> {
 
-        //private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
-
-        //private static MoviesJsonParser parser = new MoviesJsonParser();
 
         @Override
-        protected List<Movie> doInBackground(MoviesSearch... params) {
+        protected List<Movie> doInBackground(Void... params) {
 
             List<Movie> myMovies = new ArrayList<>();
 
@@ -247,58 +320,9 @@ public class MoviesFragment extends Fragment {
             noConnection = false;
 
 
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            searchCriteria.setLanguage(prefs.getString(getString(R.string.pref_key_movies_language),"en"));
+            IMovieSearch search = MoviesService.get().newSearch(searchParams);
 
-            log.debug("search crit: {}",searchCriteria);
-
-            TmdbApi moviesApi = new TmdbApi(BuildConfig.MOVIESDB_API_KEY);
-
-            TmdbMovies movies = moviesApi.getMovies();
-
-            //TmdbSearch seach = moviesApi.getSearch();
-            //seach.searchMovie("",2016,searchCriteria.getLanguage(),false,1);
-
-            TmdbDiscover search = moviesApi.getDiscover();
-
-            Discover discover = new Discover();
-            discover.language(searchCriteria.getLanguage());
-            discover.year(2016);
-            //discover.primaryReleaseYear(2016);
-            //discover.getParams().put("primary_release_date.gte","2014-01-01");
-            discover.page(1);
-            //discover.includeAdult(false);
-
-            if (searchCriteria.getSortBy() == MoviesSearch.Sorting.POPULARITY) {
-                discover.sortBy("popularity.desc");
-            } else {
-                discover.sortBy("vote_average.desc");
-            }
-
-
-
-            MovieResultsPage res = search.getDiscover(discover);
-
-
-
-
-            int limit = 5;//TODO PREFS
-
-
-
-            for (MovieDb md : res.getResults()) {
-
-                Movie m = new Movie();
-                m.setId(md.getId());
-                m.setTitle(md.getTitle());
-                m.setReleaseDate(md.getReleaseDate());
-                m.setPosterPath(md.getPosterPath());
-                m.setOverview(md.getOverview());
-                m.setOriginalTitle(md.getOriginalTitle());
-                m.setVoteAverage(md.getVoteAverage());
-                myMovies.add(m);
-            }
-
+            myMovies = search.list();
 
 
             return myMovies;
@@ -306,24 +330,44 @@ public class MoviesFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(List<Movie> movies) {
+        protected void onPostExecute(List<Movie> newMovies) {
 
-            log.debug("postExecute: {}",movies);
-
-            //update adapter
-            myAdapter.updateMovies(movies);
+            log.debug("postExecute: {}",newMovies);
 
             if (noConnection) {
 
                 Toast.makeText(getActivity(),getString(R.string.no_internet_connection),Toast.LENGTH_LONG).show();
 
+                //TODO devel mode
+                Toast.makeText(getActivity(),"Using sample data",Toast.LENGTH_LONG).show();
+
+                newMovies.addAll(MoviesService.get().getSampleData());
+
+
             }
+
+
+            //update adapter
+            myAdapter.updateMovies(newMovies);
 
         }
     }
 
     public boolean isOnline() {
         log.debug("checking if we have internet access.");
+
+/*
+        ConnectivityManager cm =
+                (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        boolean state = cm.getActiveNetworkInfo() != null &&
+                cm.getActiveNetworkInfo().isConnectedOrConnecting();
+
+        log.debug("testing via ConnectivityManager returned: {}",state);
+
+
+        return state;*/
+
 
         Runtime runtime = Runtime.getRuntime();
         try {
@@ -336,6 +380,8 @@ public class MoviesFragment extends Fragment {
         catch (InterruptedException e) { e.printStackTrace(); }
 
         return false;
+
+
     }
 
 }

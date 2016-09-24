@@ -82,7 +82,7 @@ public class MoviesService {
         bundle.putInt(getMovieDataKey("id"),movie.getId());
         bundle.putString(getMovieDataKey("title"),movie.getTitle());
         bundle.putString(getMovieDataKey("originalTitle"),movie.getOriginalTitle());
-        bundle.putString(getMovieDataKey("releaseDate"),movie.getOriginalTitle());
+        bundle.putString(getMovieDataKey("releaseDate"),movie.getReleaseDate());
         bundle.putString(getMovieDataKey("overview"),movie.getOverview());
         bundle.putDouble(getMovieDataKey("voteAverage"),movie.getVoteAverage());
         bundle.putString(getMovieDataKey("posterPath"),movie.getPosterPath());

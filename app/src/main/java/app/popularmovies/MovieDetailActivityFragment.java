@@ -57,8 +57,8 @@ public class MovieDetailActivityFragment extends Fragment {
 
         ((TextView) rootView.findViewById(R.id.originalTitle)).setText(movie.getOriginalTitle());
         ((TextView) rootView.findViewById(R.id.synospsis)).setText(movie.getOverview());
-        ((TextView) rootView.findViewById(R.id.releaseDate)).setText(movie.getReleaseDate());
-        ((TextView) rootView.findViewById(R.id.userRating)).setText(movie.getVoteAverage()+""); //TODO
+        ((TextView) rootView.findViewById(R.id.releaseDate)).setText(movie.getYear());
+        ((TextView) rootView.findViewById(R.id.userRating)).setText(String.format("%1$.1f/10", movie.getVoteAverage())); //TODO
 
         String imageUrl = MoviesService.get().getMoviePosterUrl(movie);
 

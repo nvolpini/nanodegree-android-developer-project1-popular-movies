@@ -47,13 +47,11 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         Movie movie = mValues.get(position);
 
         holder.mItem = mValues.get(position);
-        //holder.mIdView.setText(mValues.get(position).getId()+" - "+movie.getVoteAverage());//TODO REVER
-        //holder.mContentView.setText(mValues.get(position).getOriginalTitle());
 
         if (movie.getPosterPath()==null) {
 
             Picasso.with(holder.mView.getContext())
-                    .load(R.mipmap.ic_launcher) //TODO no poster image
+                    .load(R.drawable.no_poster_185)
                     .into(holder.mImageView);
 
         } else {
@@ -62,8 +60,8 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
 
             Picasso.with(holder.mView.getContext())
                     .load(imageUrl)
-                    .placeholder(R.mipmap.ic_launcher)  //TODO
-                    .error(R.mipmap.ic_launcher) //TODO
+                    .placeholder(R.drawable.loading_poster_185)
+                    .error(R.drawable.no_poster_185)
                     .into(holder.mImageView);
         }
 

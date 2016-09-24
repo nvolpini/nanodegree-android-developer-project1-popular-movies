@@ -45,6 +45,9 @@ public class Movie implements Parcelable {
         this.voteAverage = voteAverage;
     }
 
+    public String getYear() {
+        return releaseDate.substring(0,4);
+    }
 
     public String getOriginalTitle() {
         return originalTitle;

@@ -44,7 +44,7 @@ public class MoviesFragment extends Fragment {
     public static final String MOVIES_PARCELABLE_KEY = "moviesList";
     public static final String SEARCH_PARAMS_KEY = "searchParams";
     // TODO: Customize parameters
-    private int mColumnCount = 1;
+    private int mColumnCount = 2;
     private OnListFragmentInteractionListener mListener;
 
     MyItemRecyclerViewAdapter myAdapter;

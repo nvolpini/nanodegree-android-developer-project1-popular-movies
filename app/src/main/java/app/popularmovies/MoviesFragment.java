@@ -348,9 +348,9 @@ public class MoviesFragment extends Fragment  {
                 Toast.makeText(getActivity(),getString(R.string.no_internet_connection),Toast.LENGTH_LONG).show();
 
                 //TODO devel mode
-                Toast.makeText(getActivity(),"Using sample data",Toast.LENGTH_LONG).show();
+                //Toast.makeText(getActivity(),"Using sample data",Toast.LENGTH_LONG).show();
 
-                newMovies.addAll(MoviesService.get().getSampleData());
+                //newMovies.addAll(MoviesService.get().getSampleData());
 
 
             }

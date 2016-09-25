@@ -20,16 +20,15 @@ import app.popularmovies.service.MoviesService;
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Movie} and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
  */
-public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder> {
+public class MoviesListRecyclerViewAdapter extends RecyclerView.Adapter<MoviesListRecyclerViewAdapter.ViewHolder> {
 
-    private static final Logger log = LoggerFactory.getLogger(MyItemRecyclerViewAdapter.class);
+    private static final Logger log = LoggerFactory.getLogger(MoviesListRecyclerViewAdapter.class);
 
     private final List<Movie> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public MyItemRecyclerViewAdapter(List<Movie> items, OnListFragmentInteractionListener listener) {
+    public MoviesListRecyclerViewAdapter(List<Movie> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }

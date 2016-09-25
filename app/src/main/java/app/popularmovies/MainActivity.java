@@ -1,7 +1,6 @@
 package app.popularmovies;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -15,8 +14,7 @@ import app.popularmovies.model.Movie;
 import app.popularmovies.model.SearchParams;
 import app.popularmovies.service.MoviesService;
 
-public class MainActivity extends AppCompatActivity implements MoviesFragment.OnListFragmentInteractionListener
-    ,SharedPreferences.OnSharedPreferenceChangeListener {
+public class MainActivity extends AppCompatActivity implements MoviesFragment.OnListFragmentInteractionListener {
 
     private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
 
@@ -27,7 +25,7 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        log.debug("onCreate");
+        log.trace("onCreate");
 
         //reset all prefs
         //PreferenceManager.getDefaultSharedPreferences(this).edit().clear().apply();
@@ -37,22 +35,20 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
         PreferenceManager.setDefaultValues(this,R.xml.pref_data_sync,false);
 
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(MoviesFragment.SEARCH_PARAMS_KEY)) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY)) {
 
-            searchParams = savedInstanceState.getParcelable(MoviesFragment.SEARCH_PARAMS_KEY);
+            searchParams = savedInstanceState.getParcelable(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY);
 
-            log.debug("loading params from state: {}",searchParams);
+            log.trace("loading params from state: {}",searchParams);
 
         } else if (savedInstanceState == null) {
 
             searchParams = MoviesService.get().newSearchParams();
 
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            searchParams.setLanguage(Utils.getPreferredLanguage(this));
+            searchParams.setSortBy(Utils.getDefaultSorting(this));
 
-            searchParams.setLanguage(prefs.getString(getString(R.string.pref_key_movies_language), MoviesService.DEFAULT_LANGUAGE));
-            searchParams.setSortBy(prefs.getString(getString(R.string.pref_key_default_sorting), MoviesService.SORT_BY_POPULARITY));
-
-            log.debug("params from prefs: {} ",searchParams);
+            log.trace("params from prefs: {} ",searchParams);
 
 
             getSupportFragmentManager().beginTransaction()
@@ -70,9 +66,9 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
     @Override
     protected void onSaveInstanceState(Bundle outState) {
 
-        log.debug("saving state...");
+        log.trace("saving state...");
 
-        outState.putParcelable(MoviesFragment.SEARCH_PARAMS_KEY, searchParams);
+        outState.putParcelable(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY, searchParams);
 
         super.onSaveInstanceState(outState);
 
@@ -81,16 +77,14 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        log.debug("restoring state...");
+        log.trace("restoring state...");
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        log.debug("onResume()");
-
-        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+        log.trace("onResume()");
 
     }
 
@@ -98,9 +92,8 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
     @Override
     protected void onPause() {
         super.onPause();
-        log.debug("onPause()");
+        log.trace("onPause()");
 
-        //PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
 
     }
 
@@ -108,19 +101,19 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
     @Override
     protected void onStart() {
         super.onStart();
-        log.debug("onStart()");
+        log.trace("onStart()");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        log.debug("onDestroy()");
+        log.trace("onDestroy()");
     }
 
 
     @Override
     protected void onRestart() {
-        log.debug("onRestart()");
+        log.trace("onRestart()");
 
         super.onRestart();
     }
@@ -156,39 +149,24 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
     @Override
     public void onListFragmentInteraction(Movie movie) {
 
-        log.debug("iteracao, movie: {}",movie.getOriginalTitle());
+        log.trace("iteracao, movie: {}",movie.getOriginalTitle());
 
         Intent intent = new Intent(this,MovieDetailActivity.class);
 
-        //TODO rever
-        intent.putExtra(MovieDetailActivity.MOVIE_ID_EXTRA_KEY,movie.getId());
 
-
+        //TODO had to save manually, saving as parcelableExtra didnt work
         Bundle b = new Bundle();
         MoviesService.get().saveMovie(movie,b);
         intent.putExtras(b);
 
-        //didnt work
+        //TODO used to identify the existence
+        intent.putExtra(MovieDetailActivity.MOVIE_ID_EXTRA_KEY,movie.getId());
+
+        //TODO didnt work. See MovieDetailActivityFragment.onCreateView
         //intent.putExtra(MovieDetailActivity.MOVIE_EXTRA_KEY, movie);
 
         startActivity(intent);
 
     }
 
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-
-        log.debug("pref changed: {}",key);
-
-        if (key.equals(getString(R.string.pref_key_default_sorting))) {
-            searchParams.setSortBy(sharedPreferences.getString(getString(R.string.pref_key_default_sorting),MoviesService.SORT_BY_POPULARITY));
-            log.debug("pref changed '{}' to '{}'",key,searchParams.getSortBy());
-        }
-
-        if (key.equals(getString(R.string.pref_key_movies_language))) {
-            searchParams.setLanguage(sharedPreferences.getString(getString(R.string.pref_key_movies_language),MoviesService.DEFAULT_LANGUAGE));
-            log.debug("pref changed '{}' to '{}'",key,searchParams.getLanguage());
-        }
-
-    }
 }

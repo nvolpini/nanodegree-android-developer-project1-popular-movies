@@ -37,7 +37,6 @@ public class MovieDetailActivityFragment extends Fragment {
             //TODO didnt work
             //Movie movie = intent.getParcelableExtra(MovieDetailActivity.MOVIE_EXTRA_KEY);
 
-            //intent.getParcelableExtra()
 
             updateView(rootView, movie);
 
@@ -53,19 +52,18 @@ public class MovieDetailActivityFragment extends Fragment {
         }
 
 
-        //TODO formatacao datas/numeros
-
+        ((TextView) rootView.findViewById(R.id.title)).setText(movie.getTitle());
         ((TextView) rootView.findViewById(R.id.originalTitle)).setText(movie.getOriginalTitle());
         ((TextView) rootView.findViewById(R.id.synospsis)).setText(movie.getOverview());
         ((TextView) rootView.findViewById(R.id.releaseDate)).setText(movie.getYear());
-        ((TextView) rootView.findViewById(R.id.userRating)).setText(String.format("%1$.1f/10", movie.getVoteAverage())); //TODO
+        ((TextView) rootView.findViewById(R.id.userRating)).setText(String.format("%1$.1f/10", movie.getVoteAverage()));
 
         String imageUrl = MoviesService.get().getMoviePosterUrl(movie);
 
         Picasso.with(getContext())
                 .load(imageUrl)
-                .placeholder(R.mipmap.ic_launcher)  //TODO
-                .error(R.mipmap.ic_launcher) //TODO
+                .placeholder(R.drawable.loading_poster_185)
+                .error(R.drawable.no_poster_185)
                 .into((ImageView) rootView.findViewById(R.id.posterImage));
     }
 

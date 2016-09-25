@@ -13,28 +13,40 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.preference.SwitchPreference;
-import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
+import android.preference.SwitchPreference;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.MenuItem;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 /**
+ * <p>
+ *     TODO - when the user changes the language or sorting should update the movies list when it goes back.
+ * </p>
+ * <p>
  * A {@link PreferenceActivity} that presents a set of application settings. On
  * handset devices, settings are presented as a single list. On tablets,
  * settings are split by category, with category headers shown to the left of
  * the list of settings.
  * <p/>
+ * <p>
  * See <a href="http://developer.android.com/design/patterns/settings.html">
  * Android Design: Settings</a> for design guidelines and the <a
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
+ * </p>
  */
 public class SettingsActivity extends AppCompatPreferenceActivity {
+
+    private static final Logger log = LoggerFactory.getLogger(SettingsActivity.class);
+
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
@@ -189,6 +201,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public boolean onOptionsItemSelected(MenuItem item) {
             int id = item.getItemId();
             if (id == android.R.id.home) {
+                log.debug("on home button general settings");
+
                 startActivity(new Intent(getActivity(), SettingsActivity.class));
                 return true;
             }
@@ -196,7 +210,26 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
     }
 
+    /**
+     * TODO Main settings screen home button does not go back to the movies list without this.
+     * With this there is no moviesList state saved and will query movies every time it goes back.
+     * Should identify if the pertinent settings were changed and only then update the movies,
+     * otherwise the moviesList state should be saved and reused.
+     *
+     * @param item
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            log.debug("on home button top settings");
+            startActivity(new Intent(this, MainActivity.class));
+            return true;
+        }
 
+        return super.onOptionsItemSelected(item);
+    }
 
     /**
      * This fragment shows data and sync preferences only. It is used when the

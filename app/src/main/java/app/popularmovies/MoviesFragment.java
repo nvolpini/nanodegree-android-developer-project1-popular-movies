@@ -1,10 +1,8 @@
 package app.popularmovies;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,7 +18,6 @@ import android.widget.Toast;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,27 +27,51 @@ import app.popularmovies.service.IMovieSearch;
 import app.popularmovies.service.MoviesService;
 
 /**
- * A fragment representing a list of Items.
+ * A fragment representing a list of movie posters.
+ *
+ * <p>
+ *     Create new instances using {@link MoviesFragment#newInstance(int, SearchParams)}
+ * </p>
+ *
+ * <p>
+ * Can take two arguments:
+ * <br>{@link MoviesFragment#SEARCH_PARAMS_PARCELABLE_KEY} - SearchParams
+ * <br>{@link MoviesFragment#ARG_COLUMN_COUNT} - number of columns.
+ * </p>
+ *
  * <p>
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
+ * </p>
  */
-public class MoviesFragment extends Fragment {
+public class MoviesFragment extends Fragment  {
 
     private static final Logger log = LoggerFactory.getLogger(MoviesFragment.class);
 
-    // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
-    public static final String MOVIES_PARCELABLE_KEY = "moviesList";
-    public static final String SEARCH_PARAMS_KEY = "searchParams";
-    // TODO: Customize parameters
+    public static final String MOVIES_LIST_PARCELABLE_KEY = "moviesList";
+    public static final String SEARCH_PARAMS_PARCELABLE_KEY = "searchParams";
     private int mColumnCount = 2;
+
+    /**
+     * Will receive notifications when a movie is clicked.
+     * See {@link MainActivity#onListFragmentInteraction(Movie)}
+     */
     private OnListFragmentInteractionListener mListener;
 
-    MyItemRecyclerViewAdapter myAdapter;
 
+    MoviesListRecyclerViewAdapter moviesListAdapter;
+
+    /**
+     * Holds the search parameters used to fetch the movies.
+     * Saved and restored as state
+     */
     private SearchParams searchParams;
 
+    /**
+     * Holds the movies list.
+     * Saved and restored as state
+     */
     private ArrayList<Movie> moviesList = new ArrayList<>();
 
     /**
@@ -69,7 +90,7 @@ public class MoviesFragment extends Fragment {
         MoviesFragment fragment = new MoviesFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
-        args.putParcelable(MoviesFragment.SEARCH_PARAMS_KEY, searchParams);
+        args.putParcelable(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY, searchParams);
         fragment.setArguments(args);
         return fragment;
     }
@@ -78,171 +99,50 @@ public class MoviesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        log.debug("onCreate");
+        log.trace("onCreate");
 
         setHasOptionsMenu(true);
 
+        //define the search params via argument
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-            searchParams = getArguments().getParcelable(SEARCH_PARAMS_KEY);
+            searchParams = getArguments().getParcelable(SEARCH_PARAMS_PARCELABLE_KEY);
         }
 
+        //no previous instance saved, create new data
         if (savedInstanceState == null) {
 
-            log.debug("new moviesList...");
-            moviesList = new ArrayList<>(); //???
+            log.trace("new moviesList...");
+            moviesList = new ArrayList<>(); //empty movies list
 
             if (searchParams == null) {
-                log.debug("no search params passed as argument. Getting default...");
+                log.trace("no search params passed as argument. Getting default...");
                 searchParams = MoviesService.get().newSearchParams();
             }
 
+            //TODO Do this here or at onStart() - neither seem to be right - check loaders
+
             //auto sync on start
-            if(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(getString(R.string.pref_key_sync_on_start),false)) {
-                log.debug("sync on start...");
+            if(Utils.isSyncOnStart(getActivity())) {
                 updateMovies();
             }
 
-        } else {
+        } else { //previous state saved, restore
 
-            if (savedInstanceState.containsKey(MOVIES_PARCELABLE_KEY)) {
-                log.debug("restoring moviesList from state...");
-                moviesList = savedInstanceState.getParcelableArrayList(MOVIES_PARCELABLE_KEY);
+            if (savedInstanceState.containsKey(MOVIES_LIST_PARCELABLE_KEY)) {
+                log.trace("restoring moviesList from state...");
+                moviesList = savedInstanceState.getParcelableArrayList(MOVIES_LIST_PARCELABLE_KEY);
             }
 
-            if (savedInstanceState.containsKey(SEARCH_PARAMS_KEY)) {
-                log.debug("restoring params from state...");
-                searchParams = savedInstanceState.getParcelable(SEARCH_PARAMS_KEY);
+            if (savedInstanceState.containsKey(SEARCH_PARAMS_PARCELABLE_KEY)) {
+                log.trace("restoring params from state...");
+                searchParams = savedInstanceState.getParcelable(SEARCH_PARAMS_PARCELABLE_KEY);
             }
 
         }
 
-
-
-
     }
 
-
-
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-
-        log.debug("saving moviesList...");
-
-        outState.putParcelableArrayList(MOVIES_PARCELABLE_KEY, moviesList);
-
-        outState.putParcelable(SEARCH_PARAMS_KEY, searchParams);
-
-        super.onSaveInstanceState(outState);
-
-
-    }
-
-
-
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        log.debug("onStart()");
-
-
-        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        //prefs.getBoolean(getString(R.string.pref_key_sync_on_start),false);
-        //TODO test if should load on start
-
-       // updateMovies();
-    }
-
-    @Override
-    public void onPause() {
-        log.debug("onPause()");
-
-        super.onPause();
-    }
-
-    @Override
-    public void onResume() {
-        log.debug("onResume()");
-
-        super.onResume();
-    }
-
-    @Override
-    public void onDestroy() {
-        log.debug("onDestroy()");
-
-        super.onDestroy();
-    }
-
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-
-        inflater.inflate(R.menu.movies,menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_refresh) {
-
-            updateMovies();
-
-            return true;
-
-        } else if (id == R.id.action_sort_by_popularity) {
-
-
-            searchParams.setSortBy(MoviesService.SORT_BY_POPULARITY);
-
-            updateMovies();
-            return true;
-
-        } else if (id == R.id.action_sort_by_rating) {
-
-            searchParams.setSortBy(MoviesService.SORT_BY_RATING);
-
-            updateMovies();
-            return true;
-
-        } else if (id == R.id.action_clear) {
-
-            moviesList.clear();
-            myAdapter.updateMovies(moviesList);
-
-        }
-
-            return super.onOptionsItemSelected(item);
-    }
-
-    private void saveSorting(String sorting) {
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
-        prefs.edit().putString(getString(R.string.pref_key_default_sorting),sorting);
-
-
-    }
-
-    private String getSorting() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
-        return prefs.getString(getString(R.string.pref_key_default_sorting), MoviesService.SORT_BY_POPULARITY);
-
-    }
-
-    private void updateMovies() {
-        log.debug("updating movies, params: {}",searchParams);
-
-        FetchMoviesTask task = new FetchMoviesTask();
-        task.execute();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -259,11 +159,61 @@ public class MoviesFragment extends Fragment {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
 
-            myAdapter = new MyItemRecyclerViewAdapter(moviesList, mListener);
+            moviesListAdapter = new MoviesListRecyclerViewAdapter(moviesList, mListener);
 
-            recyclerView.setAdapter(myAdapter);
+            recyclerView.setAdapter(moviesListAdapter);
         }
         return view;
+    }
+
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
+        inflater.inflate(R.menu.movies,menu);
+
+    }
+
+    /**
+     * TODO highlight the selected sorting option, so the users know the current sorting param
+     *
+     * @param item
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_refresh) {
+
+            updateMovies();
+
+            return true;
+
+        } else if (id == R.id.action_sort_by_popularity) {
+
+            searchParams.setSortBy(MoviesService.SORT_BY_POPULARITY);
+            updateMovies();
+
+            return true;
+
+        } else if (id == R.id.action_sort_by_rating) {
+
+            searchParams.setSortBy(MoviesService.SORT_BY_RATING);
+            updateMovies();
+
+            return true;
+
+        } else if (id == R.id.action_clear) { //DEBUG purposes
+
+            moviesList.clear();
+            moviesListAdapter.updateMovies(moviesList);
+
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 
@@ -284,6 +234,7 @@ public class MoviesFragment extends Fragment {
         mListener = null;
     }
 
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -299,6 +250,64 @@ public class MoviesFragment extends Fragment {
     }
 
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+
+        log.trace("saving moviesList...");
+
+        outState.putParcelableArrayList(MOVIES_LIST_PARCELABLE_KEY, moviesList);
+
+        outState.putParcelable(SEARCH_PARAMS_PARCELABLE_KEY, searchParams);
+
+        super.onSaveInstanceState(outState);
+
+
+    }
+
+
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        log.trace("onStart()");
+
+        //TODO where to autoload
+        //TODO check loaders - https://developer.android.com/guide/components/loaders.html
+       // updateMovies();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        log.trace("onPause()");
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        log.trace("onResume()");
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        log.trace("onDestroy()");
+
+    }
+
+
+    private void updateMovies() {
+        log.trace("updating movies, params: {}",searchParams);
+
+        FetchMoviesTask task = new FetchMoviesTask();
+        task.execute();
+    }
+
+
     public class FetchMoviesTask extends AsyncTask<Void,Void,List<Movie>> {
 
 
@@ -307,9 +316,9 @@ public class MoviesFragment extends Fragment {
 
             List<Movie> myMovies = new ArrayList<>();
 
-            if (!isOnline()) {
+            if (!Utils.isOnline()) {
 
-                log.error("no internet access.");
+                log.trace("no internet access.");
 
                 noConnection = true;
 
@@ -332,7 +341,7 @@ public class MoviesFragment extends Fragment {
         @Override
         protected void onPostExecute(List<Movie> newMovies) {
 
-            log.debug("postExecute: {}",newMovies);
+            log.trace("postExecute: {}",newMovies);
 
             if (noConnection) {
 
@@ -348,40 +357,9 @@ public class MoviesFragment extends Fragment {
 
 
             //update adapter
-            myAdapter.updateMovies(newMovies);
+            moviesListAdapter.updateMovies(newMovies);
 
         }
-    }
-
-    public boolean isOnline() {
-        log.debug("checking if we have internet access.");
-
-/*
-        ConnectivityManager cm =
-                (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        boolean state = cm.getActiveNetworkInfo() != null &&
-                cm.getActiveNetworkInfo().isConnectedOrConnecting();
-
-        log.debug("testing via ConnectivityManager returned: {}",state);
-
-
-        return state;*/
-
-
-        Runtime runtime = Runtime.getRuntime();
-        try {
-
-            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
-            int     exitValue = ipProcess.waitFor();
-            return (exitValue == 0);
-
-        } catch (IOException e)          { e.printStackTrace(); }
-        catch (InterruptedException e) { e.printStackTrace(); }
-
-        return false;
-
-
     }
 
 }

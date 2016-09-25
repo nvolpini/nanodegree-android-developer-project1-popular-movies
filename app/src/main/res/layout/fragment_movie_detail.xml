@@ -6,19 +6,22 @@
             tools:ignore="HardcodedText">
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    style="@style/MovieDetailStyle">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+              style="@style/MovieDetailStyle"
+              android:layout_marginStart="10dp"
+              android:layout_marginEnd="10dp"
+              android:layout_marginLeft="10dp"
+              android:layout_marginRight="10dp">
 
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Original Title"
-        android:padding="25dp"
-        android:id="@+id/originalTitle"
+        android:text="Title"
+        android:id="@+id/title"
         style="@style/MovieTitleStyle"
         />
 
@@ -27,8 +30,7 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="25dp"
-        android:layout_marginBottom="15dp">
+        >
 
 
         <ImageView
@@ -42,9 +44,8 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginRight="@dimen/activity_vertical_margin"
-            android:paddingLeft="15dp">
-
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
 
 
             <TextView
@@ -53,7 +54,8 @@
                 android:text="2015"
                 android:id="@+id/releaseDate"
                 style="@style/MovieYearStyle"
-                android:layout_marginBottom="@dimen/activity_vertical_margin"/>
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -71,9 +73,15 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="Original Title"
+        android:id="@+id/originalTitle"
+        style="@style/MovieOriginalTitleStyle"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:text="Synopsis"
         android:id="@+id/synospsis"
-        android:paddingLeft="25dp"
         style="@style/MovieOverviewStyle"
         />
 

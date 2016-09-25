@@ -22,17 +22,25 @@
     </style>
 
     <style name="MovieTitleStyle" parent="Base.TextAppearance.AppCompat.Large">
+        <item name="android:layout_marginTop">15dp</item>
+        <item name="android:layout_marginBottom">15dp</item>
         <item name="android:textSize">30dp</item>
 
     </style>
 
     <style name="MovieYearStyle" parent="Base.TextAppearance.AppCompat.Large">
 
-        <item name="android:textSize">20dp</item>
+        <item name="android:textSize">15dp</item>
 
     </style>
 
     <style name="MovieOverviewStyle">
+    </style>
+
+    <style name="MovieOriginalTitleStyle">
+        <item name="android:layout_marginTop">15dp</item>
+        <item name="android:layout_marginBottom">15dp</item>
+        <item name="android:textSize">20dp</item>
     </style>
 
 </resources>

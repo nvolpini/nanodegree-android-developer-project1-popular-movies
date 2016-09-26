@@ -204,17 +204,22 @@ public class MoviesService {
 
             TmdbApi moviesApi = new TmdbApi(BuildConfig.MOVIESDB_API_KEY);
 
+
+			/**
+			 * DO NOT use discover service
+             */
+/*
             TmdbDiscover search = moviesApi.getDiscover();
 
             Discover discover = new Discover();
             discover.language(params.getLanguage());
             discover.year(2016);
-            //discover.primaryReleaseYear(2016);
-            //discover.getParams().put("primary_release_date.gte","2014-01-01");
             discover.page(1);
-            //discover.includeAdult(false);
+            discover.sortBy(params.getSortBy());*/
 
-            discover.sortBy(params.getSortBy());
+			if (params.getSortBy().equals(SORT_BY_POPULARITY))
+
+            moviesApi.getMovies().getTopRatedMovies(params.getLanguage(), 1);
 
             log.debug("Fetching movies. Lang: {}, sort by: {} ",params.getLanguage()
                     , params.getSortBy());

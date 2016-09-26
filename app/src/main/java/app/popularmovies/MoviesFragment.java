@@ -303,8 +303,19 @@ public class MoviesFragment extends Fragment  {
     private void updateMovies() {
         log.trace("updating movies, params: {}",searchParams);
 
-        FetchMoviesTask task = new FetchMoviesTask();
-        task.execute();
+		if (Utils.isOnline()) {
+
+			noConnection = false;
+
+			FetchMoviesTask task = new FetchMoviesTask();
+			task.execute();
+
+
+		} else {
+			log.trace("no internet access.");
+			noConnection = true;
+			Toast.makeText(getActivity(),getString(R.string.no_internet_connection),Toast.LENGTH_LONG).show();
+		}
     }
 
 
@@ -316,23 +327,9 @@ public class MoviesFragment extends Fragment  {
 
             List<Movie> myMovies = new ArrayList<>();
 
-            if (!Utils.isOnline()) {
-
-                log.trace("no internet access.");
-
-                noConnection = true;
-
-                return myMovies;
-
-            }
-
-            noConnection = false;
-
-
             IMovieSearch search = MoviesService.get().newSearch(searchParams);
 
             myMovies = search.list();
-
 
             return myMovies;
 
@@ -342,19 +339,6 @@ public class MoviesFragment extends Fragment  {
         protected void onPostExecute(List<Movie> newMovies) {
 
             log.trace("postExecute: {}",newMovies);
-
-            if (noConnection) {
-
-                Toast.makeText(getActivity(),getString(R.string.no_internet_connection),Toast.LENGTH_LONG).show();
-
-                //TODO devel mode
-                //Toast.makeText(getActivity(),"Using sample data",Toast.LENGTH_LONG).show();
-
-                //newMovies.addAll(MoviesService.get().getSampleData());
-
-
-            }
-
 
             //update adapter
             moviesListAdapter.updateMovies(newMovies);

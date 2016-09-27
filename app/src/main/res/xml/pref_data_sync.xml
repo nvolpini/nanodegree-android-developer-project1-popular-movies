@@ -9,8 +9,8 @@
     <SwitchPreference
         android:defaultValue="true"
         android:key="@string/pref_key_wifi_only"
-        android:summary="@string/pref_description_only_wifi"
-        android:title="@string/pref_title_only_wifi" />
+        android:summary="@string/pref_description_wifi_only"
+        android:title="@string/pref_title_wifi_only" />
 
     <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
          dismiss it. -->

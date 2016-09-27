@@ -51,8 +51,8 @@
     </string>
 
 	<string name="pref_key_wifi_only" translatable="false">only_wiki</string>
-	<string name="pref_description_only_wifi">Downloads movie information only when connected through WIFI</string>
-	<string name="pref_title_only_wifi">Download via WIFI only</string>
+	<string name="pref_description_wifi_only">Downloads movie information only when connected through WIFI</string>
+	<string name="pref_title_wifi_only">Download via WIFI only</string>
 
     <string name="pref_key_sync_frequency" translatable="false">sync_frequency</string>
     <string name="pref_title_sync_frequency">Sync frequency</string>

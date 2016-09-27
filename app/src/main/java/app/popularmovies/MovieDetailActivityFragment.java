@@ -28,6 +28,8 @@ public class MovieDetailActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
 
+        //TODO binding
+
         Intent intent = getActivity().getIntent();
 
         if (intent != null && intent.hasExtra(MovieDetailActivity.MOVIE_ID_EXTRA_KEY)) {

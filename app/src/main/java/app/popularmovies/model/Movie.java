@@ -3,23 +3,37 @@ package app.popularmovies.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 /**
  * Created by neimar on 10/09/16.
  */
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
 public class Movie implements Parcelable {
 
+    @JsonProperty("id")
     private int id;
 
+    @JsonProperty("title")
     private String title;
 
+    @JsonProperty("original_title")
     private String originalTitle;
 
+    @JsonProperty("overview")
     private String overview;
 
+    @JsonProperty("release_date")
     private String releaseDate;
 
+    @JsonProperty("vote_average")
     private double voteAverage;
 
+    @JsonProperty("poster_path")
     private String posterPath;
 
 

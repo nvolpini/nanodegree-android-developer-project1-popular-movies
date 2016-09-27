@@ -14,6 +14,8 @@ import app.popularmovies.model.Movie;
 import app.popularmovies.model.SearchParams;
 import app.popularmovies.service.MoviesService;
 
+import static app.popularmovies.Utils.changeLanguageAccordingToPrefs;
+
 public class MainActivity extends AppCompatActivity implements MoviesFragment.OnListFragmentInteractionListener {
 
     private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
@@ -85,6 +87,29 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
     protected void onResume() {
         super.onResume();
         log.trace("onResume()");
+
+		/**
+		 * TODO REVISOR: qual a melhor forma de monitor se uma preferencia foi alterada na tela de preferencias ?
+		 * para poder atualizar a lista de filmes quando o usuário altear o idioma, por exemplo ?
+		 *
+		 *
+		 */
+
+
+
+        //TODO is this the best way to monitor for changes in preferences?
+
+		/**
+		 * I can use {@link android.preference.Preference.OnPreferenceChangeListener}, however
+		 * usually the listener should be registered at onResume and unregister at onPause but
+		 * for this case shouldn't be like this, because I want to monitor exactly when the
+		 * main activity is paused because I'll be on the preferences activity ...
+		 *
+		 */
+
+		//check if the user changed the preferred language in the preferences
+		//next time he hits refresh it will use the new language
+		changeLanguageAccordingToPrefs(this,searchParams);
 
     }
 

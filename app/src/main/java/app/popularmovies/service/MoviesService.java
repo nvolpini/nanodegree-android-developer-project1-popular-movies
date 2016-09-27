@@ -8,14 +8,8 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.popularmovies.BuildConfig;
 import app.popularmovies.model.Movie;
 import app.popularmovies.model.SearchParams;
-import info.movito.themoviedbapi.TmdbApi;
-import info.movito.themoviedbapi.TmdbDiscover;
-import info.movito.themoviedbapi.model.Discover;
-import info.movito.themoviedbapi.model.MovieDb;
-import info.movito.themoviedbapi.model.core.MovieResultsPage;
 
 /**
  * Created by neimar on 19/09/16.
@@ -47,18 +41,6 @@ public class MoviesService {
 
 
 
-
-    private Movie convert(MovieDb md) {
-        Movie m = new Movie();
-        m.setId(md.getId());
-        m.setTitle(md.getTitle());
-        m.setReleaseDate(md.getReleaseDate());
-        m.setPosterPath(md.getPosterPath());
-        m.setOverview(md.getOverview());
-        m.setOriginalTitle(md.getOriginalTitle());
-        m.setVoteAverage(md.getVoteAverage());
-        return m;
-    }
 
 
 
@@ -114,13 +96,18 @@ public class MoviesService {
 
 
     public IMovieSearch newSearch() {
-        return new MoviesSearch(newSearchParams());
+
+		return newSearch(newSearchParams());
 
     }
 
     public IMovieSearch newSearch(SearchParams params) {
-        return new MoviesSearch(params);
 
+		//to swap implementations, just change here
+
+		//return new TheMovieDBAPISearchImpl(params);
+
+		return new RetrofitSearchImpl(params);
     }
 
     /**
@@ -149,121 +136,4 @@ public class MoviesService {
 
     }
 
-
-    class MoviesSearch implements IMovieSearch {
-
-        private final SearchParams params;
-
-        public MoviesSearch(SearchParams params) {
-            this.params = params;
-        }
-
-        public SearchParams getParams() {
-            return params;
-        }
-
-        @Override
-        public IMovieSearch sortByPopularity() {
-            this.sortBy(SORT_BY_POPULARITY);
-            return this;
-        }
-
-        @Override
-        public IMovieSearch sortByRating() {
-            this.sortBy(SORT_BY_RATING);
-            return this;
-        }
-
-        @Override
-        public IMovieSearch sortBy(String sortBy) {
-            this.params.setSortBy(sortBy);
-            return this;
-        }
-
-        @Override
-        public IMovieSearch withLanguage(String language) {
-            this.params.setLanguage(language);
-            return this;
-        }
-
-        @Override
-        public List<Movie> list() {
-
-            List<Movie> movies = new ArrayList<>();
-
-            String sortBy = params.getSortBy();
-
-            if (sortBy == null ||
-                    (!SORT_BY_POPULARITY.equals(sortBy) && !SORT_BY_RATING.equals(sortBy) )) {
-                log.warn("invalid sort: {}", sortBy);
-                sortBy = SORT_BY_POPULARITY;
-                params.setSortBy(sortBy);
-            }
-
-
-
-            TmdbApi moviesApi = new TmdbApi(BuildConfig.MOVIESDB_API_KEY);
-
-
-			/**
-			 * DO NOT use discover service
-             */
-/*
-            TmdbDiscover search = moviesApi.getDiscover();
-
-            Discover discover = new Discover();
-            discover.language(params.getLanguage());
-            discover.year(2016);
-            discover.page(1);
-            discover.sortBy(params.getSortBy());*/
-
-			if (params.getSortBy().equals(SORT_BY_POPULARITY))
-
-            moviesApi.getMovies().getTopRatedMovies(params.getLanguage(), 1);
-
-            log.debug("Fetching movies. Lang: {}, sort by: {} ",params.getLanguage()
-                    , params.getSortBy());
-
-
-            MovieResultsPage res = search.getDiscover(discover);
-
-            for (MovieDb md : res.getResults()) {
-
-                movies.add(convert(md));
-
-            }
-
-            return movies;
-
-        }
-
-        /**
-         *
-         * TODO create app exceptions
-         *
-         * @param movieId
-         * @return movie or null if not found or error
-         */
-        @Override
-        public Movie getMovieById(int movieId) {
-
-            log.debug("Getting movie: {}",movieId);
-
-            try {
-
-                TmdbApi moviesApi = new TmdbApi(BuildConfig.MOVIESDB_API_KEY);
-
-                MovieDb md = moviesApi.getMovies().getMovie(movieId, params.getLanguage());
-
-                log.debug("movieId: {} found: {}",movieId,md.getTitle());
-
-                return convert(md);
-
-            } catch (Exception e) {
-
-            }
-
-            return null;
-        }
-    }
 }

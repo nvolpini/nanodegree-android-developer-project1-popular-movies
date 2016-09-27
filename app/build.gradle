@@ -61,7 +61,21 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
+
+    //already included on both deps bellow
+    //compile 'com.fasterxml.jackson.core:jackson-databind:2.7.2'
+
+
+    //used in TheMovieDBAPISearchImpl
     compile group: 'info.movito', name: 'themoviedbapi', version: '1.4'
+
+    //used in RetrofitSearchImpl
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.retrofit2:converter-jackson:2.1.0'
+    //for logging
+    compile 'com.squareup.okhttp3:logging-interceptor:3.3.1'
+
+
     //compile 'org.slf4j:slf4j-android:1.7.21'
     compile('com.github.tony19:logback-android-classic:1.1.1-6') {
         // workaround issue #73

@@ -7,6 +7,7 @@
     <string name="action_sort_by_popularity">Most popular</string>
     <string name="action_sort_by_rating">Top rated</string>
     <string name="no_internet_connection">No connection available</string>
+    <string name="error_getting_data">Error getting remote data, sorry :-(</string>
 
 
     <!-- Strings related to Settings -->
@@ -162,6 +163,7 @@
         "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
         "when a user tries to pick up one of cards.\n\n"
     </string>
+
 
 
 </resources>

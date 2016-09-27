@@ -19,11 +19,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import app.popularmovies.model.Movie;
 import app.popularmovies.model.SearchParams;
 import app.popularmovies.service.IMovieSearch;
+import app.popularmovies.service.MoviesDataException;
 import app.popularmovies.service.MoviesService;
 
 /**
@@ -303,7 +305,7 @@ public class MoviesFragment extends Fragment  {
     private void updateMovies() {
         log.trace("updating movies, params: {}",searchParams);
 
-		if (Utils.isOnline()) {
+		if (Utils.isOnline(getContext())) {
 
 			noConnection = false;
 
@@ -327,9 +329,17 @@ public class MoviesFragment extends Fragment  {
 
             List<Movie> myMovies = new ArrayList<>();
 
-            IMovieSearch search = MoviesService.get().newSearch(searchParams);
+			try {
+				IMovieSearch search = MoviesService.get().newSearch(searchParams);
 
-            myMovies = search.list();
+				myMovies = search.list();
+
+			}catch (MoviesDataException e) {
+
+				log.error("error querying.",e);
+
+				return null;
+			}
 
             return myMovies;
 
@@ -339,6 +349,13 @@ public class MoviesFragment extends Fragment  {
         protected void onPostExecute(List<Movie> newMovies) {
 
             log.trace("postExecute: {}",newMovies);
+
+			if (newMovies == null) {
+
+				Toast.makeText(getActivity(),getString(R.string.error_getting_data),Toast.LENGTH_LONG).show();
+
+				newMovies = Collections.emptyList();
+			}
 
             //update adapter
             moviesListAdapter.updateMovies(newMovies);

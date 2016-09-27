@@ -17,8 +17,19 @@ public interface IMovieSearch {
 
     IMovieSearch withLanguage(String language);
 
-    List<Movie> list();
+	/**
+	 *
+	 * @return list of movies. Empty list if none found
+	 * @throws MoviesDataException in case of errors
+	 */
+    List<Movie> list() throws MoviesDataException;
 
-    Movie getMovieById(int movieId);
+	/**
+	 *
+	 * @param movieId movie id to get
+	 * @return movie or null if not found
+	 * @throws MoviesDataException in case of errors
+	 */
+    Movie getMovieById(int movieId) throws MoviesDataException;
 
 }

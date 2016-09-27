@@ -13,6 +13,7 @@
 				  android:layout_marginEnd="@dimen/movie_detail_outer_margins"
 				  android:layout_marginLeft="@dimen/movie_detail_outer_margins"
 				  android:layout_marginRight="@dimen/movie_detail_outer_margins"
+				  android:layout_marginBottom="@dimen/movie_detail_outer_margins"
 				  android:layout_marginStart="@dimen/movie_detail_outer_margins"
 				  android:orientation="vertical">
 

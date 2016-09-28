@@ -29,9 +29,6 @@ import java.util.List;
 
 /**
  * <p>
- *     TODO - when the user changes the language or sorting should update the movies list when it goes back.
- * </p>
- * <p>
  * A {@link PreferenceActivity} that presents a set of application settings. On
  * handset devices, settings are presented as a single list. On tablets,
  * settings are split by category, with category headers shown to the left of
@@ -212,9 +209,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
     /**
-     * TODO REVISOR sem esse override o botão voltar da toolbar não tem efeito quando na tela principal das prefs.
-	 * mas com ele assim dentro das sub-prefs o home volta para a MainActivity.
-	 *
+     * TODO top bar back button in the other fragments are not reached with this override
+	 * When inside general prefs and hit back it goes back to the MainActivity instead of main prefs screen.
      *
      * @param item
      * @return
@@ -224,11 +220,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         int id = item.getItemId();
         if (id == android.R.id.home) {
             log.debug("on home button top settings");
-            //startActivity(new Intent(this, MainActivity.class)); //vai forçar o carregamento dos filmes
 
-			//NavUtils.navigateUpFromSameTask(this);
 
-			//OK volta mantendo o estado - mas o voltar da toolbar nas outras telas de prefs volta para o main activity
+			//Goes back to the parent activity (according to the manifest) and keeps the saved state
 			Intent intent = NavUtils.getParentActivityIntent(this);
 			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
 			NavUtils.navigateUpTo(this, intent);

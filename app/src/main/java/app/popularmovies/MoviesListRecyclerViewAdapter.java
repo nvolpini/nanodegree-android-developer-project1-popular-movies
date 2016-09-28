@@ -47,6 +47,15 @@ public class MoviesListRecyclerViewAdapter extends RecyclerView.Adapter<MoviesLi
 
         holder.mItem = mValues.get(position);
 
+
+        //TODO buscar imagens maiores conforme a tela do dispositivo.
+
+		//
+		/**
+		 *TODO REVISOR por favor uma dica para identificar o tamanho da tela e decidir buscar uma imagem maior (maneira recomendada)
+		 * conforme última revisão, ajustei para que a imagem ocupe toda a largura da tela (layout/movies_fragment_item.xml) mas em telas maiores a imagem de tamanho 185 fica muito distorcida.
+		 */
+
         if (movie.getPosterPath()==null) {
 
             Picasso.with(holder.mView.getContext())

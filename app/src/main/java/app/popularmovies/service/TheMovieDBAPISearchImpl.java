@@ -89,7 +89,6 @@ public class TheMovieDBAPISearchImpl extends AbstractSearchImpl {
 
 	/**
 	 *
-	 * TODO create app exceptions
 	 *
 	 * @param movieId
 	 * @return movie or null if not found or error

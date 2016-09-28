@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
         //reset all prefs
         //PreferenceManager.getDefaultSharedPreferences(this).edit().clear().apply();
 
-        //TODO review this - is it needed?
+		//initialize prefs
         PreferenceManager.setDefaultValues(this,R.xml.pref_general,false);
         PreferenceManager.setDefaultValues(this,R.xml.pref_data_sync,false);
 
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
 
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container
-                            //, new MoviesFragment()
+							//TODO talvez usar 3 colunas de dispositivos maiores
                             ,MoviesFragment.newInstance(2, searchParams)
                     )
                     .commit();
@@ -87,25 +87,6 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
     protected void onResume() {
         super.onResume();
         log.trace("onResume()");
-
-		/**
-		 * TODO REVISOR: qual a melhor forma de monitor se uma preferencia foi alterada na tela de preferencias ?
-		 * para poder atualizar a lista de filmes quando o usuário altear o idioma, por exemplo ?
-		 *
-		 *
-		 */
-
-
-
-        //TODO is this the best way to monitor for changes in preferences?
-
-		/**
-		 * I can use {@link android.preference.Preference.OnPreferenceChangeListener}, however
-		 * usually the listener should be registered at onResume and unregister at onPause but
-		 * for this case shouldn't be like this, because I want to monitor exactly when the
-		 * main activity is paused because I'll be on the preferences activity ...
-		 *
-		 */
 
 		//check if the user changed the preferred language in the preferences
 		//next time he hits refresh it will use the new language
@@ -159,7 +140,6 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
-			//TODO REVISOR como salvar o estado para que ao voltar das prefs não seja necessário recarregar a lista de filmes ?
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
@@ -174,20 +154,7 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
         log.trace("iteracao, movie: {}",movie.getOriginalTitle());
 
         Intent intent = new Intent(this,MovieDetailActivity.class);
-
-
-        //TODO had to save manually, saving as parcelableExtra didnt work
-        Bundle b = new Bundle();
-        MoviesService.get().saveMovie(movie,b); //TODO estou salvando um bundle manualmente ao inves de usar o parcelable direto
-        intent.putExtras(b);
-
-        //TODO used to identify the existence
-        intent.putExtra(MovieDetailActivity.MOVIE_ID_EXTRA_KEY,movie.getId());
-
-
-		//TODO didnt work. See MovieDetailActivityFragment.onCreateView
-		//TODO REVISOR isso não funcionou, não consigo restaurar no MovieDetailActivityFragment.onCreateView
-        //intent.putExtra(MovieDetailActivity.MOVIE_EXTRA_KEY, movie);
+        intent.putExtra(MovieDetailActivity.MOVIE_EXTRA_KEY, movie);
 
         startActivity(intent);
 

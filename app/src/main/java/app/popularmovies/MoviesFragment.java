@@ -275,7 +275,7 @@ public class MoviesFragment extends Fragment  {
 
         log.trace("onStart()");
 
-        //TODO where to autoload
+        //where to autoload ?
         //TODO check loaders - https://developer.android.com/guide/components/loaders.html
        // updateMovies();
     }

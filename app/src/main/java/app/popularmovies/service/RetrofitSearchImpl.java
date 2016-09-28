@@ -42,9 +42,12 @@ public class RetrofitSearchImpl extends AbstractSearchImpl {
 	static {
 
 		HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-		// set your desired log level
-		//logging.setLevel(HttpLoggingInterceptor.Level.BODY); //TODO how to change when packaging for production ?
-		logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
+
+		if (BuildConfig.DEBUG) {
+			logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
+		} else {
+			logging.setLevel(HttpLoggingInterceptor.Level.NONE);
+		}
 
 		OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 		// add your other interceptors …

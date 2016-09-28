@@ -39,11 +39,12 @@ public class MoviesService {
     }
 
 
-
-
-
-
-
+	/**
+	 * TODO buscar uma imagem maior dependendo do tamanho da tela do dispositivo.
+	 *
+	 * @param movie
+	 * @return
+	 */
     public String getMoviePosterUrl(Movie movie) {
 
         return movie == null ? null : String.format("http://image.tmdb.org/t/p/w185/%s"
@@ -55,6 +56,11 @@ public class MoviesService {
         return String.format("app.popularmovies.movie.%s",name);
     }
 
+	/**
+	 * @deprecated  usar parcelable
+	 * @param movie
+	 * @param bundle
+	 */
     public void saveMovie(Movie movie, Bundle bundle) {
 
         if (movie == null || bundle == null) {
@@ -72,6 +78,11 @@ public class MoviesService {
 
     }
 
+	/**
+	 * @deprecated  usar parcelable
+	 * @param bundle
+	 * @return
+	 */
     public Movie restoreMovie(Bundle bundle) {
 
         if (bundle == null) {

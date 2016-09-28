@@ -76,19 +76,7 @@ public class Utils {
 
 		return state;
 
-		/**
-		 *
-		 * TODO REVISOR: O código abaixo tem a vantagem de verificar se existe "acesso" de fato,
-		 * pois apesar de existir uma conexão (wireless conectado), o acesso pode ser controlado
-		 * por um proxy (em hoteis por exemplo, a conexão a rede é livre, mas o acesso exige um login)
-		 * e nesse caso o teste acima (recomendado) vai retornar que existe uma conexão,
-		 * mas as solicitações HTTP podem não se completar.
-		 *
-		 * A desvantagem é que ele é bem mais lento que o teste acima, BEM mais lento.
-		 *
-		 * Faz sentido ter essa preocupação ?
-		 *
-		 */
+		//another way to check, this will guarantee that we can access remote data. Much slower though
 		/*
 		Runtime runtime = Runtime.getRuntime();
         try {

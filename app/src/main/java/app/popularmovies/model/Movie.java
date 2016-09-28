@@ -1,11 +1,17 @@
 package app.popularmovies.model;
 
+import android.databinding.BindingAdapter;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.widget.ImageView;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.squareup.picasso.Picasso;
+
+import app.popularmovies.R;
+import app.popularmovies.service.MoviesService;
 
 /**
  * Created by neimar on 10/09/16.
@@ -58,6 +64,19 @@ public class Movie implements Parcelable {
         this.releaseDate = releaseDate;
         this.voteAverage = voteAverage;
     }
+
+	@BindingAdapter({"bind:moviePoster"})
+	public static void loadImage(ImageView view, Movie movie) {
+
+		String imageUrl = MoviesService.get().getMoviePosterUrl(movie);
+
+		Picasso.with(view.getContext())
+				.load(imageUrl)
+				.placeholder(R.drawable.loading_poster_185)
+				.error(R.drawable.no_poster_185)
+				.into(view);
+
+	}
 
     public String getYear() {
         return releaseDate.substring(0,4);

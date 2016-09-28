@@ -156,13 +156,10 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+			//TODO REVISOR como salvar o estado para que ao voltar das prefs não seja necessário recarregar a lista de filmes ?
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
@@ -181,13 +178,15 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
 
         //TODO had to save manually, saving as parcelableExtra didnt work
         Bundle b = new Bundle();
-        MoviesService.get().saveMovie(movie,b);
+        MoviesService.get().saveMovie(movie,b); //TODO estou salvando um bundle manualmente ao inves de usar o parcelable direto
         intent.putExtras(b);
 
         //TODO used to identify the existence
         intent.putExtra(MovieDetailActivity.MOVIE_ID_EXTRA_KEY,movie.getId());
 
-        //TODO didnt work. See MovieDetailActivityFragment.onCreateView
+
+		//TODO didnt work. See MovieDetailActivityFragment.onCreateView
+		//TODO REVISOR isso não funcionou, não consigo restaurar no MovieDetailActivityFragment.onCreateView
         //intent.putExtra(MovieDetailActivity.MOVIE_EXTRA_KEY, movie);
 
         startActivity(intent);

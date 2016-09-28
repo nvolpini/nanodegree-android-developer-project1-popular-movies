@@ -17,6 +17,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.preference.SwitchPreference;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -211,10 +212,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
     /**
-     * TODO Main settings screen home button does not go back to the movies list without this.
-     * With this there is no moviesList state saved and will query movies every time it goes back.
-     * Should identify if the pertinent settings were changed and only then update the movies,
-     * otherwise the moviesList state should be saved and reused.
+     * TODO REVISOR sem esse override o botão voltar da toolbar não tem efeito quando na tela principal das prefs.
+	 * mas com ele assim dentro das sub-prefs o home volta para a MainActivity.
+	 *
      *
      * @param item
      * @return
@@ -224,7 +224,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         int id = item.getItemId();
         if (id == android.R.id.home) {
             log.debug("on home button top settings");
-            startActivity(new Intent(this, MainActivity.class));
+            //startActivity(new Intent(this, MainActivity.class)); //vai forçar o carregamento dos filmes
+
+			//NavUtils.navigateUpFromSameTask(this);
+
+			//OK volta mantendo o estado - mas o voltar da toolbar nas outras telas de prefs volta para o main activity
+			Intent intent = NavUtils.getParentActivityIntent(this);
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+			NavUtils.navigateUpTo(this, intent);
+
             return true;
         }
 

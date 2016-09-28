@@ -21,7 +21,7 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName="app.popularmovies.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="app.popularmovies.MainActivity" />
@@ -29,7 +29,7 @@
         <activity
             android:name=".MovieDetailActivity"
             android:label="@string/title_activity_movie_detail"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="app.popularmovies.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

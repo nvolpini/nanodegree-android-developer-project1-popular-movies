@@ -35,6 +35,8 @@
     </style>
 
     <style name="MovieOverviewStyle">
+        <item name="android:layout_marginBottom">@dimen/movie_detail_outer_margins</item>
+
     </style>
 
     <style name="MovieOriginalTitleStyle">

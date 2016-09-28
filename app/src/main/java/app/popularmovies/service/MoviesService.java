@@ -47,7 +47,7 @@ public class MoviesService {
 	 */
     public String getMoviePosterUrl(Movie movie) {
 
-        return movie == null ? null : String.format("http://image.tmdb.org/t/p/w185/%s"
+        return movie == null ? null : String.format("http://image.tmdb.org/t/p/w500/%s"
                 ,movie.getPosterPath());
 
     }

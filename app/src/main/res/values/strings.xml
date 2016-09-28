@@ -50,7 +50,7 @@
     <string name="pref_description_sync_on_start">Automatically synchronize when application starts
     </string>
 
-	<string name="pref_key_wifi_only" translatable="false">only_wiki</string>
+	<string name="pref_key_wifi_only" translatable="false">wifi_only</string>
 	<string name="pref_description_wifi_only">Downloads movie information only when connected through WIFI</string>
 	<string name="pref_title_wifi_only">Download via WIFI only</string>
 

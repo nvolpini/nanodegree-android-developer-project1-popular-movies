@@ -2,6 +2,7 @@ package app.popularmovies;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
@@ -43,7 +44,7 @@ public class Utils {
 
 	public static boolean isSyncOnStart(Context context) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		return prefs.getBoolean(context.getString(R.string.pref_key_sync_on_start), false);
+		return prefs.getBoolean(context.getString(R.string.pref_key_sync_on_start), true);
 	}
 
 	public static boolean useWifiOnly(Context context) {
@@ -92,4 +93,28 @@ public class Utils {
 
 
 	}
+
+	/**
+	 * Exemplo de como obter o tamanho da tela.
+	 * @param context
+	 * @return
+     */
+	public static String getSizeName(Context context) {
+		int screenLayout = context.getResources().getConfiguration().screenLayout;
+		screenLayout &= Configuration.SCREENLAYOUT_SIZE_MASK;
+
+		switch (screenLayout) {
+			case Configuration.SCREENLAYOUT_SIZE_SMALL:
+				return "small";
+			case Configuration.SCREENLAYOUT_SIZE_NORMAL:
+				return "normal";
+			case Configuration.SCREENLAYOUT_SIZE_LARGE:
+				return "large";
+			case 4: // Configuration.SCREENLAYOUT_SIZE_XLARGE is API >= 9
+				return "xlarge";
+			default:
+				return "undefined";
+		}
+	}
+
 }

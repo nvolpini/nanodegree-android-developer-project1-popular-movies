@@ -44,16 +44,45 @@ public class TestUtilities extends AndroidTestCase {
 
   
     static ContentValues createMovieValues() {
-        ContentValues weatherValues = new ContentValues();
-        weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIESDB_ID, TEST_MOVIEDB_ID);
-        weatherValues.put(MovieContract.MovieEntry.COLUMN_TITLE, "Filme Teste");
-        weatherValues.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE, "Test Movie");
-        weatherValues.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, TEST_DATE);
-        weatherValues.put(MovieContract.MovieEntry.COLUMN_OVERVIEW, "Just a fictional movie");
-        weatherValues.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, 7.5);
-        weatherValues.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH, "path");
+        ContentValues values = new ContentValues();
+        values.put(MovieContract.MovieEntry.COLUMN_MOVIESDB_ID, TEST_MOVIEDB_ID);
+        values.put(MovieContract.MovieEntry.COLUMN_TITLE, "Filme Teste");
+        values.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE, "Test Movie");
+        values.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, TEST_DATE);
+        values.put(MovieContract.MovieEntry.COLUMN_OVERVIEW, "Just a fictional movie");
+        values.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, 7.5);
+        values.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH, "path");
 
-        return weatherValues;
+        return values;
+    }
+
+
+    static ContentValues createPopularMoviesValues(long movieId, int position) {
+        ContentValues values = new ContentValues();
+        values.put(MovieContract.PopularMoviesEntry.COLUMN_MOVIE_ID, movieId);
+        values.put(MovieContract.PopularMoviesEntry.COLUMN_POSITION, position);
+
+        return values;
+    }
+
+
+    static ContentValues createTopRatedMoviesValues(long movieId, int position) {
+        ContentValues values = new ContentValues();
+        values.put(MovieContract.TopRatedMoviesEntry.COLUMN_MOVIE_ID, movieId);
+        values.put(MovieContract.TopRatedMoviesEntry.COLUMN_POSITION, position);
+
+        return values;
+    }
+
+
+    static ContentValues createFavoriteMoviesValues(long movieId, int position) {
+        ContentValues values = new ContentValues();
+        values.put(MovieContract.FavoriteMoviesEntry.COLUMN_MOVIE_ID, movieId);
+        values.put(MovieContract.FavoriteMoviesEntry.COLUMN_POSITION, position);
+        values.put(MovieContract.FavoriteMoviesEntry.COLUMN_VOTES, 5);
+        values.put(MovieContract.FavoriteMoviesEntry.COLUMN_DATE_ADD, TEST_DATE);
+
+        return values;
     }
 
     /*

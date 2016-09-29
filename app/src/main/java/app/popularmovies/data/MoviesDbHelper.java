@@ -7,7 +7,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import app.popularmovies.data.MovieContract.FavoriteMoviesEntry;
 import app.popularmovies.data.MovieContract.MovieEntry;
+import app.popularmovies.data.MovieContract.PopularMoviesEntry;
+import app.popularmovies.data.MovieContract.TopRatedMoviesEntry;
 
 /**
  * Created by neimar on 25/09/16.
@@ -41,12 +44,44 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
                 MovieEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL " +
                 " );";
 
-        sqLiteDatabase.execSQL(SQL_CREATE_MOVIES_TABLE);
+        final String SQL_CREATE_POPULAR_MOVIES_TABLE = "CREATE TABLE " + PopularMoviesEntry.TABLE_NAME + " (" +
+				PopularMoviesEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+				PopularMoviesEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL REFERENCES "+MovieEntry.TABLE_NAME+", " +
+				PopularMoviesEntry.COLUMN_POSITION + " INTEGER NOT NULL " +
+                " );";
+
+
+
+		final String SQL_CREATE_TOP_RATED_MOVIES_TABLE = "CREATE TABLE " + TopRatedMoviesEntry.TABLE_NAME + " (" +
+				TopRatedMoviesEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+				TopRatedMoviesEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL REFERENCES "+MovieEntry.TABLE_NAME+", " +
+				TopRatedMoviesEntry.COLUMN_POSITION + " INTEGER NOT NULL " +
+				" );";
+
+
+
+		final String SQL_CREATE_FAVORITE_MOVIES_TABLE = "CREATE TABLE " + FavoriteMoviesEntry.TABLE_NAME + " (" +
+				FavoriteMoviesEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+				FavoriteMoviesEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL REFERENCES "+MovieEntry.TABLE_NAME+", " +
+				FavoriteMoviesEntry.COLUMN_POSITION + " INTEGER NOT NULL, " +
+				FavoriteMoviesEntry.COLUMN_DATE_ADD + " INTEGER NOT NULL, " +
+				FavoriteMoviesEntry.COLUMN_VOTES + " INTEGER NOT NULL DEFAULT 0 " +
+				" );";
+
+
+		sqLiteDatabase.execSQL(SQL_CREATE_MOVIES_TABLE);
+
+		sqLiteDatabase.execSQL(SQL_CREATE_POPULAR_MOVIES_TABLE);
+
+		sqLiteDatabase.execSQL(SQL_CREATE_TOP_RATED_MOVIES_TABLE);
+
+		sqLiteDatabase.execSQL(SQL_CREATE_FAVORITE_MOVIES_TABLE);
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + MovieEntry.TABLE_NAME);
-        onCreate(sqLiteDatabase);
+        //sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + MovieEntry.TABLE_NAME);
+        //onCreate(sqLiteDatabase);
     }
 }

@@ -31,6 +31,7 @@ public class TestDb extends AndroidTestCase {
 
     private static final Logger log = LoggerFactory.getLogger(TestDb.class);
 
+
     // Since we want each test to start with a clean slate
     void deleteTheDatabase() {
         mContext.deleteDatabase(MoviesDbHelper.DATABASE_NAME);
@@ -46,6 +47,9 @@ public class TestDb extends AndroidTestCase {
 
         final HashSet<String> tableNameHashSet = new HashSet<String>();
         tableNameHashSet.add(MovieContract.MovieEntry.TABLE_NAME);
+        tableNameHashSet.add(MovieContract.PopularMoviesEntry.TABLE_NAME);
+        tableNameHashSet.add(MovieContract.TopRatedMoviesEntry.TABLE_NAME);
+        tableNameHashSet.add(MovieContract.FavoriteMoviesEntry.TABLE_NAME);
 
         mContext.deleteDatabase(MoviesDbHelper.DATABASE_NAME);
         SQLiteDatabase db = new MoviesDbHelper(
@@ -68,78 +72,133 @@ public class TestDb extends AndroidTestCase {
         assertTrue("Error: Your database was created without the movie table",
                 tableNameHashSet.isEmpty());
 
-        // now, do our tables contain the correct columns?
-        c = db.rawQuery("PRAGMA table_info(" + MovieContract.MovieEntry.TABLE_NAME + ")",
-                null);
+		checkTableMovies(db);
+		checkTablePopularMovies(db);
+		checkTableTopRatedMovies(db);
+		checkTableFavoriteMovies(db);
 
-        assertTrue("Error: This means that we were unable to query the database for table information.",
-                c.moveToFirst());
-
-        // Build a HashSet of all of the column names we want to look for
-        final HashSet<String> movieColumnHashSet = new HashSet<String>();
-        movieColumnHashSet.add(MovieContract.MovieEntry._ID);
-        movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_MOVIESDB_ID);
-        movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_TITLE);
-        movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE);
-        movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_OVERVIEW);
-        movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_RELEASE_DATE);
-        movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE);
-        movieColumnHashSet.add(MovieContract.MovieEntry.COLUMN_POSTER_PATH);
-
-        int columnNameIndex = c.getColumnIndex("name");
-        do {
-            String columnName = c.getString(columnNameIndex);
-            movieColumnHashSet.remove(columnName);
-        } while(c.moveToNext());
-
-        // if this fails, it means that your database doesn't contain all of the required movie
-        // entry columns
-        assertTrue("Error: The database doesn't contain all of the required movie entry columns",
-                movieColumnHashSet.isEmpty());
         db.close();
     }
 
 
-    public void testMovieTable() {
+	public void testInsertTables() {
+		MoviesDbHelper dbHelper = new MoviesDbHelper(mContext);
+		SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+		long movieId = doInsertTable(db, MovieContract.MovieEntry.TABLE_NAME,TestUtilities.createMovieValues());
+
+		doInsertTable(db, MovieContract.PopularMoviesEntry.TABLE_NAME,TestUtilities.createPopularMoviesValues(movieId,1));
+
+		doInsertTable(db, MovieContract.TopRatedMoviesEntry.TABLE_NAME,TestUtilities.createTopRatedMoviesValues(movieId,1));
+
+		doInsertTable(db, MovieContract.FavoriteMoviesEntry.TABLE_NAME,TestUtilities.createFavoriteMoviesValues(movieId,1));
+
+		dbHelper.close();
+
+	}
 
 
-        MoviesDbHelper dbHelper = new MoviesDbHelper(mContext);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        // Second Step (Weather): Create weather values
-        ContentValues weatherValues = TestUtilities.createMovieValues();
+	private void checkTableMovies(SQLiteDatabase db) {
+		final HashSet<String> columns = new HashSet<String>();
+		columns.add(MovieContract.MovieEntry._ID);
+		columns.add(MovieContract.MovieEntry.COLUMN_MOVIESDB_ID);
+		columns.add(MovieContract.MovieEntry.COLUMN_TITLE);
+		columns.add(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE);
+		columns.add(MovieContract.MovieEntry.COLUMN_OVERVIEW);
+		columns.add(MovieContract.MovieEntry.COLUMN_RELEASE_DATE);
+		columns.add(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE);
+		columns.add(MovieContract.MovieEntry.COLUMN_POSTER_PATH);
 
-        // Third Step (Weather): Insert ContentValues into database and get a row ID back
-        long weatherRowId = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, weatherValues);
-        assertTrue(weatherRowId != -1);
+		checkTable(db,MovieContract.MovieEntry.TABLE_NAME,columns);
+	}
 
-        // Fourth Step: Query the database and receive a Cursor back
-        // A cursor is your primary interface to the query results.
-        Cursor moviesCursor = db.query(
-                MovieContract.MovieEntry.TABLE_NAME,  // Table to Query
-                null, // leaving "columns" null just returns all the columns.
-                null, // cols for "where" clause
-                null, // values for "where" clause
-                null, // columns to group by
-                null, // columns to filter by row groups
-                null  // sort order
-        );
+	private void checkTablePopularMovies(SQLiteDatabase db) {
+		final HashSet<String> columns = new HashSet<String>();
+		columns.add(MovieContract.PopularMoviesEntry._ID);
+		columns.add(MovieContract.PopularMoviesEntry.COLUMN_MOVIE_ID);
+		columns.add(MovieContract.PopularMoviesEntry.COLUMN_POSITION);
 
-        // Move the cursor to the first valid database row and check to see if we have any rows
-        assertTrue( "Error: No Records returned from movie query", moviesCursor.moveToFirst() );
+		checkTable(db,MovieContract.PopularMoviesEntry.TABLE_NAME,columns);
+	}
 
-        // Fifth Step: Validate the location Query
-        TestUtilities.validateCurrentRecord("testInsertReadDb MovieEntry failed to validate",
-                moviesCursor, weatherValues);
 
-        // Move the cursor to demonstrate that there is only one record in the database
-        assertFalse( "Error: More than one record returned from movies query",
-                moviesCursor.moveToNext() );
+	private void checkTableTopRatedMovies(SQLiteDatabase db) {
+		final HashSet<String> columns = new HashSet<String>();
+		columns.add(MovieContract.TopRatedMoviesEntry._ID);
+		columns.add(MovieContract.TopRatedMoviesEntry.COLUMN_MOVIE_ID);
+		columns.add(MovieContract.TopRatedMoviesEntry.COLUMN_POSITION);
 
-        // Sixth Step: Close cursor and database
-        moviesCursor.close();
-        dbHelper.close();
-    }
+		checkTable(db,MovieContract.TopRatedMoviesEntry.TABLE_NAME,columns);
+	}
+
+	private void checkTableFavoriteMovies(SQLiteDatabase db) {
+		final HashSet<String> columns = new HashSet<String>();
+		columns.add(MovieContract.FavoriteMoviesEntry._ID);
+		columns.add(MovieContract.FavoriteMoviesEntry.COLUMN_MOVIE_ID);
+		columns.add(MovieContract.FavoriteMoviesEntry.COLUMN_POSITION);
+		columns.add(MovieContract.FavoriteMoviesEntry.COLUMN_VOTES);
+		columns.add(MovieContract.FavoriteMoviesEntry.COLUMN_DATE_ADD);
+
+		checkTable(db,MovieContract.FavoriteMoviesEntry.TABLE_NAME,columns);
+	}
+
+
+	private void checkTable(SQLiteDatabase db, String tableName, HashSet<String> expectedTableColumns) {
+		Cursor c = db.rawQuery("PRAGMA table_info(" + tableName + ")",
+				null);
+
+		assertTrue("Error: This means that we were unable to query the database for table information.",
+				c.moveToFirst());
+
+		int columnNameIndex = c.getColumnIndex("name");
+		do {
+			String columnName = c.getString(columnNameIndex);
+			expectedTableColumns.remove(columnName);
+		} while(c.moveToNext());
+
+		// if this fails, it means that your database doesn't contain all of the required movie
+		// entry columns
+		assertTrue("Error: The database doesn't contain all of the required columns for table "+tableName,
+				expectedTableColumns.isEmpty());
+	}
+
+
+	private long doInsertTable(SQLiteDatabase db, String tableName, ContentValues values) {
+
+
+
+		long id = db.insert(tableName, null, values);
+		assertTrue(id != -1);
+
+		Cursor cursor = db.query(
+				tableName,  // Table to Query
+				null, // leaving "columns" null just returns all the columns.
+				null, // cols for "where" clause
+				null, // values for "where" clause
+				null, // columns to group by
+				null, // columns to filter by row groups
+				null  // sort order
+		);
+
+		assertTrue( "Error: No Records returned for table: "+tableName, cursor.moveToFirst() );
+
+		TestUtilities.validateCurrentRecord("testInsertReadDb failed to validate table: "+tableName,
+				cursor, values);
+
+		assertFalse( "Error: More than one record returned for table: "+tableName,
+				cursor.moveToNext() );
+
+		cursor.close();
+
+
+		return id;
+	}
+
+
+
+
+
 
 
 }

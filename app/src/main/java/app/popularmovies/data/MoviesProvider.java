@@ -181,7 +181,15 @@ public class MoviesProvider extends ContentProvider {
 					throw new android.database.SQLException("Failed to insert row into " + uri);
 				break;
 			}
-
+			case MOVIES: {
+				normalizeDate(values);
+				long _id = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, values);
+				if (_id > 0)
+					returnUri = MovieContract.MovieEntry.buildMovieUri(_id);
+				else
+					throw new android.database.SQLException("Failed to insert row into " + uri);
+				break;
+			}
 			//TODO INSERT OTHERS
 
 			default:
@@ -245,7 +253,11 @@ public class MoviesProvider extends ContentProvider {
 				rowsUpdated = db.update(MovieContract.MovieEntry.TABLE_NAME, values, selection,
 						selectionArgs);
 				break;
-
+			case MOVIES:
+				normalizeDate(values);
+				rowsUpdated = db.update(MovieContract.MovieEntry.TABLE_NAME, values, selection,
+						selectionArgs);
+				break;
 			default:
 				throw new UnsupportedOperationException("Unknown uri: " + uri);
 		}

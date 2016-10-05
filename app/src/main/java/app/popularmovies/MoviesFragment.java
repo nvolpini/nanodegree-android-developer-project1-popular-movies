@@ -1,9 +1,12 @@
 package app.popularmovies;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -46,7 +49,7 @@ import app.popularmovies.service.MoviesService;
  * interface.
  * </p>
  */
-public class MoviesFragment extends Fragment  {
+public class MoviesFragment extends Fragment  implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final Logger log = LoggerFactory.getLogger(MoviesFragment.class);
 
@@ -236,6 +239,21 @@ public class MoviesFragment extends Fragment  {
         mListener = null;
     }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
+
 
     /**
      * This interface must be implemented by activities that contain this
@@ -309,7 +327,7 @@ public class MoviesFragment extends Fragment  {
 
 			noConnection = false;
 
-			FetchMoviesTask task = new FetchMoviesTask();
+            FetchMoviesTaskOLD task = new FetchMoviesTaskOLD();
 			task.execute();
 
 
@@ -321,7 +339,7 @@ public class MoviesFragment extends Fragment  {
     }
 
 
-    public class FetchMoviesTask extends AsyncTask<Void,Void,List<Movie>> {
+    public class FetchMoviesTaskOLD extends AsyncTask<Void,Void,List<Movie>> {
 
 
         @Override

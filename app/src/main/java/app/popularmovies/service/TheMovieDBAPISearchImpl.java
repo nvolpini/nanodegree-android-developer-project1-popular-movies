@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.popularmovies.BuildConfig;
+import app.popularmovies.Utils;
 import app.popularmovies.model.Movie;
 import app.popularmovies.model.SearchParams;
 import info.movito.themoviedbapi.TmdbApi;
@@ -118,9 +119,10 @@ public class TheMovieDBAPISearchImpl extends AbstractSearchImpl {
 
 	private Movie convert(MovieDb md) {
 		Movie m = new Movie();
-		m.setId(md.getId());
+		m.setMoviesDbId(md.getId());
 		m.setTitle(md.getTitle());
-		m.setReleaseDate(md.getReleaseDate());
+		//m.setReleaseDateString(md.getReleaseDate());
+		m.setReleaseDate(Utils.toDate(md.getReleaseDate()));
 		m.setPosterPath(md.getPosterPath());
 		m.setOverview(md.getOverview());
 		m.setOriginalTitle(md.getOriginalTitle());

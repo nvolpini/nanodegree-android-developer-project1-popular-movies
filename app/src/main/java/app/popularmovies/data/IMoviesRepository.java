@@ -3,6 +3,7 @@ package app.popularmovies.data;
 import java.util.List;
 
 import app.popularmovies.model.Movie;
+import app.popularmovies.service.MoviesDataException;
 
 /**
  * Repository to manage movies in the local database
@@ -19,19 +20,19 @@ public interface IMoviesRepository {
      *
      * @param movie
      */
-    void create(Movie movie);
+    void create(Movie movie) throws MoviesDataException;
 
     /**
      * Update movie
      * @param movie
      */
-    void update(Movie movie);
+    void update(Movie movie) throws MoviesDataException;
 
     /**
      * Delete movie
      * @param movie
      */
-    void delete(Movie movie);
+    void delete(Movie movie) throws MoviesDataException;
 
 
     /**
@@ -40,52 +41,52 @@ public interface IMoviesRepository {
      * @param movieDbId
      * @return
      */
-    boolean exists(int movieDbId);
+    boolean exists(int movieDbId) throws MoviesDataException;
 
     /**
      * Load movie by id
      * @param id
      * @return
      */
-    Movie getById(int id);
+    Movie getById(int id) throws MoviesDataException;
 
     /**
      * Load movie by movieDbId
      * @param movieDbId
      * @return
      */
-    Movie getByMovieDbId(int movieDbId);
+    Movie getByMovieDbId(int movieDbId) throws MoviesDataException;
 
-    List<Movie> getPopularMovies();
+    List<Movie> getPopularMovies() throws MoviesDataException;
 
-    List<Movie> getTopRatedMovies();
+    List<Movie> getTopRatedMovies() throws MoviesDataException;
 
-    List<Movie> getFavoriteMovies();
+    List<Movie> getFavoriteMovies() throws MoviesDataException;
 
 
     /**
      * Mark a movie as favorite
      * @param movie
      */
-    void markFavorite(Movie movie);
+    void markFavorite(Movie movie) throws MoviesDataException;
 
     /**
      * remove from favorites
      * @param movie
      */
-    void removeFavorite(Movie movie);
+    void removeFavorite(Movie movie) throws MoviesDataException;
 
     /**
      * Save the list of popular movies
      * @param movies
      */
-    void savePopular(List<Movie> movies);
+    void savePopular(List<Movie> movies) throws MoviesDataException;
 
     /**
      * Save the list of top rated movies
      * @param movies
      */
-    void saveTopRated(List<Movie> movies);
+    void saveTopRated(List<Movie> movies) throws MoviesDataException;
 
 
 

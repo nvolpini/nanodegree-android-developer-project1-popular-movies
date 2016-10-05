@@ -2,18 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/action_sort_by_popularity" android:title="@string/action_sort_by_popularity"
+    <item android:moviesDbId="@+moviesDbId/action_sort_by_popularity" android:title="@string/action_sort_by_popularity"
           android:orderInCategory="101" app:showAsAction="never"
           android:checkable="false"
         />
-    <item android:id="@+id/action_sort_by_rating" android:title="@string/action_sort_by_rating"
+    <item android:moviesDbId="@+moviesDbId/action_sort_by_rating" android:title="@string/action_sort_by_rating"
         android:orderInCategory="101" app:showAsAction="never" />
 
-    <item android:id="@+id/action_refresh" android:title="@string/action_refresh"
+    <item android:moviesDbId="@+moviesDbId/action_refresh" android:title="@string/action_refresh"
           android:orderInCategory="100" app:showAsAction="never"/>
 
     <!--debug stuff-->
-    <item android:id="@+id/action_clear" android:title="@string/action_clear"
+    <item android:moviesDbId="@+moviesDbId/action_clear" android:title="@string/action_clear"
         android:orderInCategory="100" app:showAsAction="never"  android:visible="false" />
 
 </menu>

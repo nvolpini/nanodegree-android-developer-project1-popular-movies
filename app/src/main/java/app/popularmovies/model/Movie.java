@@ -5,12 +5,16 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.widget.ImageView;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.squareup.picasso.Picasso;
 
+import java.util.Date;
+
 import app.popularmovies.R;
+import app.popularmovies.Utils;
 import app.popularmovies.service.MoviesService;
 
 /**
@@ -21,8 +25,14 @@ import app.popularmovies.service.MoviesService;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
 public class Movie implements Parcelable {
 
+	/**
+	 * internal id
+	 */
+	@JsonIgnore
+	private long id;
+
     @JsonProperty("id")
-    private int id;
+    private int moviesDbId;
 
     @JsonProperty("title")
     private String title;
@@ -34,7 +44,11 @@ public class Movie implements Parcelable {
     private String overview;
 
     @JsonProperty("release_date")
-    private String releaseDate;
+    private String releaseDateString;
+
+
+	@JsonIgnore
+	private Date releaseDate;
 
     @JsonProperty("vote_average")
     private double voteAverage;
@@ -47,21 +61,23 @@ public class Movie implements Parcelable {
     }
 
     private Movie(Parcel in){
-        id = in.readInt();
+        moviesDbId = in.readInt();
         title = in.readString();
         originalTitle = in.readString();
         overview = in.readString();
-        releaseDate = in.readString();
+        //releaseDateString = in.readString();
+		releaseDate = new Date(in.readLong());
         voteAverage = in.readDouble();
         posterPath = in.readString();
     }
 
-    public Movie(int id, String title, String originalTitle, String overview, String releaseDate, double voteAverage) {
-        this.id = id;
+    public Movie(int moviesDbId, String title, String originalTitle, String overview, Date releaseDate, double voteAverage) {
+        this.moviesDbId = moviesDbId;
         this.title = title;
         this.originalTitle = originalTitle;
         this.overview = overview;
-        this.releaseDate = releaseDate;
+        //this.releaseDateString = releaseDateString;
+		this.releaseDate = releaseDate;
         this.voteAverage = voteAverage;
     }
 
@@ -79,7 +95,8 @@ public class Movie implements Parcelable {
 	}
 
     public String getYear() {
-        return releaseDate.substring(0,4);
+        //return releaseDateString.substring(0,4);
+		return releaseDate != null ? String.format("%1$tY",releaseDate) : null;
     }
 
     public String getOriginalTitle() {
@@ -123,32 +140,52 @@ public class Movie implements Parcelable {
         this.voteAverage = voteAverage;
     }
 
-    public String getReleaseDate() {
-        return releaseDate;
+	@Deprecated
+    public String getReleaseDateString() {
+        return releaseDateString;
     }
 
-    public void setReleaseDate(String releaseDate) {
-        this.releaseDate = releaseDate;
+	@Deprecated
+    public void setReleaseDateString(String releaseDateString) {
+        this.releaseDateString = releaseDateString;
+		this.releaseDate = Utils.toDate(releaseDateString);
     }
 
-    public int getId() {
-        return id;
+    public int getMoviesDbId() {
+        return moviesDbId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setMoviesDbId(int moviesDbId) {
+        this.moviesDbId = moviesDbId;
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("Movie{");
-        sb.append("id=").append(id);
-        sb.append(", originalTitle='").append(originalTitle).append('\'');
-        sb.append('}');
-        return sb.toString();
-    }
 
-    @Override
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+	public Date getReleaseDate() {
+		return releaseDate;
+	}
+
+	public void setReleaseDate(Date releaseDate) {
+		this.releaseDate = releaseDate;
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder("Movie{");
+		sb.append("id=").append(id);
+		sb.append(", moviesDbId=").append(moviesDbId);
+		sb.append(", originalTitle='").append(originalTitle).append('\'');
+		sb.append('}');
+		return sb.toString();
+	}
+
+	@Override
     public int describeContents() {
         return 0;
     }
@@ -156,11 +193,12 @@ public class Movie implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
 
-        dest.writeInt(id);
+        dest.writeInt(moviesDbId);
         dest.writeString(title);
         dest.writeString(originalTitle);
         dest.writeString(overview);
-        dest.writeString(releaseDate);
+        //dest.writeString(releaseDateString);
+		dest.writeLong(releaseDate.getTime());
         dest.writeDouble(voteAverage);
         dest.writeString(posterPath);
 

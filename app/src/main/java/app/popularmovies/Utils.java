@@ -6,9 +6,14 @@ import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
+import android.text.format.Time;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import app.popularmovies.model.SearchParams;
 import app.popularmovies.service.MoviesService;
@@ -21,6 +26,7 @@ public class Utils {
 
 	private static final Logger log = LoggerFactory.getLogger(Utils.class);
 
+	private static SimpleDateFormat ISO_DATE = new SimpleDateFormat("yyyy-MM-dd");
 
 	public static String getPreferredLanguage(Context context) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -117,4 +123,28 @@ public class Utils {
 		}
 	}
 
+
+	public static void assertNotNull(Object obj, String message) {
+		if (obj == null)
+			throw new AssertionError(message);
+	}
+
+
+	public static long normalizeDate(long startDate) {
+		// normalize the start date to the beginning of the (UTC) day
+		Time time = new Time();
+		time.set(startDate);
+		int julianDay = Time.getJulianDay(startDate, time.gmtoff);
+		return time.setJulianDay(julianDay);
+	}
+
+	public static Date toDate(String releaseDateString) {
+
+		try {
+			return ISO_DATE.parse(releaseDateString);
+		} catch (ParseException e) {
+			return null;
+		}
+
+	}
 }

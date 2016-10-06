@@ -175,8 +175,23 @@ public class Movie implements Parcelable {
 		this.releaseDate = releaseDate;
 	}
 
-	@Override
 	public String toString() {
+		final StringBuilder sb = new StringBuilder("Movie{");
+		sb.append("id=").append(id);
+		sb.append(", moviesDbId=").append(moviesDbId);
+		sb.append(", title='").append(title).append('\'');
+		sb.append(", originalTitle='").append(originalTitle).append('\'');
+		sb.append(", overview='").append(overview).append('\'');
+		sb.append(", releaseDateString='").append(releaseDateString).append('\'');
+		sb.append(", releaseDate=").append(releaseDate);
+		sb.append(", voteAverage=").append(voteAverage);
+		sb.append(", posterPath='").append(posterPath).append('\'');
+		sb.append('}');
+		return sb.toString();
+	}
+
+	//@Override
+	public String toStringx() {
 		final StringBuilder sb = new StringBuilder("Movie{");
 		sb.append("id=").append(id);
 		sb.append(", moviesDbId=").append(moviesDbId);

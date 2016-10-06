@@ -31,6 +31,7 @@ public class MoviesRepository implements IMoviesRepository {
 	private static final Logger log = LoggerFactory.getLogger(MoviesRepository.class);
 
 	private static MoviesRepository sInstance = null;
+	private final Context mContext;
 
 	public static synchronized MoviesRepository get(Context context) {
 
@@ -44,6 +45,7 @@ public class MoviesRepository implements IMoviesRepository {
 
 	private MoviesRepository(Context context) {
 		dbHelper = new MoviesDbHelper(context);
+		mContext = context;
 	}
 
 	private ContentValues getContentValues(Movie movie) {
@@ -162,7 +164,7 @@ public class MoviesRepository implements IMoviesRepository {
 
 		SQLiteDatabase db = null;
 		Cursor cursor = null;
-		log.debug("checking if movie exists, movieDbId: {}",movieDbId);
+		log.trace("checking if movie exists, movieDbId: {}",movieDbId);
 
 		try {
 
@@ -213,6 +215,8 @@ public class MoviesRepository implements IMoviesRepository {
 					, new String[]{Long.toString(id)}
 					);
 
+			cursor.moveToFirst();
+
 			return cursorToMovie(cursor);
 
 		} catch (SQLiteException e) {
@@ -233,11 +237,10 @@ public class MoviesRepository implements IMoviesRepository {
 
 	}
 
-	private Movie cursorToMovie(Cursor cursor) {
+	@Override
+	public Movie cursorToMovie(Cursor cursor) {
 
 		Movie m = new Movie();
-
-		cursor.moveToFirst();
 
 		m.setId(cursor.getLong(0));
 		m.setMoviesDbId(cursor.getInt(1));
@@ -249,6 +252,8 @@ public class MoviesRepository implements IMoviesRepository {
 
 		m.setVoteAverage(cursor.getDouble(6));
 		m.setPosterPath(cursor.getString(7));
+
+		log.trace("Movie from cursor: {}",m);
 
 		return m;
 
@@ -291,11 +296,109 @@ public class MoviesRepository implements IMoviesRepository {
 
 	@Override
 	public void savePopular(List<Movie> movies) {
+		SQLiteDatabase db = null;
+
+		log.debug("saving popular movies...");
+
+		try {
+
+			db = dbHelper.getWritableDatabase();
+
+			db.beginTransaction();
+			try {
+
+				int rows = db.delete(MovieContract.PopularMoviesEntry.TABLE_NAME,"1",null);
+
+				log.debug("deleted {} rows from '{}' table",rows,MovieContract.PopularMoviesEntry.TABLE_NAME);
+
+				int pos = 1;
+				for (Movie m : movies) {
+
+					ContentValues values = new ContentValues();
+					values.put(MovieContract.PopularMoviesEntry.COLUMN_MOVIE_ID, m.getId());
+					values.put(MovieContract.PopularMoviesEntry.COLUMN_POSITION, pos++);
+
+					long id = db.insert(MovieContract.PopularMoviesEntry.TABLE_NAME, null, values);
+
+					if (id < 0) {
+						throw new  MoviesDataException(String.format("Error inserting popular movie: %s",m.getId()));
+					}
+
+				}
+				
+
+
+
+				db.setTransactionSuccessful();
+			} finally {
+				db.endTransaction();
+			}
+
+			mContext.getContentResolver().notifyChange(MovieContract.PopularMoviesEntry.CONTENT_URI, null);
+
+		} catch (SQLiteException e) {
+
+			log.error("Error opening database",e);
+
+			throw new  MoviesDataException("Error opening database",e);
+
+		} finally {
+			if (db != null)
+				db.close();
+		}
 
 	}
 
 	@Override
 	public void saveTopRated(List<Movie> movies) {
+		SQLiteDatabase db = null;
 
+		log.debug("saving top rated movies...");
+
+		try {
+
+			db = dbHelper.getWritableDatabase();
+
+			db.beginTransaction();
+			try {
+
+				int rows = db.delete(MovieContract.TopRatedMoviesEntry.TABLE_NAME,"1",null);
+
+				log.debug("deleted {} rows from '{}' table",rows,MovieContract.TopRatedMoviesEntry.TABLE_NAME);
+
+				int pos = 1;
+				for (Movie m : movies) {
+
+					ContentValues values = new ContentValues();
+					values.put(MovieContract.TopRatedMoviesEntry.COLUMN_MOVIE_ID, m.getId());
+					values.put(MovieContract.TopRatedMoviesEntry.COLUMN_POSITION, pos++);
+
+					long id = db.insert(MovieContract.TopRatedMoviesEntry.TABLE_NAME, null, values);
+
+					if (id < 0) {
+						throw new  MoviesDataException(String.format("Error inserting top_rated movie: %s",m.getId()));
+					}
+
+				}
+
+
+
+				db.setTransactionSuccessful();
+			} finally {
+				db.endTransaction();
+			}
+
+			mContext.getContentResolver().notifyChange(MovieContract.TopRatedMoviesEntry.CONTENT_URI, null);
+
+		} catch (SQLiteException e) {
+
+			log.error("Error opening database",e);
+
+			throw new  MoviesDataException("Error opening database",e);
+
+		} finally {
+			if (db != null)
+				db.close();
+		}
 	}
 }

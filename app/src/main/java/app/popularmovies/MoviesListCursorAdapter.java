@@ -1,5 +1,7 @@
 package app.popularmovies;
 
+import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,27 +13,29 @@ import com.squareup.picasso.Picasso;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
-import app.popularmovies.MoviesFragmentOLD.OnListFragmentInteractionListener;
+import app.popularmovies.MoviesFragment.OnListFragmentInteractionListener;
+import app.popularmovies.data.MoviesRepository;
 import app.popularmovies.model.Movie;
 import app.popularmovies.service.MoviesService;
+import app.popularmovies.util.CursorRecyclerViewAdapter;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Movie} and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
  */
-public class MoviesListRecyclerViewAdapter extends RecyclerView.Adapter<MoviesListRecyclerViewAdapter.ViewHolder> {
+public class MoviesListCursorAdapter extends CursorRecyclerViewAdapter<MoviesListCursorAdapter.ViewHolder> {
 
-    private static final Logger log = LoggerFactory.getLogger(MoviesListRecyclerViewAdapter.class);
+    private static final Logger log = LoggerFactory.getLogger(MoviesListCursorAdapter.class);
 
-    private final List<Movie> mValues;
+
     private final OnListFragmentInteractionListener mListener;
 
-    public MoviesListRecyclerViewAdapter(List<Movie> items, OnListFragmentInteractionListener listener) {
-        mValues = items;
-        mListener = listener;
-    }
+    public MoviesListCursorAdapter(Context context, Cursor cursor, OnListFragmentInteractionListener listener){
+        super(context,cursor);
+		this.mListener = listener;
+
+	}
+
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -40,12 +44,12 @@ public class MoviesListRecyclerViewAdapter extends RecyclerView.Adapter<MoviesLi
         return new ViewHolder(view);
     }
 
-    @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+	@Override
+	public void onBindViewHolder(final ViewHolder holder, Cursor cursor) {
 
-        Movie movie = mValues.get(position);
+        Movie movie = MoviesRepository.get(mContext).cursorToMovie(cursor);
 
-        holder.mItem = mValues.get(position);
+        holder.mItem = movie;
 
 
         //TODO buscar imagens maiores conforme a tela do dispositivo.
@@ -83,17 +87,6 @@ public class MoviesListRecyclerViewAdapter extends RecyclerView.Adapter<MoviesLi
                 }
             }
         });
-    }
-
-    @Override
-    public int getItemCount() {
-        return mValues.size();
-    }
-
-    public void updateMovies(List<Movie> movies) {
-        mValues.clear();
-        mValues.addAll(movies);
-        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

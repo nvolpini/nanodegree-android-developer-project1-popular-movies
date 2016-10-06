@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import app.popularmovies.model.SearchParams;
-import app.popularmovies.service.MoviesService;
+import app.popularmovies.service.IMovieSearch;
 
 /**
  * Created by neimar on 24/09/16.
@@ -31,7 +31,7 @@ public class Utils {
 	public static String getPreferredLanguage(Context context) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		return prefs.getString(context.getString(R.string.pref_key_movies_language)
-				, MoviesService.DEFAULT_LANGUAGE);
+				, IMovieSearch.DEFAULT_LANGUAGE);
 	}
 
 	public static void changeLanguageAccordingToPrefs(Context context, SearchParams params) {
@@ -45,7 +45,7 @@ public class Utils {
 	public static String getDefaultSorting(Context context) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		return prefs.getString(context.getString(R.string.pref_key_default_sorting)
-				, MoviesService.SORT_BY_POPULARITY);
+				, IMovieSearch.SORT_BY_POPULARITY);
 	}
 
 	public static boolean isSyncOnStart(Context context) {

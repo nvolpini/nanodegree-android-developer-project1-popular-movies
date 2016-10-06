@@ -2,9 +2,6 @@ package app.popularmovies.service;
 
 import app.popularmovies.model.SearchParams;
 
-import static app.popularmovies.service.MoviesService.SORT_BY_POPULARITY;
-import static app.popularmovies.service.MoviesService.SORT_BY_RATING;
-
 /**
  * Created by neimar on 26/09/16.
  */

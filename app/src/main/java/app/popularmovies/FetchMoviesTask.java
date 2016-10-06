@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.popularmovies.model.SearchParams;
-import app.popularmovies.service.MoviesDataException;
 import app.popularmovies.service.MoviesService;
 
 /**
@@ -37,7 +36,9 @@ public class FetchMoviesTask extends AsyncTask<SearchParams,Void,Void> {
 
 			MoviesService.get().downloadAndSaveMovies(mContext,searchParams);
 
-		} catch (MoviesDataException e) {
+
+
+		} catch (Exception e) {
 
 			log.error("error fetching and saving movies.",e);
 

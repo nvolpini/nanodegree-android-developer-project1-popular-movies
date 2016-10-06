@@ -3,6 +3,8 @@ package app.popularmovies.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import app.popularmovies.service.IMovieSearch;
+
 /**
  * Created by neimar on 19/09/16.
  */
@@ -19,6 +21,15 @@ public class SearchParams implements Parcelable {
     private SearchParams(Parcel in){
         language = in.readString();
         sortBy = in.readString();
+    }
+
+    public boolean isSortByPopularity() {
+        return IMovieSearch.SORT_BY_POPULARITY.equals(sortBy);
+    }
+
+
+    public boolean isSortByRating() {
+        return IMovieSearch.SORT_BY_RATING.equals(sortBy);
     }
 
     public String getSortBy() {

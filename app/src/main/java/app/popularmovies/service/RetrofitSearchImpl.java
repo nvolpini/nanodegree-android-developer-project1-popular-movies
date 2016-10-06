@@ -22,7 +22,6 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
-import static app.popularmovies.service.MoviesService.SORT_BY_POPULARITY;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**

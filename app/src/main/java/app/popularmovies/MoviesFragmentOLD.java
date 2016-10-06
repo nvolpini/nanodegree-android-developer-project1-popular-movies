@@ -2,11 +2,10 @@ package app.popularmovies;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,45 +21,44 @@ import android.widget.Toast;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.popularmovies.data.MovieContract;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import app.popularmovies.model.Movie;
 import app.popularmovies.model.SearchParams;
 import app.popularmovies.service.IMovieSearch;
+import app.popularmovies.service.MoviesDataException;
 import app.popularmovies.service.MoviesService;
 
 /**
  * A fragment representing a list of movie posters.
  *
  * <p>
- *     Create new instances using {@link app.popularmovies.MoviesFragment#newInstance(int, SearchParams)}
+ *     Create new instances using {@link MoviesFragmentOLD#newInstance(int, SearchParams)}
  * </p>
  *
  * <p>
  * Can take two arguments:
- * <br>{@link MoviesFragment#SEARCH_PARAMS_PARCELABLE_KEY} - SearchParams
- * <br>{@link MoviesFragment#ARG_COLUMN_COUNT} - number of columns.
+ * <br>{@link MoviesFragmentOLD#SEARCH_PARAMS_PARCELABLE_KEY} - SearchParams
+ * <br>{@link MoviesFragmentOLD#ARG_COLUMN_COUNT} - number of columns.
  * </p>
  *
  * <p>
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  * </p>
+ *
+ * @deprecated
  */
-public class MoviesFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MoviesFragmentOLD extends Fragment  implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final Logger log = LoggerFactory.getLogger(MoviesFragment.class);
+    private static final Logger log = LoggerFactory.getLogger(MoviesFragmentOLD.class);
 
-    public static final String ARG_COLUMN_COUNT = "column-count";
+    private static final String ARG_COLUMN_COUNT = "column-count";
     public static final String MOVIES_LIST_PARCELABLE_KEY = "moviesList";
     public static final String SEARCH_PARAMS_PARCELABLE_KEY = "searchParams";
     private int mColumnCount = 2;
-
-	private int mPosition = RecyclerView.NO_POSITION;
-	private boolean mUseTodayLayout;
-
-	private static final String SELECTED_KEY = "selected_position";
-
-	private static final int FORECAST_LOADER = 0;
 
     /**
      * Will receive notifications when a movie is clicked.
@@ -69,13 +67,19 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     private OnListFragmentInteractionListener mListener;
 
 
-	MoviesListCursorAdapter moviesListAdapter;
+    MoviesListRecyclerViewAdapter moviesListAdapter;
 
     /**
      * Holds the search parameters used to fetch the movies.
      * Saved and restored as state
      */
     private SearchParams searchParams;
+
+    /**
+     * Holds the movies list.
+     * Saved and restored as state
+     */
+    private ArrayList<Movie> moviesList = new ArrayList<>();
 
     /**
      * indicates no connection on the last fetch attempt
@@ -86,20 +90,14 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public MoviesFragment() {
+    public MoviesFragmentOLD() {
     }
 
-	/**
-	 * @deprecated agora a criacao é estatica - direto pelo layout
-	 * @param columnCount
-	 * @param searchParams
-	 * @return
-	 */
-    public static MoviesFragment newInstance(int columnCount, SearchParams searchParams) {
-        MoviesFragment fragment = new MoviesFragment();
+    public static MoviesFragmentOLD newInstance(int columnCount, SearchParams searchParams) {
+        MoviesFragmentOLD fragment = new MoviesFragmentOLD();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
-        args.putParcelable(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY, searchParams);
+        args.putParcelable(MoviesFragmentOLD.SEARCH_PARAMS_PARCELABLE_KEY, searchParams);
         fragment.setArguments(args);
         return fragment;
     }
@@ -112,11 +110,8 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
         setHasOptionsMenu(true);
 
-		//TODO agora o fragment e criado automaticamente (direto no layout)
-		//remover isso
         //define the search params via argument
         if (getArguments() != null) {
-			log.trace("argumentos recebidos !!");
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
             searchParams = getArguments().getParcelable(SEARCH_PARAMS_PARCELABLE_KEY);
         }
@@ -125,7 +120,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         if (savedInstanceState == null) {
 
             log.trace("new moviesList...");
-            //moviesList = new ArrayList<>(); //empty movies list
+            moviesList = new ArrayList<>(); //empty movies list
 
             if (searchParams == null) {
                 log.trace("no search params passed as argument. Getting default...");
@@ -136,14 +131,14 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
             //auto sync on start
             if(Utils.isSyncOnStart(getActivity())) {
-                downloadMovies();
+                updateMovies();
             }
 
         } else { //previous state saved, restore
 
             if (savedInstanceState.containsKey(MOVIES_LIST_PARCELABLE_KEY)) {
                 log.trace("restoring moviesList from state...");
-                //moviesList = savedInstanceState.getParcelableArrayList(MOVIES_LIST_PARCELABLE_KEY);
+                moviesList = savedInstanceState.getParcelableArrayList(MOVIES_LIST_PARCELABLE_KEY);
             }
 
             if (savedInstanceState.containsKey(SEARCH_PARAMS_PARCELABLE_KEY)) {
@@ -171,32 +166,14 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
 
-            moviesListAdapter = new MoviesListCursorAdapter(getActivity(), null, mListener) ;
+            moviesListAdapter = new MoviesListRecyclerViewAdapter(moviesList, mListener);
 
             recyclerView.setAdapter(moviesListAdapter);
         }
-
-
-		if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
-			// The listview probably hasn't even been populated yet.  Actually perform the
-			// swapout in onLoadFinished.
-			mPosition = savedInstanceState.getInt(SELECTED_KEY);
-		}
-
         return view;
     }
 
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		getLoaderManager().initLoader(FORECAST_LOADER, null, this);
-		super.onActivityCreated(savedInstanceState);
-	}
 
-	// since we read the location when we create the loader, all we need to do is restart things
-	void onLocationChanged( ) {
-		//updateWeather();
-		getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
-	}
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -217,32 +194,28 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
         if (id == R.id.action_refresh) {
 
-            downloadMovies();
-
-			//getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
+            updateMovies();
 
             return true;
 
         } else if (id == R.id.action_sort_by_popularity) {
 
             searchParams.setSortBy(IMovieSearch.SORT_BY_POPULARITY);
-			//getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
-			//downloadMovies();
+            updateMovies();
 
             return true;
 
         } else if (id == R.id.action_sort_by_rating) {
 
             searchParams.setSortBy(IMovieSearch.SORT_BY_RATING);
-			//getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
-            //downloadMovies();
+            updateMovies();
 
             return true;
 
         } else if (id == R.id.action_clear) { //DEBUG purposes
 
-            //moviesList.clear();
-            //moviesListAdapter.downloadMovies(moviesList);
+            moviesList.clear();
+            moviesListAdapter.updateMovies(moviesList);
 
             return true;
         }
@@ -270,46 +243,18 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
-		Uri uri = MovieContract.PopularMoviesEntry.CONTENT_URI;
-
-		if (searchParams.isSortByRating()) {
-			uri = MovieContract.TopRatedMoviesEntry.CONTENT_URI;
-		}
-
-		log.trace("onCreateLoader, uri: {}",uri);
-
-		return new CursorLoader(getActivity(),
-				uri,
-				null,
-				null,
-				null,
-				null);
+        return null;
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		log.trace("onLoadFinished..");
 
-		moviesListAdapter.swapCursor(data);
-		if (mPosition != RecyclerView.NO_POSITION) {
-			// If we don't need to restart the loader, and there's a desired position to restore
-			// to, do so now.
-			RecyclerView recyclerView = (RecyclerView) getView();
-			recyclerView.smoothScrollToPosition(mPosition);
-		}
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-		log.trace("onLoaderReset..");
-		moviesListAdapter.swapCursor(null);
-    }
 
-    public void setSearchParams(SearchParams searchParams) {
-		this.searchParams = searchParams;
     }
-
 
 
     /**
@@ -332,13 +277,9 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
         log.trace("saving moviesList...");
 
-        //outState.putParcelableArrayList(MOVIES_LIST_PARCELABLE_KEY, moviesList);
+        outState.putParcelableArrayList(MOVIES_LIST_PARCELABLE_KEY, moviesList);
 
         outState.putParcelable(SEARCH_PARAMS_PARCELABLE_KEY, searchParams);
-
-		if (mPosition != RecyclerView.NO_POSITION) {
-			outState.putInt(SELECTED_KEY, mPosition);
-		}
 
         super.onSaveInstanceState(outState);
 
@@ -356,7 +297,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
         //where to autoload ?
         //TODO check loaders - https://developer.android.com/guide/components/loaders.html
-       // downloadMovies();
+       // updateMovies();
     }
 
     @Override
@@ -381,15 +322,15 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     }
 
 
-    private void downloadMovies() {
+    private void updateMovies() {
         log.trace("updating movies, params: {}",searchParams);
 
 		if (Utils.isOnline(getContext())) {
 
 			noConnection = false;
 
-            FetchMoviesTask task = new FetchMoviesTask(getActivity());
-			task.execute(searchParams);
+            FetchMoviesTaskOLD task = new FetchMoviesTaskOLD();
+			task.execute();
 
 
 		} else {
@@ -400,5 +341,46 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     }
 
 
+    public class FetchMoviesTaskOLD extends AsyncTask<Void,Void,List<Movie>> {
+
+
+        @Override
+        protected List<Movie> doInBackground(Void... params) {
+
+            List<Movie> myMovies = new ArrayList<>();
+
+			try {
+				IMovieSearch search = MoviesService.get().newSearch(searchParams);
+
+				myMovies = search.list();
+
+			}catch (MoviesDataException e) {
+
+				log.error("error querying.",e);
+
+				return null;
+			}
+
+            return myMovies;
+
+        }
+
+        @Override
+        protected void onPostExecute(List<Movie> newMovies) {
+
+            log.trace("postExecute: {}",newMovies);
+
+			if (newMovies == null) {
+
+				Toast.makeText(getActivity(),getString(R.string.error_getting_data),Toast.LENGTH_LONG).show();
+
+				newMovies = Collections.emptyList();
+			}
+
+            //update adapter
+            moviesListAdapter.updateMovies(newMovies);
+
+        }
+    }
 
 }

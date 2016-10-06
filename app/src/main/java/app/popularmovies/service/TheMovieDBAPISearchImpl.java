@@ -14,8 +14,6 @@ import info.movito.themoviedbapi.TmdbApi;
 import info.movito.themoviedbapi.model.MovieDb;
 import info.movito.themoviedbapi.model.core.MovieResultsPage;
 
-import static app.popularmovies.service.MoviesService.SORT_BY_POPULARITY;
-
 /**
  * Implementation based on the library TheMovieDB API (https://github.com/holgerbrandl/themoviedbapi)
  *

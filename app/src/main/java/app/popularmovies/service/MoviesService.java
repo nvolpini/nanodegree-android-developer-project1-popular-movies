@@ -1,18 +1,16 @@
 package app.popularmovies.service;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Bundle;
+import android.database.Cursor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import app.popularmovies.Utils;
+import app.popularmovies.data.MovieContract;
 import app.popularmovies.data.MoviesDbHelper;
 import app.popularmovies.data.MoviesRepository;
 import app.popularmovies.model.Movie;
@@ -25,13 +23,7 @@ public class MoviesService {
 
     private static final Logger log = LoggerFactory.getLogger(MoviesService.class);
 
-    public static final String SORT_BY_POPULARITY = "popularity.desc";
-
-    public static final String SORT_BY_RATING = "vote_average.desc";
-
-    public static final String DEFAULT_LANGUAGE = "en";
-
-    private static MoviesService INSTANCE = null;
+	private static MoviesService INSTANCE = null;
 
     public static synchronized MoviesService get() {
 
@@ -63,54 +55,6 @@ public class MoviesService {
         return String.format("app.popularmovies.movie.%s",name);
     }
 
-	/**
-	 * @deprecated  usar parcelable
-	 * @param movie
-	 * @param bundle
-	 */
-    public void saveMovie(Movie movie, Bundle bundle) {
-
-        if (movie == null || bundle == null) {
-            throw new IllegalArgumentException("Movie and bundle cannot be null");
-        }
-
-        bundle.putInt(getMovieDataKey("id"),movie.getMoviesDbId());
-        bundle.putString(getMovieDataKey("title"),movie.getTitle());
-        bundle.putString(getMovieDataKey("originalTitle"),movie.getOriginalTitle());
-        bundle.putString(getMovieDataKey("releaseDate"),movie.getReleaseDateString());
-        bundle.putString(getMovieDataKey("overview"),movie.getOverview());
-        bundle.putDouble(getMovieDataKey("voteAverage"),movie.getVoteAverage());
-        bundle.putString(getMovieDataKey("posterPath"),movie.getPosterPath());
-
-
-    }
-
-	/**
-	 * @deprecated  usar parcelable
-	 * @param bundle
-	 * @return
-	 */
-    public Movie restoreMovie(Bundle bundle) {
-
-        if (bundle == null) {
-            throw new IllegalArgumentException("Bundle cannot be null");
-        }
-
-        Movie movie = new Movie();
-
-        movie.setMoviesDbId(bundle.getInt(getMovieDataKey("id")));
-        movie.setTitle(bundle.getString(getMovieDataKey("title")));
-        movie.setOriginalTitle(bundle.getString(getMovieDataKey("originalTitle")));
-        movie.setReleaseDateString(bundle.getString(getMovieDataKey("releaseDate")));
-        movie.setOverview(bundle.getString(getMovieDataKey("overview")));
-        movie.setVoteAverage(bundle.getDouble(getMovieDataKey("voteAverage")));
-        movie.setPosterPath(bundle.getString(getMovieDataKey("posterPath")));
-
-
-
-        return movie;
-
-    }
 
 
     public IMovieSearch newSearch() {
@@ -134,8 +78,8 @@ public class MoviesService {
      */
     public SearchParams newSearchParams() {
         return new SearchParams()
-                .setLanguage(DEFAULT_LANGUAGE)
-                .setSortBy(SORT_BY_POPULARITY);
+                .setLanguage(IMovieSearch.DEFAULT_LANGUAGE)
+                .setSortBy(IMovieSearch.SORT_BY_POPULARITY);
     }
 
     public List<? extends Movie> getSampleData() {
@@ -161,7 +105,9 @@ public class MoviesService {
 	public void downloadAndSaveMovies(Context context, SearchParams searchParams) throws MoviesDataException {
 
 		MoviesDbHelper dbHelper = new MoviesDbHelper(context);
-		SQLiteDatabase db = dbHelper.getWritableDatabase();
+		//SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+		MoviesRepository repo = MoviesRepository.get(context);
 
 		List<Movie> movies = null;
 
@@ -176,17 +122,40 @@ public class MoviesService {
 			throw e;
 
 		}
-		Vector<ContentValues> regs = new Vector<ContentValues>(movies.size());
+		//Vector<ContentValues> regs = new Vector<ContentValues>(movies.size());
 
 		for (Movie m: movies) {
 
 			//ContentValues mv = new ContentValues();
 			//regs.add(mv);
 
-			MoviesRepository.get(context).create(m);
+			if (!repo.exists(m.getMoviesDbId())) {
+				repo.create(m);
+			}
+
+
 
 		}
 
+		if(searchParams.isSortByPopularity()) {
+
+			repo.savePopular(movies);
+
+		} else if(searchParams.isSortByRating()) {
+
+			repo.saveTopRated(movies);
+
+		}
+
+
+		Cursor c = context.getContentResolver().query(MovieContract.PopularMoviesEntry.CONTENT_URI, null, null, null, null);
+
+		c.moveToFirst();
+		do {
+
+			log.debug("movie: {}",repo.cursorToMovie(c));
+
+		} while( c.moveToNext() );
 
 /*
 		int inserted = 0;

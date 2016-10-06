@@ -1,6 +1,5 @@
 package app.popularmovies;
 
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,11 +12,10 @@ import app.popularmovies.model.Movie;
 
 /**
  * Show the movie details.
- * @deprecated
  */
-public class MovieDetailActivityFragment extends Fragment {
+public class MovieDetailsFragment extends Fragment {
 
-    public MovieDetailActivityFragment() {
+    public MovieDetailsFragment() {
     }
 
 
@@ -26,21 +24,18 @@ public class MovieDetailActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         //View rootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
 
-        FragmentMovieDetailBinding binding = DataBindingUtil.inflate(inflater,R.layout.fragment_movie_detail, container, false);
+        FragmentMovieDetailBinding binding = DataBindingUtil.inflate(inflater,R.layout.fragment_movie_details, container, false);
 		View rootView = binding.getRoot();
 
-
-		Intent intent = getActivity().getIntent();
-
-        if (intent != null && intent.hasExtra(MovieDetailActivity.MOVIE_EXTRA_KEY)) {
-
-			Movie movie = intent.getParcelableExtra(MovieDetailActivity.MOVIE_EXTRA_KEY);
+		Bundle arguments = getArguments();
+		if (arguments != null) {
+			Movie movie = arguments.getParcelable(MovieDetailsActivity.MOVIE_EXTRA_KEY);
 
 			if (movie != null) {
 				binding.setMovie(movie);
 			}
+		}
 
-        }
 
         return rootView;
     }

@@ -9,7 +9,11 @@ import app.popularmovies.model.Movie;
  */
 public interface IMovieSearch {
 
-    IMovieSearch sortByPopularity();
+	String SORT_BY_POPULARITY = "popularity.desc";
+	String SORT_BY_RATING = "vote_average.desc";
+	String DEFAULT_LANGUAGE = "en";
+
+	IMovieSearch sortByPopularity();
 
     IMovieSearch sortByRating();
 

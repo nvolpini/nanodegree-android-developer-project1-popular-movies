@@ -6,14 +6,20 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by neimar on 28/09/16.
  */
 
 public class MoviesProvider extends ContentProvider {
+
+	private static final Logger log = LoggerFactory.getLogger(MoviesProvider.class);
 
 	// The URI Matcher used by this content provider.
 	private static final UriMatcher sUriMatcher = buildUriMatcher();
@@ -54,6 +60,8 @@ public class MoviesProvider extends ContentProvider {
 
 		final int match = sUriMatcher.match(uri);
 
+		log.trace("matching uri {} to {}", uri, match);
+
 		switch (match) {
 			case MOVIE_ID:
 				return MovieContract.MovieEntry.CONTENT_ITEM_TYPE;
@@ -69,50 +77,132 @@ public class MoviesProvider extends ContentProvider {
 				throw new UnsupportedOperationException("Unknown uri: " + uri);
 		}
 	}
+	private static final SQLiteQueryBuilder popularQueryBuilder;
 
+	static{
+		popularQueryBuilder = new SQLiteQueryBuilder();
+
+		//This is an inner join which looks like
+		//top_rated INNER JOIN movies ON movies.id = top_rated.movie_id
+		popularQueryBuilder.setTables(
+				MovieContract.PopularMoviesEntry.TABLE_NAME + " INNER JOIN " +
+						MovieContract.MovieEntry.TABLE_NAME +
+						" ON " + MovieContract.MovieEntry.TABLE_NAME +
+						".." + MovieContract.MovieEntry._ID +
+						" = " + MovieContract.PopularMoviesEntry.TABLE_NAME +
+						"." + MovieContract.PopularMoviesEntry.COLUMN_MOVIE_ID);
+	}
+
+	private Cursor getPopular(
+			Uri uri, String[] projection, String sortOrder) {
+
+		return popularQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+				projection,
+				null,
+				null,
+				null,
+				null,
+				sortOrder == null ? sortOrder = MovieContract.PopularMoviesEntry.TABLE_NAME+"."+MovieContract.PopularMoviesEntry.COLUMN_POSITION : sortOrder
+		);
+	}
+
+	private static final SQLiteQueryBuilder topRatedQueryBuilder;
+
+	static{
+		topRatedQueryBuilder = new SQLiteQueryBuilder();
+
+		//This is an inner join which looks like
+		//top_rated INNER JOIN movies ON movies.id = top_rated.movie_id
+		topRatedQueryBuilder.setTables(
+				MovieContract.TopRatedMoviesEntry.TABLE_NAME + " INNER JOIN " +
+						MovieContract.MovieEntry.TABLE_NAME +
+						" ON " + MovieContract.MovieEntry.TABLE_NAME +
+						"." + MovieContract.MovieEntry._ID +
+						" = " + MovieContract.TopRatedMoviesEntry.TABLE_NAME +
+						"." + MovieContract.TopRatedMoviesEntry.COLUMN_MOVIE_ID);
+	}
+
+	private Cursor getTopRated(
+			Uri uri, String[] projection, String sortOrder) {
+
+		return topRatedQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+				projection,
+				null,
+				null,
+				null,
+				null,
+				sortOrder == null ? sortOrder = MovieContract.TopRatedMoviesEntry.TABLE_NAME+"."+MovieContract.TopRatedMoviesEntry.COLUMN_POSITION : sortOrder
+		);
+	}
+
+
+	private static final SQLiteQueryBuilder favoritesQueryBuilder;
+
+	static{
+		favoritesQueryBuilder = new SQLiteQueryBuilder();
+
+		//This is an inner join which looks like
+		//top_rated INNER JOIN movies ON movies.id = top_rated.movie_id
+		favoritesQueryBuilder.setTables(
+				MovieContract.FavoriteMoviesEntry.TABLE_NAME + " INNER JOIN " +
+						MovieContract.MovieEntry.TABLE_NAME +
+						" ON " + MovieContract.MovieEntry.TABLE_NAME +
+						"." + MovieContract.MovieEntry._ID +
+						" = " + MovieContract.FavoriteMoviesEntry.TABLE_NAME +
+						"." + MovieContract.FavoriteMoviesEntry.COLUMN_MOVIE_ID);
+	}
+
+	private Cursor getFavorites(
+			Uri uri, String[] projection, String sortOrder) {
+
+		return favoritesQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+				projection,
+				null,
+				null,
+				null,
+				null,
+				sortOrder == null ? sortOrder = MovieContract.FavoriteMoviesEntry.TABLE_NAME+"."+MovieContract.FavoriteMoviesEntry.COLUMN_POSITION : sortOrder
+		);
+	}
+
+	private static final String[] DEFAULT_MOVIES_PROJECTION = {
+			MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry._ID
+			,MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry.COLUMN_MOVIESDB_ID
+			,MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry.COLUMN_TITLE
+			,MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE
+			,MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry.COLUMN_OVERVIEW
+			,MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry.COLUMN_RELEASE_DATE
+			,MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE
+			,MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry.COLUMN_POSTER_PATH
+
+	};
 
 	@Nullable
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+
+		log.trace("querying uri: {}, projection: {}",uri,projection);
+
+		projection = projection != null ? projection : DEFAULT_MOVIES_PROJECTION;
+
 		// Here's the switch statement that, given a URI, will determine what kind of request it is,
 		// and query the database accordingly.
 		Cursor retCursor;
 		switch (sUriMatcher.match(uri)) {
 
 			case POPULAR_MOVIES: {
-				retCursor = mOpenHelper.getReadableDatabase().query(
-						MovieContract.PopularMoviesEntry.TABLE_NAME,
-						projection,
-						selection,
-						selectionArgs,
-						null,
-						null,
-						sortOrder
-				);
+				retCursor = getPopular(uri,projection,sortOrder);
+
+				log.trace("total: {}",retCursor.getCount());
+
 				break;
 			}
 			case TOP_RATED_MOVIES: {
-				retCursor = mOpenHelper.getReadableDatabase().query(
-						MovieContract.TopRatedMoviesEntry.TABLE_NAME,
-						projection,
-						selection,
-						selectionArgs,
-						null,
-						null,
-						sortOrder
-				);
+				retCursor = getTopRated(uri,projection,sortOrder);
 				break;
 			}
 			case FAVORITE_MOVIES: {
-				retCursor = mOpenHelper.getReadableDatabase().query(
-						MovieContract.FavoriteMoviesEntry.TABLE_NAME,
-						projection,
-						selection,
-						selectionArgs,
-						null,
-						null,
-						sortOrder
-				);
+				retCursor = getFavorites(uri,projection,sortOrder);
 				break;
 			}
 			case MOVIE_ID:

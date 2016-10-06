@@ -20,6 +20,11 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
 
     private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
 
+    private static final String DETAILFRAGMENT_TAG = "DFTAG";
+
+    private boolean mTwoPane;
+    private String mLocation;
+
     private SearchParams searchParams;
 
     @Override
@@ -52,16 +57,43 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
 
             log.trace("params from prefs: {} ",searchParams);
 
-
+			/*
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container
 							//TODO talvez usar 3 colunas de dispositivos maiores
-                            ,MoviesFragment.newInstance(2, searchParams)
+                            ,MoviesFragmentOLD.newInstance(2, searchParams)
                     )
-                    .commit();
+                    .commit();*/
         }
 
 
+		if (findViewById(R.id.movie_detail_container) != null) {
+			// The detail container view will be present only in the large-screen layouts
+			// (res/layout-sw600dp). If this view is present, then the activity should be
+			// in two-pane mode.
+			mTwoPane = true;
+			// In two-pane mode, show the detail view in this activity by
+			// adding or replacing the detail fragment using a
+			// fragment transaction.
+			if (savedInstanceState == null) {
+				getSupportFragmentManager().beginTransaction()
+						.replace(R.id.movie_detail_container, new MovieDetailsFragment(), DETAILFRAGMENT_TAG)
+						.commit();
+			}
+		} else {
+			mTwoPane = false;
+			getSupportActionBar().setElevation(0f);
+		}
+
+		MoviesFragment moviesFragment =  ((MoviesFragment)getSupportFragmentManager()
+				.findFragmentById(R.id.fragment_movies));
+
+		moviesFragment.setSearchParams(searchParams);
+
+		//Bundle args = new Bundle();
+		//args.putInt(MoviesFragment.ARG_COLUMN_COUNT, columnCount);
+		//args.putParcelable(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY, searchParams);
+		//moviesFragment.setArguments(args);
     }
 
 
@@ -70,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
 
         log.trace("saving state...");
 
-        outState.putParcelable(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY, searchParams);
+        outState.putParcelable(MoviesFragmentOLD.SEARCH_PARAMS_PARCELABLE_KEY, searchParams);
 
         super.onSaveInstanceState(outState);
 
@@ -92,6 +124,22 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
 		//next time he hits refresh it will use the new language
 		changeLanguageAccordingToPrefs(this,searchParams);
 
+
+
+		/**
+		 *TODO testar se mudou:
+		 * - sortBy
+		 * - idioma
+		 */
+
+		MoviesFragment mf =  ((MoviesFragment)getSupportFragmentManager()
+				.findFragmentById(R.id.fragment_movies));
+
+		//TODO mf.onChange
+
+		MovieDetailsFragment df = (MovieDetailsFragment)getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
+
+		//TODO mf.onChange
     }
 
 
@@ -153,10 +201,25 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
 
         log.trace("iteracao, movie: {}",movie.getOriginalTitle());
 
-        Intent intent = new Intent(this,MovieDetailActivity.class);
-        intent.putExtra(MovieDetailActivity.MOVIE_EXTRA_KEY, movie);
+		if(mTwoPane) {
 
-        startActivity(intent);
+			Bundle args = new Bundle();
+			args.putParcelable(MovieDetailsActivity.MOVIE_EXTRA_KEY, movie);
+
+			MovieDetailsFragment df = new MovieDetailsFragment();
+			df.setArguments(args);
+
+			getSupportFragmentManager().beginTransaction()
+					.replace(R.id.movie_detail_container, df, DETAILFRAGMENT_TAG)
+					.commit();
+
+		} else {
+
+			Intent intent = new Intent(this, MovieDetailsActivity.class);
+			intent.putExtra(MovieDetailsActivity.MOVIE_EXTRA_KEY, movie);
+
+			startActivity(intent);
+		}
 
     }
 

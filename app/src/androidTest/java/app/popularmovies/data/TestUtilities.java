@@ -56,6 +56,18 @@ public class TestUtilities extends AndroidTestCase {
         return values;
     }
 
+    static ContentValues createMovieValues(int movieDbId) {
+        ContentValues values = new ContentValues();
+        values.put(MovieContract.MovieEntry.COLUMN_MOVIESDB_ID, movieDbId);
+        values.put(MovieContract.MovieEntry.COLUMN_TITLE, "Test Movie "+movieDbId);
+        values.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE, "Test Movie");
+        values.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, TEST_DATE);
+        values.put(MovieContract.MovieEntry.COLUMN_OVERVIEW, "Just a fictional movie");
+        values.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, 7.5);
+        values.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH, "path");
+
+        return values;
+    }
 
     static ContentValues createPopularMoviesValues(long movieId, int position) {
         ContentValues values = new ContentValues();

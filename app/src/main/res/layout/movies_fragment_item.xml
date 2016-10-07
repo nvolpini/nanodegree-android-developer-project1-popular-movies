@@ -9,8 +9,8 @@
 	android:layout_centerInParent="false"
 	android:layout_centerVertical="false"
 	android:adjustViewBounds="true"
-	android:contentDescription="Movie poster"
 	android:scaleType="centerCrop"
+	android:contentDescription="Movie poster"
 	android:src="@drawable/no_poster_185"
 	tools:ignore="HardcodedText"/>
 

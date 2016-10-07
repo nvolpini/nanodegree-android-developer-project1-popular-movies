@@ -97,6 +97,44 @@ public class TestDb extends AndroidTestCase {
 
 	}
 
+	public void testJoinPopularMovies() {
+		MoviesDbHelper dbHelper = new MoviesDbHelper(mContext);
+		SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+		ContentValues movie1 = TestUtilities.createMovieValues(1);
+		ContentValues movie2 = TestUtilities.createMovieValues(2);
+
+		long movieId = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, movie1);
+		db.insert(MovieContract.PopularMoviesEntry.TABLE_NAME, null,TestUtilities.createPopularMoviesValues(movieId,1));
+
+
+		movieId = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, movie2);
+		db.insert(MovieContract.PopularMoviesEntry.TABLE_NAME, null,TestUtilities.createPopularMoviesValues(movieId,2));
+
+
+
+
+		Cursor cursor = MoviesDbHelper.POPULAR_MOVIES_QUERY_BUILDER.query(db,
+				MoviesDbHelper.DEFAULT_MOVIES_PROJECTION,
+				null,
+				null,
+				null,
+				null,
+				null);
+
+		assertTrue( "Erro no results", cursor.moveToFirst() );
+
+
+		TestUtilities.validateCurrentRecord("erro",cursor,movie1);
+		cursor.moveToNext();
+		TestUtilities.validateCurrentRecord("erro",cursor,movie2);
+
+		assertFalse("more than 2 returned", cursor.moveToNext());
+
+		cursor.close();
+		dbHelper.close();
+
+	}
 
 
 	private void checkTableMovies(SQLiteDatabase db) {

@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import app.popularmovies.databinding.FragmentMovieDetailBinding;
+import app.popularmovies.databinding.FragmentMovieDetailsBinding;
 import app.popularmovies.model.Movie;
 
 /**
@@ -24,7 +24,7 @@ public class MovieDetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
         //View rootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
 
-        FragmentMovieDetailBinding binding = DataBindingUtil.inflate(inflater,R.layout.fragment_movie_details, container, false);
+        FragmentMovieDetailsBinding binding = DataBindingUtil.inflate(inflater,R.layout.fragment_movie_details, container, false);
 		View rootView = binding.getRoot();
 
 		Bundle arguments = getArguments();

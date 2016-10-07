@@ -9,10 +9,8 @@ import android.database.sqlite.SQLiteException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
 import java.util.List;
 
-import app.popularmovies.Utils;
 import app.popularmovies.model.Movie;
 import app.popularmovies.service.MoviesDataException;
 
@@ -25,6 +23,7 @@ import static android.R.attr.id;
 /**
  * Work with db directly.
  * Proof of concept -  most operations will be running via ContentProvider
+ * @deprecated
  */
 public class MoviesRepository implements IMoviesRepository {
 
@@ -33,6 +32,11 @@ public class MoviesRepository implements IMoviesRepository {
 	private static MoviesRepository sInstance = null;
 	private final Context mContext;
 
+	/**
+	 * @deprecated
+	 * @param context
+	 * @return
+	 */
 	public static synchronized MoviesRepository get(Context context) {
 
 		if (sInstance == null) {
@@ -48,26 +52,10 @@ public class MoviesRepository implements IMoviesRepository {
 		mContext = context;
 	}
 
-	private ContentValues getContentValues(Movie movie) {
-		Utils.assertNotNull(movie,"movie cannot be null");
-
-		ContentValues values = new ContentValues();
-		values.put(MovieContract.MovieEntry.COLUMN_MOVIESDB_ID, movie.getMoviesDbId());
-		values.put(MovieContract.MovieEntry.COLUMN_TITLE, movie.getTitle());
-		values.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE, movie.getOriginalTitle());
-		values.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, movie.getReleaseDate().getTime());
-		values.put(MovieContract.MovieEntry.COLUMN_OVERVIEW, movie.getOverview());
-		values.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, movie.getVoteAverage());
-		values.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH, movie.getPosterPath());
-
-		return values;
-
-	}
-
 	@Override
 	public void create(Movie movie) throws MoviesDataException {
 
-		ContentValues values = getContentValues(movie);
+		ContentValues values = MoviesDbHelper.getContentValues(movie);
 
 		SQLiteDatabase db = null;
 
@@ -101,7 +89,7 @@ public class MoviesRepository implements IMoviesRepository {
 	@Override
 	public void update(Movie movie) {
 
-		ContentValues values = getContentValues(movie);
+		ContentValues values = MoviesDbHelper.getContentValues(movie);
 
 		SQLiteDatabase db = null;
 
@@ -217,7 +205,7 @@ public class MoviesRepository implements IMoviesRepository {
 
 			cursor.moveToFirst();
 
-			return cursorToMovie(cursor);
+			return MoviesDbHelper.cursorToMovie(cursor);
 
 		} catch (SQLiteException e) {
 
@@ -237,27 +225,6 @@ public class MoviesRepository implements IMoviesRepository {
 
 	}
 
-	@Override
-	public Movie cursorToMovie(Cursor cursor) {
-
-		Movie m = new Movie();
-
-		m.setId(cursor.getLong(0));
-		m.setMoviesDbId(cursor.getInt(1));
-		m.setTitle(cursor.getString(2));
-		m.setOriginalTitle(cursor.getString(3));
-		m.setOverview(cursor.getString(4));
-
-		m.setReleaseDate(new Date(cursor.getLong(5))); //TODO
-
-		m.setVoteAverage(cursor.getDouble(6));
-		m.setPosterPath(cursor.getString(7));
-
-		log.trace("Movie from cursor: {}",m);
-
-		return m;
-
-	}
 
 	@Override
 	public Movie getById(int id) {

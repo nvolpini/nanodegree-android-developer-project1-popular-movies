@@ -1,7 +1,5 @@
 package app.popularmovies.data;
 
-import android.database.Cursor;
-
 import java.util.List;
 
 import app.popularmovies.model.Movie;
@@ -44,8 +42,6 @@ public interface IMoviesRepository {
      * @return
      */
     boolean exists(int movieDbId) throws MoviesDataException;
-
-    Movie cursorToMovie(Cursor cursor);
 
     /**
      * Load movie by id

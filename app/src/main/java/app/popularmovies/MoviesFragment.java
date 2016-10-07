@@ -226,7 +226,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         } else if (id == R.id.action_sort_by_popularity) {
 
             searchParams.setSortBy(IMovieSearch.SORT_BY_POPULARITY);
-			//getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
+			getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
 			//downloadMovies();
 
             return true;
@@ -234,7 +234,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         } else if (id == R.id.action_sort_by_rating) {
 
             searchParams.setSortBy(IMovieSearch.SORT_BY_RATING);
-			//getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
+			getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
             //downloadMovies();
 
             return true;

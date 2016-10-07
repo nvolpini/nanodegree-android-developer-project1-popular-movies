@@ -77,26 +77,12 @@ public class MoviesProvider extends ContentProvider {
 				throw new UnsupportedOperationException("Unknown uri: " + uri);
 		}
 	}
-	private static final SQLiteQueryBuilder popularQueryBuilder;
 
-	static{
-		popularQueryBuilder = new SQLiteQueryBuilder();
-
-		//This is an inner join which looks like
-		//top_rated INNER JOIN movies ON movies.id = top_rated.movie_id
-		popularQueryBuilder.setTables(
-				MovieContract.PopularMoviesEntry.TABLE_NAME + " INNER JOIN " +
-						MovieContract.MovieEntry.TABLE_NAME +
-						" ON " + MovieContract.MovieEntry.TABLE_NAME +
-						".." + MovieContract.MovieEntry._ID +
-						" = " + MovieContract.PopularMoviesEntry.TABLE_NAME +
-						"." + MovieContract.PopularMoviesEntry.COLUMN_MOVIE_ID);
-	}
 
 	private Cursor getPopular(
 			Uri uri, String[] projection, String sortOrder) {
 
-		return popularQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+		return MoviesDbHelper.POPULAR_MOVIES_QUERY_BUILDER.query(mOpenHelper.getReadableDatabase(),
 				projection,
 				null,
 				null,
@@ -165,17 +151,7 @@ public class MoviesProvider extends ContentProvider {
 		);
 	}
 
-	private static final String[] DEFAULT_MOVIES_PROJECTION = {
-			MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry._ID
-			,MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry.COLUMN_MOVIESDB_ID
-			,MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry.COLUMN_TITLE
-			,MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE
-			,MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry.COLUMN_OVERVIEW
-			,MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry.COLUMN_RELEASE_DATE
-			,MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE
-			,MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry.COLUMN_POSTER_PATH
 
-	};
 
 	@Nullable
 	@Override
@@ -183,7 +159,7 @@ public class MoviesProvider extends ContentProvider {
 
 		log.trace("querying uri: {}, projection: {}",uri,projection);
 
-		projection = projection != null ? projection : DEFAULT_MOVIES_PROJECTION;
+		projection = projection != null ? projection : MoviesDbHelper.DEFAULT_MOVIES_PROJECTION;
 
 		// Here's the switch statement that, given a URI, will determine what kind of request it is,
 		// and query the database accordingly.
@@ -191,14 +167,16 @@ public class MoviesProvider extends ContentProvider {
 		switch (sUriMatcher.match(uri)) {
 
 			case POPULAR_MOVIES: {
-				retCursor = getPopular(uri,projection,sortOrder);
+				retCursor = getPopular(uri,projection
+						,sortOrder != null ? sortOrder : MovieContract.PopularMoviesEntry.COLUMN_POSITION);
 
 				log.trace("total: {}",retCursor.getCount());
 
 				break;
 			}
 			case TOP_RATED_MOVIES: {
-				retCursor = getTopRated(uri,projection,sortOrder);
+				retCursor = getTopRated(uri,projection
+						,sortOrder != null ? sortOrder : MovieContract.TopRatedMoviesEntry.COLUMN_POSITION);
 				break;
 			}
 			case FAVORITE_MOVIES: {
@@ -241,6 +219,7 @@ public class MoviesProvider extends ContentProvider {
 	}
 
 
+	@Deprecated
 	private void normalizeDate(ContentValues values) {
 		// normalize the date value
 		if (values.containsKey(MovieContract.MovieEntry.COLUMN_RELEASE_DATE)) {
@@ -263,7 +242,7 @@ public class MoviesProvider extends ContentProvider {
 
 		switch (match) {
 			case MOVIE_ID: {
-				normalizeDate(values);
+				//normalizeDate(values);
 				long _id = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, values);
 				if (_id > 0)
 					returnUri = MovieContract.MovieEntry.buildMovieUri(_id);
@@ -272,7 +251,7 @@ public class MoviesProvider extends ContentProvider {
 				break;
 			}
 			case MOVIES: {
-				normalizeDate(values);
+				//normalizeDate(values);
 				long _id = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, values);
 				if (_id > 0)
 					returnUri = MovieContract.MovieEntry.buildMovieUri(_id);
@@ -280,7 +259,33 @@ public class MoviesProvider extends ContentProvider {
 					throw new android.database.SQLException("Failed to insert row into " + uri);
 				break;
 			}
-			//TODO INSERT OTHERS
+
+			case POPULAR_MOVIES: {
+				long _id = db.insert(MovieContract.PopularMoviesEntry.TABLE_NAME, null, values);
+				if (_id > 0)
+					returnUri = MovieContract.PopularMoviesEntry.buildMovieUri(_id);
+				else
+					throw new android.database.SQLException("Failed to insert row into " + uri);
+				break;
+			}
+
+			case TOP_RATED_MOVIES: {
+				long _id = db.insert(MovieContract.TopRatedMoviesEntry.TABLE_NAME, null, values);
+				if (_id > 0)
+					returnUri = MovieContract.TopRatedMoviesEntry.buildMovieUri(_id);
+				else
+					throw new android.database.SQLException("Failed to insert row into " + uri);
+				break;
+			}
+
+			case FAVORITE_MOVIES: {
+				long _id = db.insert(MovieContract.FavoriteMoviesEntry.TABLE_NAME, null, values);
+				if (_id > 0)
+					returnUri = MovieContract.FavoriteMoviesEntry.buildMovieUri(_id);
+				else
+					throw new android.database.SQLException("Failed to insert row into " + uri);
+				break;
+			}
 
 			default:
 				throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -361,14 +366,49 @@ public class MoviesProvider extends ContentProvider {
 	public int bulkInsert(Uri uri, ContentValues[] values) {
 		final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 		final int match = sUriMatcher.match(uri);
+		int returnCount = 0;
 		switch (match) {
-			case POPULAR_MOVIES:
+			case MOVIES:
 				db.beginTransaction();
-				int returnCount = 0;
+
 				try {
 					for (ContentValues value : values) {
-						normalizeDate(value);
+						//normalizeDate(value);
+						long _id = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, value);
+						if (_id != -1) {
+							returnCount++;
+						}
+					}
+					db.setTransactionSuccessful();
+				} finally {
+					db.endTransaction();
+				}
+				getContext().getContentResolver().notifyChange(uri, null);
+				return returnCount;
+			case POPULAR_MOVIES:
+				db.beginTransaction();
+
+				try {
+					for (ContentValues value : values) {
+						//normalizeDate(value);
 						long _id = db.insert(MovieContract.PopularMoviesEntry.TABLE_NAME, null, value);
+						if (_id != -1) {
+							returnCount++;
+						}
+					}
+					db.setTransactionSuccessful();
+				} finally {
+					db.endTransaction();
+				}
+				getContext().getContentResolver().notifyChange(uri, null);
+				return returnCount;
+
+			case TOP_RATED_MOVIES:
+				db.beginTransaction();
+				try {
+					for (ContentValues value : values) {
+						//normalizeDate(value);
+						long _id = db.insert(MovieContract.TopRatedMoviesEntry.TABLE_NAME, null, value);
 						if (_id != -1) {
 							returnCount++;
 						}

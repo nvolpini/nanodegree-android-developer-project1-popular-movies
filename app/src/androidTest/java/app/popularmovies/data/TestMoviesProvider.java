@@ -277,4 +277,46 @@ public class TestMoviesProvider extends AndroidTestCase {
 
 		cursor.close();
 	}
+
+	public void testPopularMoviesList() {
+
+	// insert our test records into the database
+		MoviesDbHelper dbHelper = new MoviesDbHelper(mContext);
+		SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+
+		ContentValues movie1 = TestUtilities.createMovieValues(1);
+		ContentValues movie2 = TestUtilities.createMovieValues(2);
+
+		long movieId = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, movie1);
+		db.insert(MovieContract.PopularMoviesEntry.TABLE_NAME, null,TestUtilities.createPopularMoviesValues(movieId,1));
+
+
+		movieId = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, movie2);
+		db.insert(MovieContract.PopularMoviesEntry.TABLE_NAME, null,TestUtilities.createPopularMoviesValues(movieId,2));
+
+
+
+		// Test the basic content provider query
+		Cursor cursor = mContext.getContentResolver().query(
+				MovieContract.PopularMoviesEntry.CONTENT_URI,
+				null,
+				null,
+				null,
+				null
+		);
+
+
+		assertTrue( "Erro no results", cursor.moveToFirst() );
+
+
+		TestUtilities.validateCurrentRecord("erro",cursor,movie1);
+		cursor.moveToNext();
+		TestUtilities.validateCurrentRecord("erro",cursor,movie2);
+
+		assertFalse("more than 2 returned", cursor.moveToNext());
+
+		cursor.close();
+		dbHelper.close();
+	}
 }

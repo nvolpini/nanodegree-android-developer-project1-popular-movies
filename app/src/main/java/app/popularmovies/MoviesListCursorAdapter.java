@@ -3,21 +3,26 @@ package app.popularmovies;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.popularmovies.MoviesFragment.OnListFragmentInteractionListener;
-import app.popularmovies.data.MoviesRepository;
+import app.popularmovies.data.MoviesDbHelper;
 import app.popularmovies.model.Movie;
 import app.popularmovies.service.MoviesService;
 import app.popularmovies.util.CursorRecyclerViewAdapter;
+
+import static app.popularmovies.R.id.imageView;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Movie} and makes a call to the
@@ -47,7 +52,7 @@ public class MoviesListCursorAdapter extends CursorRecyclerViewAdapter<MoviesLis
 	@Override
 	public void onBindViewHolder(final ViewHolder holder, Cursor cursor) {
 
-        Movie movie = MoviesRepository.get(mContext).cursorToMovie(cursor);
+        Movie movie = MoviesDbHelper.cursorToMovie(cursor);
 
         holder.mItem = movie;
 
@@ -68,13 +73,39 @@ public class MoviesListCursorAdapter extends CursorRecyclerViewAdapter<MoviesLis
 
         } else {
 
-            String imageUrl = MoviesService.get().getMoviePosterUrl(movie);
+            final String imageUrl = MoviesService.get().getMoviePosterUrl(movie);
 
             Picasso.with(holder.mView.getContext())
                     .load(imageUrl)
+					.networkPolicy(NetworkPolicy.OFFLINE)
                     .placeholder(R.drawable.loading_poster_185)
                     .error(R.drawable.no_poster_185)
-                    .into(holder.mImageView);
+                    .into(holder.mImageView, new Callback() {
+						@Override
+						public void onSuccess() {
+
+						}
+
+						@Override
+						public void onError() {
+							//Try again online if cache failed
+							Picasso.with(holder.mView.getContext())
+									.load(imageUrl)
+									.placeholder(R.drawable.loading_poster_185)
+									.error(R.drawable.no_poster_185)
+									.into(holder.mImageView, new Callback() {
+										@Override
+										public void onSuccess() {
+
+										}
+
+										@Override
+										public void onError() {
+											Log.v("Picasso","Could not fetch image");
+										}
+									});
+						}
+					});
         }
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -101,7 +132,7 @@ public class MoviesListCursorAdapter extends CursorRecyclerViewAdapter<MoviesLis
             mView = view;
             //mIdView = (TextView) view.findViewById(R.id.id);
             //mContentView = (TextView) view.findViewById(R.id.content);
-            mImageView = (ImageView) view.findViewById(R.id.imageView);
+            mImageView = (ImageView) view.findViewById(imageView);
         }
 
         @Override

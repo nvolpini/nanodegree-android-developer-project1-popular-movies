@@ -111,6 +111,9 @@ public class MovieContract {
 		// Table name
 		public static final String TABLE_NAME = "popular_movies";
 
+		public static Uri buildMovieUri(long id) {
+			return ContentUris.withAppendedId(CONTENT_URI, id);
+		}
 
 	}
 
@@ -135,7 +138,9 @@ public class MovieContract {
 		// Table name
 		public static final String TABLE_NAME = "top_rated_movies";
 
-
+		public static Uri buildMovieUri(long id) {
+			return ContentUris.withAppendedId(CONTENT_URI, id);
+		}
 	}
 
 	/**
@@ -163,6 +168,9 @@ public class MovieContract {
 
 		public static final String COLUMN_DATE_ADD = "date_add";
 
+		public static Uri buildMovieUri(long id) {
+			return ContentUris.withAppendedId(CONTENT_URI, id);
+		}
 
 	}
 }

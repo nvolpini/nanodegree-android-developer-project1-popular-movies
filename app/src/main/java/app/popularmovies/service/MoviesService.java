@@ -6,10 +6,8 @@ import android.database.Cursor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import app.popularmovies.Utils;
 import app.popularmovies.data.MovieContract;
 import app.popularmovies.data.MoviesDbHelper;
 import app.popularmovies.data.MoviesRepository;
@@ -82,22 +80,6 @@ public class MoviesService {
                 .setSortBy(IMovieSearch.SORT_BY_POPULARITY);
     }
 
-    public List<? extends Movie> getSampleData() {
-
-        ArrayList<Movie> m = new ArrayList<>();
-
-        m.add(new Movie(1,"Movie 1", "Movie 1 ot", "Movie, movie, movie, movie movie text long text movie text long movie text again", Utils.toDate("2016-01-05"),8));
-        m.add(new Movie(2,"Movie 2 long title for this movie"
-                , "Movie 2 ot", "Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text againMovie 2 ot\", \"Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text againMovie 2 ot\", \"Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text againMovie 2 ot\", \"Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text againMovie 2 ot\", \"Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text again Movie 2 ot\", \"Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text againMovie 2 ot\", \"Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text againMovie 2 ot\", \"Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text againMovie 2 ot\", \"Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text againMovie 2 ot\", \"Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text again Movie 2 ot\", \"Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text againMovie 2 ot\", \"Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text againMovie 2 ot\", \"Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text againMovie 2 ot\", \"Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text againMovie 2 ot\", \"Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text again, Movie, movie, movie, movie movie text long text movie text long movie text again"
-                , Utils.toDate("2016-01-05"),8));
-        m.add(new Movie(3,"Movie 3", "Movie 3 ot", "Movie, movie, movie, movie movie text long text movie text long movie text again", Utils.toDate("2016-01-05"),8));
-        m.add(new Movie(4,"Movie 4", "Movie 4 ot", "Movie, movie, movie, movie movie text long text movie text long movie text again", Utils.toDate("2016-01-05"),8));
-
-        return m;
-
-
-    }
-
 	/**
 	 * Fetch and save locally
 	 * @param searchParams
@@ -153,7 +135,7 @@ public class MoviesService {
 		c.moveToFirst();
 		do {
 
-			log.debug("movie: {}",repo.cursorToMovie(c));
+			log.debug("movie: {}", MoviesDbHelper.cursorToMovie(c));
 
 		} while( c.moveToNext() );
 

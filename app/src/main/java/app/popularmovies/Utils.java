@@ -72,7 +72,7 @@ public class Utils {
 		boolean state = activeNetwork != null &&
 				activeNetwork.isConnectedOrConnecting();
 
-		boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
+		boolean isWiFi = activeNetwork != null && activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
 
 		log.debug("testing via ConnectivityManager returned: {}, isWifi: {}", state, isWiFi);
 

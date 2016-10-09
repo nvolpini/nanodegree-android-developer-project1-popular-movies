@@ -14,6 +14,8 @@ public class SearchParams implements Parcelable {
 
     private String sortBy;
 
+    private int moviesToDownload;
+
     public SearchParams() {
 
 
@@ -21,6 +23,7 @@ public class SearchParams implements Parcelable {
     private SearchParams(Parcel in){
         language = in.readString();
         sortBy = in.readString();
+        moviesToDownload = in.readInt();
     }
 
     public boolean isSortByPopularity() {
@@ -50,11 +53,20 @@ public class SearchParams implements Parcelable {
         return this;
     }
 
+    public int getMoviesToDownload() {
+        return moviesToDownload;
+    }
+
+    public void setMoviesToDownload(int moviesToDownload) {
+        this.moviesToDownload = moviesToDownload;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("SearchParams{");
         sb.append("language='").append(language).append('\'');
         sb.append(", sortBy='").append(sortBy).append('\'');
+        sb.append(", moviesToDownload='").append(moviesToDownload).append('\'');
         sb.append('}');
         return sb.toString();
     }
@@ -68,6 +80,7 @@ public class SearchParams implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(language);
         dest.writeString(sortBy);
+        dest.writeInt(moviesToDownload);
     }
 
 

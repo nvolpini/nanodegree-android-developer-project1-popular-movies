@@ -106,7 +106,9 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 				PopularMoviesEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
 				PopularMoviesEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL " +
 				" REFERENCES "+MovieEntry.TABLE_NAME+" (" +MovieEntry._ID+"), " +
-				PopularMoviesEntry.COLUMN_POSITION + " INTEGER NOT NULL " +
+				PopularMoviesEntry.COLUMN_POSITION + " INTEGER NOT NULL, " +
+				" UNIQUE (" + PopularMoviesEntry.COLUMN_MOVIE_ID + ") " +
+				" ON CONFLICT REPLACE" +
                 " );";
 
 
@@ -116,6 +118,8 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 				TopRatedMoviesEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL " +
 				" REFERENCES "+MovieEntry.TABLE_NAME+" (" +MovieEntry._ID+"), " +
 				TopRatedMoviesEntry.COLUMN_POSITION + " INTEGER NOT NULL " +
+				" UNIQUE (" + TopRatedMoviesEntry.COLUMN_MOVIE_ID + ") " +
+				" ON CONFLICT REPLACE" +
 				" );";
 
 
@@ -161,4 +165,6 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 		return values;
 
 	}
+
+
 }

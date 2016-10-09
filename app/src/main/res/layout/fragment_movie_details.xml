@@ -76,6 +76,23 @@
 						android:layout_height="wrap_content"
 						android:text='@{String.format("%1$.1f/10", movie.voteAverage)}'/>
 
+					<ToggleButton
+						android:text="ToggleButton"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:id="@+id/setFavorite"
+						android:checked="false"
+						/>
+
+					<RatingBar
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:id="@+id/movieNote"
+						android:numStars="5"
+						android:rating="4"
+						style="@style/Widget.AppCompat.RatingBar.Small"
+						android:stepSize="1"/>
+
 
 				</LinearLayout>
 

@@ -56,8 +56,10 @@ public class Movie implements Parcelable {
     @JsonProperty("poster_path")
     private String posterPath;
 
+	@JsonIgnore
+	private FavoriteInformation favorite;
 
-    public Movie() {
+	public Movie() {
     }
 
     private Movie(Parcel in){
@@ -69,6 +71,7 @@ public class Movie implements Parcelable {
 		releaseDate = new Date(in.readLong());
         voteAverage = in.readDouble();
         posterPath = in.readString();
+		favorite = in.readParcelable(null);
     }
 
     public Movie(int moviesDbId, String title, String originalTitle, String overview, Date releaseDate, double voteAverage) {
@@ -175,6 +178,18 @@ public class Movie implements Parcelable {
 		this.releaseDate = releaseDate;
 	}
 
+	public FavoriteInformation getFavorite() {
+		return favorite;
+	}
+
+	public void setFavorite(FavoriteInformation favorite) {
+		this.favorite = favorite;
+	}
+
+	public boolean isFavorite() {
+		return favorite != null;
+	}
+
 	public String toString() {
 		final StringBuilder sb = new StringBuilder("Movie{");
 		sb.append("id=").append(id);
@@ -190,15 +205,6 @@ public class Movie implements Parcelable {
 		return sb.toString();
 	}
 
-	//@Override
-	public String toStringx() {
-		final StringBuilder sb = new StringBuilder("Movie{");
-		sb.append("id=").append(id);
-		sb.append(", moviesDbId=").append(moviesDbId);
-		sb.append(", originalTitle='").append(originalTitle).append('\'');
-		sb.append('}');
-		return sb.toString();
-	}
 
 	@Override
     public int describeContents() {
@@ -216,6 +222,7 @@ public class Movie implements Parcelable {
 		dest.writeLong(releaseDate.getTime());
         dest.writeDouble(voteAverage);
         dest.writeString(posterPath);
+		dest.writeParcelable(favorite,0);
 
     }
 

@@ -130,10 +130,10 @@ public class MovieContract {
 						.build();
 
 		public static final String CONTENT_TYPE =
-				ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_POPULAR;
+				ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_TOP_RATED;
 
 		public static final String CONTENT_ITEM_TYPE =
-				ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_POPULAR;
+				ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_TOP_RATED;
 
 		// Table name
 		public static final String TABLE_NAME = "top_rated_movies";
@@ -156,10 +156,10 @@ public class MovieContract {
 						.build();
 
 		public static final String CONTENT_TYPE =
-				ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_POPULAR;
+				ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAVORITES;
 
 		public static final String CONTENT_ITEM_TYPE =
-				ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_POPULAR;
+				ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAVORITES;
 
 		// Table name
 		public static final String TABLE_NAME = "favorite_movies";

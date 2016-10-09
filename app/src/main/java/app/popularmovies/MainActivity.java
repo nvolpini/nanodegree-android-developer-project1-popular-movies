@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
 
             searchParams.setLanguage(Utils.getPreferredLanguage(this));
             searchParams.setSortBy(Utils.getDefaultSorting(this));
+			searchParams.setMoviesToDownload(Utils.getMoviesToDownload(this));
 
             log.trace("params from prefs: {} ",searchParams);
 

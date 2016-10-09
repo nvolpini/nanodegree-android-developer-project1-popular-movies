@@ -1,5 +1,6 @@
 package app.popularmovies.service;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -42,14 +43,16 @@ public class RetrofitSearchImpl extends AbstractSearchImpl {
 
 		HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
 
-		if (BuildConfig.DEBUG) {
-			logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
-		} else {
-			logging.setLevel(HttpLoggingInterceptor.Level.NONE);
-		}
 
 		OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 		// add your other interceptors …
+
+		if (BuildConfig.DEBUG) {
+			logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
+			httpClient.addNetworkInterceptor(new StethoInterceptor()); //TODO
+		} else {
+			logging.setLevel(HttpLoggingInterceptor.Level.NONE);
+		}
 
 		// add logging as last interceptor
 		httpClient.addInterceptor(logging);
@@ -78,6 +81,10 @@ public class RetrofitSearchImpl extends AbstractSearchImpl {
 
 		log.debug("Fetching movies. Lang: {}, sort by: {} ", params.getLanguage()
 				, params.getSortBy());
+
+		//TODO call N times according to the movies_to_download pref
+
+		int pagesToDownload = params.getMoviesToDownload()/20;
 
 
 		Call<MoviesResult> resultCall = null;
@@ -113,6 +120,8 @@ public class RetrofitSearchImpl extends AbstractSearchImpl {
 	}
 
 	public interface MoviesDBService {
+
+		//TODO page number param
 
 		@GET("movie/popular")
 		Call<MoviesResult> popularMovies(@Query("api_key") String apiKey, @Query("language") String language);

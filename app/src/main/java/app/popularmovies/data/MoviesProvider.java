@@ -387,7 +387,8 @@ public class MoviesProvider extends ContentProvider {
 				return returnCount;
 			case POPULAR_MOVIES:
 				db.beginTransaction();
-
+				//clear first TODO tratar limpeza antes do download... no insert também
+				db.delete(MovieContract.PopularMoviesEntry.TABLE_NAME,"1",null);
 				try {
 					for (ContentValues value : values) {
 						//normalizeDate(value);
@@ -405,6 +406,7 @@ public class MoviesProvider extends ContentProvider {
 
 			case TOP_RATED_MOVIES:
 				db.beginTransaction();
+				db.delete(MovieContract.TopRatedMoviesEntry.TABLE_NAME,"1",null);
 				try {
 					for (ContentValues value : values) {
 						//normalizeDate(value);

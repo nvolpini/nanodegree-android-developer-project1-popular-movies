@@ -22,6 +22,7 @@ android {
         }
         debug {
             debuggable true
+            applicationIdSuffix ".debug"
         }
     }
     buildTypes.each {
@@ -65,6 +66,12 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
+
+    //debug
+    //TODO ver build variants - deve ser apenas para debug
+
+    debugCompile 'com.facebook.stetho:stetho:1.4.1'
+    debugCompile 'com.facebook.stetho:stetho-okhttp3:1.4.1'
 
     //already included on both deps bellow
     //compile 'com.fasterxml.jackson.core:jackson-databind:2.7.2'

@@ -58,6 +58,11 @@ public class Utils {
 		return prefs.getBoolean(context.getString(R.string.pref_key_wifi_only), false);
 	}
 
+	public static int getMoviesToDownload(Context context) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		return prefs.getInt(context.getString(R.string.pref_key_movies_to_download),20);
+	}
+
 	public static boolean isOnline(Context context) {
 
 		log.debug("checking if we have internet access.");

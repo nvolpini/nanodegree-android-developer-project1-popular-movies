@@ -117,7 +117,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 				TopRatedMoviesEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
 				TopRatedMoviesEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL " +
 				" REFERENCES "+MovieEntry.TABLE_NAME+" (" +MovieEntry._ID+"), " +
-				TopRatedMoviesEntry.COLUMN_POSITION + " INTEGER NOT NULL " +
+				TopRatedMoviesEntry.COLUMN_POSITION + " INTEGER NOT NULL, " +
 				" UNIQUE (" + TopRatedMoviesEntry.COLUMN_MOVIE_ID + ") " +
 				" ON CONFLICT REPLACE" +
 				" );";

@@ -3,9 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file:///data/neimar/devel/projects/android/nanodegree-android-developer/project1-popular-movies-app/app/app.iml" filepath="/data/neimar/devel/projects/android/nanodegree-android-developer/project1-popular-movies-app/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../../../../../neimar/devel/projects/android/nanodegree-android-developer/project1-popular-movies-app/app/app.iml" filepath="$PROJECT_DIR$/../../../../../neimar/devel/projects/android/nanodegree-android-developer/project1-popular-movies-app/app/app.iml" />
       <module fileurl="file:///data/neimar/devel/projects/android/nanodegree-android-developer/project1-popular-movies-app/project1-popular-movies-app.iml" filepath="/data/neimar/devel/projects/android/nanodegree-android-developer/project1-popular-movies-app/project1-popular-movies-app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../../../../../neimar/devel/projects/android/nanodegree-android-developer/project1-popular-movies-app/project1-popular-movies-app.iml" filepath="$PROJECT_DIR$/../../../../../neimar/devel/projects/android/nanodegree-android-developer/project1-popular-movies-app/project1-popular-movies-app.iml" />
     </modules>
   </component>
 </project>

@@ -30,6 +30,12 @@ public abstract class AbstractSearchImpl implements IMovieSearch {
 	}
 
 	@Override
+	public IMovieSearch sortByFavorites() {
+		this.sortBy(SORT_BY_FAVORITES);
+		return this;
+	}
+
+	@Override
 	public IMovieSearch sortBy(String sortBy) {
 		this.params.setSortBy(sortBy);
 		return this;

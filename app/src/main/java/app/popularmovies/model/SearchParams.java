@@ -35,6 +35,10 @@ public class SearchParams implements Parcelable {
         return IMovieSearch.SORT_BY_RATING.equals(sortBy);
     }
 
+    public boolean isSortByFavorites() {
+        return IMovieSearch.SORT_BY_FAVORITES.equals(sortBy);
+    }
+
     public String getSortBy() {
         return sortBy;
     }

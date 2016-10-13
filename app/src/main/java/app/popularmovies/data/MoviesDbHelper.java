@@ -17,6 +17,7 @@ import app.popularmovies.data.MovieContract.FavoriteMoviesEntry;
 import app.popularmovies.data.MovieContract.MovieEntry;
 import app.popularmovies.data.MovieContract.PopularMoviesEntry;
 import app.popularmovies.data.MovieContract.TopRatedMoviesEntry;
+import app.popularmovies.model.FavoriteInformation;
 import app.popularmovies.model.Movie;
 
 /**
@@ -46,6 +47,11 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 			,MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE
 			,MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry.COLUMN_POSTER_PATH
 
+			, FavoriteMoviesEntry.TABLE_NAME+"."+ FavoriteMoviesEntry._ID
+			, FavoriteMoviesEntry.TABLE_NAME+"."+ FavoriteMoviesEntry.COLUMN_POSITION
+			, FavoriteMoviesEntry.TABLE_NAME+"."+ FavoriteMoviesEntry.COLUMN_DATE_ADD
+			, FavoriteMoviesEntry.TABLE_NAME+"."+ FavoriteMoviesEntry.COLUMN_VOTES
+
 	};
 
 	public static final SQLiteQueryBuilder POPULAR_MOVIES_QUERY_BUILDER;
@@ -61,8 +67,56 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 						" ON " + MovieContract.MovieEntry.TABLE_NAME +
 						"." + MovieContract.MovieEntry._ID +
 						" = " + MovieContract.PopularMoviesEntry.TABLE_NAME +
-						"." + MovieContract.PopularMoviesEntry.COLUMN_MOVIE_ID);
+						"." + MovieContract.PopularMoviesEntry.COLUMN_MOVIE_ID +
+						" LEFT JOIN "+FavoriteMoviesEntry.TABLE_NAME +
+						" ON "+FavoriteMoviesEntry.TABLE_NAME+
+						"."+FavoriteMoviesEntry.COLUMN_MOVIE_ID +
+						" = "+MovieEntry.TABLE_NAME+
+						"."+MovieEntry._ID
+					);
 	}
+
+	public static final SQLiteQueryBuilder TOP_RATED_QUERY_BUILDER;
+
+	static{
+		TOP_RATED_QUERY_BUILDER = new SQLiteQueryBuilder();
+
+		//This is an inner join which looks like
+		//top_rated INNER JOIN movies ON movies.id = top_rated.movie_id
+		TOP_RATED_QUERY_BUILDER.setTables(
+				MovieContract.TopRatedMoviesEntry.TABLE_NAME + " INNER JOIN " +
+						MovieContract.MovieEntry.TABLE_NAME +
+						" ON " + MovieContract.MovieEntry.TABLE_NAME +
+						"." + MovieContract.MovieEntry._ID +
+						" = " + MovieContract.TopRatedMoviesEntry.TABLE_NAME +
+						"." + MovieContract.TopRatedMoviesEntry.COLUMN_MOVIE_ID+
+						" LEFT JOIN "+FavoriteMoviesEntry.TABLE_NAME +
+						" ON "+FavoriteMoviesEntry.TABLE_NAME+
+						"."+FavoriteMoviesEntry.COLUMN_MOVIE_ID +
+						" = "+MovieEntry.TABLE_NAME+
+						"."+MovieEntry._ID
+					);
+	}
+
+
+	public static final SQLiteQueryBuilder FAVORITES_QUERY_BUILDER;
+
+	static{
+		FAVORITES_QUERY_BUILDER = new SQLiteQueryBuilder();
+
+		//This is an inner join which looks like
+		//top_rated INNER JOIN movies ON movies.id = top_rated.movie_id
+		FAVORITES_QUERY_BUILDER.setTables(
+				MovieContract.FavoriteMoviesEntry.TABLE_NAME + " INNER JOIN " +
+						MovieContract.MovieEntry.TABLE_NAME +
+						" ON " + MovieContract.MovieEntry.TABLE_NAME +
+						"." + MovieContract.MovieEntry._ID +
+						" = " + MovieContract.FavoriteMoviesEntry.TABLE_NAME +
+						"." + MovieContract.FavoriteMoviesEntry.COLUMN_MOVIE_ID
+
+					);
+	}
+
 
 	public static Movie cursorToMovie(Cursor cursor) {
 
@@ -78,6 +132,16 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 
 		m.setVoteAverage(cursor.getDouble(6));
 		m.setPosterPath(cursor.getString(7));
+
+		FavoriteInformation f = new FavoriteInformation();
+
+		int fidi = cursor.getColumnIndex(FavoriteMoviesEntry._ID);
+		if (fidi >= 0) {
+			f.setId(cursor.getLong(fidi));
+
+			m.setFavorite(f);
+
+		}
 
 		//log.trace("Movie from cursor: {}",m);
 

@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ToggleButton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +47,7 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
 			binding.setMovie(movie);
 		}
 
+		rootView.findViewById(R.id.action_set_favorite).setOnClickListener(this);
 
         return rootView;
     }
@@ -58,15 +60,18 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
 		return null;
 	}
 
-	public FavoriteInformation setFavorite(Movie movie) {
+	public FavoriteInformation setFavorite(Movie movie, boolean activated) {
 
 		FavoriteInformation f = new FavoriteInformation();
 
 		// First, check if the movie already exists
 		Cursor cursor = getActivity().getContentResolver().query(
 				MovieContract.FavoriteMoviesEntry.CONTENT_URI,
-				new String[]{MovieContract.FavoriteMoviesEntry._ID},
-				MovieContract.FavoriteMoviesEntry.COLUMN_MOVIE_ID + " = ?",
+				new String[]{
+						MovieContract.FavoriteMoviesEntry.TABLE_NAME+ "."+
+						MovieContract.FavoriteMoviesEntry._ID},
+						MovieContract.FavoriteMoviesEntry.TABLE_NAME+ "."+
+						MovieContract.FavoriteMoviesEntry.COLUMN_MOVIE_ID + " = ?",
 				new String[]{Long.toString(movie.getId())},
 				null);
 
@@ -74,6 +79,15 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
 			int movieIdIndex = cursor.getColumnIndex(MovieContract.FavoriteMoviesEntry._ID);
 			f.setId(cursor.getLong(movieIdIndex));
 			log.trace("movie already is a favorite: {}",movie);
+
+			if (!activated) {
+				log.debug("removing favorite: {}", movieIdIndex);
+
+				getActivity().getContentResolver().delete(MovieContract.FavoriteMoviesEntry.CONTENT_URI
+						,MovieContract.FavoriteMoviesEntry.TABLE_NAME+ "."+
+								MovieContract.FavoriteMoviesEntry._ID+"=?",new String[]{Long.toString(f.getId())});
+
+			}
 
 		} else {
 
@@ -105,8 +119,10 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
 
 	@Override
 	public void onClick(View v) {
-		if (v.getId()==R.id.setFavorite) {
-			setFavorite(getMovie());
+		if (v.getId()==R.id.action_set_favorite) {
+			ToggleButton b = (ToggleButton) v.findViewById(R.id.action_set_favorite);
+
+			setFavorite(getMovie(), b.isActivated());
 		}
 	}
 }

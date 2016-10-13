@@ -6,7 +6,6 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
@@ -92,26 +91,10 @@ public class MoviesProvider extends ContentProvider {
 		);
 	}
 
-	private static final SQLiteQueryBuilder topRatedQueryBuilder;
-
-	static{
-		topRatedQueryBuilder = new SQLiteQueryBuilder();
-
-		//This is an inner join which looks like
-		//top_rated INNER JOIN movies ON movies.id = top_rated.movie_id
-		topRatedQueryBuilder.setTables(
-				MovieContract.TopRatedMoviesEntry.TABLE_NAME + " INNER JOIN " +
-						MovieContract.MovieEntry.TABLE_NAME +
-						" ON " + MovieContract.MovieEntry.TABLE_NAME +
-						"." + MovieContract.MovieEntry._ID +
-						" = " + MovieContract.TopRatedMoviesEntry.TABLE_NAME +
-						"." + MovieContract.TopRatedMoviesEntry.COLUMN_MOVIE_ID);
-	}
-
 	private Cursor getTopRated(
 			Uri uri, String[] projection, String sortOrder) {
 
-		return topRatedQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+		return MoviesDbHelper.TOP_RATED_QUERY_BUILDER.query(mOpenHelper.getReadableDatabase(),
 				projection,
 				null,
 				null,
@@ -122,26 +105,10 @@ public class MoviesProvider extends ContentProvider {
 	}
 
 
-	private static final SQLiteQueryBuilder favoritesQueryBuilder;
-
-	static{
-		favoritesQueryBuilder = new SQLiteQueryBuilder();
-
-		//This is an inner join which looks like
-		//top_rated INNER JOIN movies ON movies.id = top_rated.movie_id
-		favoritesQueryBuilder.setTables(
-				MovieContract.FavoriteMoviesEntry.TABLE_NAME + " INNER JOIN " +
-						MovieContract.MovieEntry.TABLE_NAME +
-						" ON " + MovieContract.MovieEntry.TABLE_NAME +
-						"." + MovieContract.MovieEntry._ID +
-						" = " + MovieContract.FavoriteMoviesEntry.TABLE_NAME +
-						"." + MovieContract.FavoriteMoviesEntry.COLUMN_MOVIE_ID);
-	}
-
 	private Cursor getFavorites(
 			Uri uri, String[] projection, String sortOrder) {
 
-		return favoritesQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+		return MoviesDbHelper.FAVORITES_QUERY_BUILDER.query(mOpenHelper.getReadableDatabase(),
 				projection,
 				null,
 				null,
@@ -168,7 +135,7 @@ public class MoviesProvider extends ContentProvider {
 
 			case POPULAR_MOVIES: {
 				retCursor = getPopular(uri,projection
-						,sortOrder != null ? sortOrder : MovieContract.PopularMoviesEntry.COLUMN_POSITION);
+						,sortOrder != null ? sortOrder : MovieContract.PopularMoviesEntry.TABLE_NAME+"."+MovieContract.PopularMoviesEntry.COLUMN_POSITION);
 
 				log.trace("total: {}",retCursor.getCount());
 
@@ -176,11 +143,12 @@ public class MoviesProvider extends ContentProvider {
 			}
 			case TOP_RATED_MOVIES: {
 				retCursor = getTopRated(uri,projection
-						,sortOrder != null ? sortOrder : MovieContract.TopRatedMoviesEntry.COLUMN_POSITION);
+						,sortOrder != null ? sortOrder : MovieContract.TopRatedMoviesEntry.TABLE_NAME+"."+MovieContract.TopRatedMoviesEntry.COLUMN_POSITION);
 				break;
 			}
 			case FAVORITE_MOVIES: {
-				retCursor = getFavorites(uri,projection,sortOrder);
+				retCursor = getFavorites(uri,projection
+						,sortOrder != null ? sortOrder : MovieContract.FavoriteMoviesEntry.TABLE_NAME+"."+MovieContract.FavoriteMoviesEntry.COLUMN_POSITION);
 				break;
 			}
 			case MOVIE_ID:

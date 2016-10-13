@@ -60,7 +60,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
 	private static final String SELECTED_KEY = "selected_position";
 
-	private static final int FORECAST_LOADER = 0;
+	private static final int MOVIES_LOADER = 0;
 
     /**
      * Will receive notifications when a movie is clicked.
@@ -188,14 +188,14 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-		getLoaderManager().initLoader(FORECAST_LOADER, null, this);
+		getLoaderManager().initLoader(MOVIES_LOADER, null, this);
 		super.onActivityCreated(savedInstanceState);
 	}
 
 	// since we read the location when we create the loader, all we need to do is restart things
 	void onLocationChanged( ) {
 		//updateWeather();
-		getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
+		getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
 	}
 
     @Override
@@ -226,7 +226,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         } else if (id == R.id.action_sort_by_popularity) {
 
             searchParams.setSortBy(IMovieSearch.SORT_BY_POPULARITY);
-			getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
+			getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
 			//downloadMovies();
 
             return true;
@@ -234,12 +234,21 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         } else if (id == R.id.action_sort_by_rating) {
 
             searchParams.setSortBy(IMovieSearch.SORT_BY_RATING);
-			getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
+			getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
             //downloadMovies();
 
             return true;
 
-        } else if (id == R.id.action_clear) { //DEBUG purposes
+		} else if (id == R.id.action_favorites) {
+
+			searchParams.setSortBy(IMovieSearch.SORT_BY_FAVORITES);
+			getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
+			//downloadMovies();
+
+			return true;
+
+
+		} else if (id == R.id.action_clear) { //DEBUG purposes
 
             //moviesList.clear();
             //moviesListAdapter.downloadMovies(moviesList);
@@ -275,6 +284,9 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
 		if (searchParams.isSortByRating()) {
 			uri = MovieContract.TopRatedMoviesEntry.CONTENT_URI;
+
+		} else if (searchParams.isSortByFavorites()) {
+			uri = MovieContract.FavoriteMoviesEntry.CONTENT_URI;
 		}
 
 		log.trace("onCreateLoader, uri: {}",uri);

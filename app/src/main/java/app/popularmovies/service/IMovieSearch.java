@@ -12,6 +12,7 @@ public interface IMovieSearch {
 	String SORT_BY_POPULARITY = "popularity.desc";
 	String SORT_BY_RATING = "vote_average.desc";
 	String DEFAULT_LANGUAGE = "en";
+	String SORT_BY_FAVORITES = "favorites";
 
 	IMovieSearch sortByPopularity();
 
@@ -19,7 +20,9 @@ public interface IMovieSearch {
 
     IMovieSearch sortBy(String sortBy);
 
-    IMovieSearch withLanguage(String language);
+	IMovieSearch sortByFavorites();
+
+	IMovieSearch withLanguage(String language);
 
 	/**
 	 *

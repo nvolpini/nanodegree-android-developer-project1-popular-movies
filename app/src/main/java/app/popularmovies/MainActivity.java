@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
         log.trace("onCreate");
 
         //reset all prefs
-        //PreferenceManager.getDefaultSharedPreferences(this).edit().clear().apply();
+        PreferenceManager.getDefaultSharedPreferences(this).edit().clear().apply();
 
 		//initialize prefs
         PreferenceManager.setDefaultValues(this,R.xml.pref_general,false);
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
 
         log.trace("saving state...");
 
-        outState.putParcelable(MoviesFragmentOLD.SEARCH_PARAMS_PARCELABLE_KEY, searchParams);
+        outState.putParcelable(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY, searchParams);
 
         super.onSaveInstanceState(outState);
 

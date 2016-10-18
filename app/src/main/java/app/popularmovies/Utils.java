@@ -39,6 +39,7 @@ public class Utils {
 		if (!getPreferredLanguage(context).equals(params.getLanguage())) {
 			params.setLanguage(getPreferredLanguage(context));
 			Utils.setMoviesLanguageChanged(context,true);
+			log.trace("language changed to: {}",params.getLanguage());
 		}
 
 		if (getMoviesToDownload(context) != params.getMoviesToDownload()) {
@@ -76,7 +77,10 @@ public class Utils {
 
 	public static void setMoviesLanguageChanged(Context context, boolean changed) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		prefs.edit().putBoolean(context.getString(R.string.pref_key_movies_language_changed), changed);
+		prefs.edit().putBoolean(context.getString(R.string.pref_key_movies_language_changed), changed)
+			.commit();
+
+
 	}
 
 

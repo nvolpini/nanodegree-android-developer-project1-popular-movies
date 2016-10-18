@@ -12,6 +12,8 @@
 	android:scaleType="centerCrop"
 	android:contentDescription="Movie poster"
 	android:src="@drawable/no_poster_185"
+	android:padding="5dp"
+
 	tools:ignore="HardcodedText"
-	android:background="@drawable/touch_selector"/>
+	/>
 

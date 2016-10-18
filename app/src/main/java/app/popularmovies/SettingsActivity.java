@@ -192,6 +192,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // guidelines.
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_movies_language)));
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_default_sorting)));
+            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_movies_to_download)));
 
         }
 

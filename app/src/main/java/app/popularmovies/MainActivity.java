@@ -14,7 +14,7 @@ import app.popularmovies.model.Movie;
 import app.popularmovies.model.SearchParams;
 import app.popularmovies.service.MoviesService;
 
-import static app.popularmovies.Utils.changeLanguageAccordingToPrefs;
+import static app.popularmovies.Utils.changeParamsFromPrefs;
 
 public class MainActivity extends AppCompatActivity implements MoviesFragment.OnListFragmentInteractionListener {
 
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
         log.trace("onCreate");
 
         //reset all prefs
-        PreferenceManager.getDefaultSharedPreferences(this).edit().clear().apply();
+        //PreferenceManager.getDefaultSharedPreferences(this).edit().clear().apply();
 
 		//initialize prefs
         PreferenceManager.setDefaultValues(this,R.xml.pref_general,false);
@@ -123,7 +123,8 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
 
 		//check if the user changed the preferred language in the preferences
 		//next time he hits refresh it will use the new language
-		changeLanguageAccordingToPrefs(this,searchParams);
+		//same for other prefs
+		changeParamsFromPrefs(this,searchParams);
 
 
 
@@ -191,7 +192,10 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
-        }
+        } else if (id == R.id.action_main2) {
+			startActivity(new Intent(this, Main2Activity.class));
+			return true;
+		}
 
         return super.onOptionsItemSelected(item);
 

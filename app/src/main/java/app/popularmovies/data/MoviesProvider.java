@@ -106,12 +106,12 @@ public class MoviesProvider extends ContentProvider {
 
 
 	private Cursor getFavorites(
-			Uri uri, String[] projection, String sortOrder) {
+			Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
 		return MoviesDbHelper.FAVORITES_QUERY_BUILDER.query(mOpenHelper.getReadableDatabase(),
 				projection,
-				null,
-				null,
+				selection,
+				selectionArgs,
 				null,
 				null,
 				sortOrder == null ? sortOrder = MovieContract.FavoriteMoviesEntry.TABLE_NAME+"."+MovieContract.FavoriteMoviesEntry.COLUMN_POSITION : sortOrder
@@ -124,7 +124,7 @@ public class MoviesProvider extends ContentProvider {
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
-		log.trace("querying uri: {}, projection: {}",uri,projection);
+		log.trace("querying uri: {}, projection: {}, selection: {}, args: {}",uri,projection,selection,selectionArgs);
 
 		projection = projection != null ? projection : MoviesDbHelper.DEFAULT_MOVIES_PROJECTION;
 
@@ -147,7 +147,7 @@ public class MoviesProvider extends ContentProvider {
 				break;
 			}
 			case FAVORITE_MOVIES: {
-				retCursor = getFavorites(uri,projection
+				retCursor = getFavorites(uri,projection,selection,selectionArgs
 						,sortOrder != null ? sortOrder : MovieContract.FavoriteMoviesEntry.TABLE_NAME+"."+MovieContract.FavoriteMoviesEntry.COLUMN_POSITION);
 				break;
 			}
@@ -312,12 +312,12 @@ public class MoviesProvider extends ContentProvider {
 
 		switch (match) {
 			case MOVIE_ID:
-				normalizeDate(values);
+				//normalizeDate(values);
 				rowsUpdated = db.update(MovieContract.MovieEntry.TABLE_NAME, values, selection,
 						selectionArgs);
 				break;
 			case MOVIES:
-				normalizeDate(values);
+				//normalizeDate(values);
 				rowsUpdated = db.update(MovieContract.MovieEntry.TABLE_NAME, values, selection,
 						selectionArgs);
 				break;

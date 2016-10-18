@@ -1,11 +1,13 @@
 package app.popularmovies.data;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.net.Uri;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +49,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 			,MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE
 			,MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry.COLUMN_POSTER_PATH
 
-			, FavoriteMoviesEntry.TABLE_NAME+"."+ FavoriteMoviesEntry._ID
+			, FavoriteMoviesEntry.TABLE_NAME+"."+ FavoriteMoviesEntry._ID+" as fav_id "
 			, FavoriteMoviesEntry.TABLE_NAME+"."+ FavoriteMoviesEntry.COLUMN_POSITION
 			, FavoriteMoviesEntry.TABLE_NAME+"."+ FavoriteMoviesEntry.COLUMN_DATE_ADD
 			, FavoriteMoviesEntry.TABLE_NAME+"."+ FavoriteMoviesEntry.COLUMN_VOTES
@@ -96,6 +98,8 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 						" = "+MovieEntry.TABLE_NAME+
 						"."+MovieEntry._ID
 					);
+
+
 	}
 
 
@@ -135,11 +139,20 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 
 		FavoriteInformation f = new FavoriteInformation();
 
-		int fidi = cursor.getColumnIndex(FavoriteMoviesEntry._ID);
-		if (fidi >= 0) {
-			f.setId(cursor.getLong(fidi));
+		int fidi = cursor.getColumnIndex("fav_id");
 
-			m.setFavorite(f);
+		//log.trace("favorite id col index: {}",fidi);
+
+		if (fidi >= 0 && !cursor.isNull(fidi)) {
+
+			f.setId(cursor.getLong(fidi));
+			f.setPosition(cursor.getInt(9));
+			f.setDateAdded(new Date(cursor.getLong(10)));
+			f.setVotes(cursor.getInt(11));
+
+			//log.trace("Movie is a favorite, fid: {}, movieId: {}",f.getId(), m.getId());
+
+			m.setFavoriteInformation(f);
 
 		}
 
@@ -230,5 +243,58 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 
 	}
 
+
+	public static long addMovie(Context mContext, Movie movie, boolean moviesLanguageChanged) {
+
+		long movieId;
+
+		// First, check if the movie already exists
+		Cursor cursor = mContext.getContentResolver().query(
+				MovieContract.MovieEntry.CONTENT_URI,
+				new String[]{MovieContract.MovieEntry._ID},
+				MovieContract.MovieEntry.COLUMN_MOVIESDB_ID + " = ?",
+				new String[]{Integer.toString(movie.getMoviesDbId())},
+				null);
+
+		if (cursor.moveToFirst()) {
+			int movieIdIndex = cursor.getColumnIndex(MovieContract.MovieEntry._ID);
+			movieId = cursor.getLong(movieIdIndex);
+			movie.setId(movieId);
+
+			if(moviesLanguageChanged) {
+
+				log.debug("updating movie data due to language change");
+
+				ContentValues movieValues = new ContentValues();
+
+				movieValues.put(MovieContract.MovieEntry.COLUMN_TITLE, movie.getTitle());
+				movieValues.put(MovieContract.MovieEntry.COLUMN_OVERVIEW, movie.getOverview());
+				movieValues.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH, movie.getPosterPath());
+
+				int updatedRows = mContext.getContentResolver().update(MovieContract.MovieEntry.CONTENT_URI, movieValues
+						, MovieContract.MovieEntry._ID+"=?", new String[]{Long.toString(movie.getId())});
+
+			}
+
+			log.trace("movie already exists: {}",movie);
+		} else {
+
+			ContentValues movieValues = MoviesDbHelper.getContentValues(movie);
+
+			Uri insertedUri = mContext.getContentResolver().insert(
+					MovieContract.MovieEntry.CONTENT_URI,
+					movieValues
+			);
+
+			// The resulting URI contains the ID for the row.  Extract the locationId from the Uri.
+			movieId = ContentUris.parseId(insertedUri);
+			movie.setId(movieId);
+			log.trace("Movie created: {}",movie);
+		}
+
+		cursor.close();
+
+		return movieId;
+	}
 
 }

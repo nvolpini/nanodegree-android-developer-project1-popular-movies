@@ -108,6 +108,7 @@ public class MoviesListCursorAdapter extends CursorRecyclerViewAdapter<MoviesLis
 					});
         }
 
+		//TODO mover isso para onCreateViewHolder ???
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -130,6 +131,9 @@ public class MoviesListCursorAdapter extends CursorRecyclerViewAdapter<MoviesLis
         public ViewHolder(View view) {
             super(view);
             mView = view;
+
+			mView.setClickable(true);
+
             //mIdView = (TextView) view.findViewById(R.id.id);
             //mContentView = (TextView) view.findViewById(R.id.content);
             mImageView = (ImageView) view.findViewById(imageView);

@@ -55,5 +55,9 @@ public abstract class AbstractSearchImpl implements IMovieSearch {
 			sortBy = SORT_BY_POPULARITY;
 			params.setSortBy(sortBy);
 		}
+
+		if (params.getMoviesToDownload()==0) { //TODO VALIDAR RESTO DE 20 == 0
+			params.setMoviesToDownload(20);
+		}
 	}
 }

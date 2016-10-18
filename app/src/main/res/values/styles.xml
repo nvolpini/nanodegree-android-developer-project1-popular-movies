@@ -1,51 +1,51 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
+	<!-- Base application theme. -->
+	<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+		<!-- Customize your theme here. -->
+		<item name="colorPrimary">@color/colorPrimary</item>
+		<item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+		<item name="colorAccent">@color/colorAccent</item>
+	</style>
 
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
+	<style name="AppTheme.NoActionBar">
+		<item name="windowActionBar">false</item>
+		<item name="windowNoTitle">true</item>
+	</style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+	<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
-    <style name="MovieDetailStyle">
+	<style name="MovieDetailStyle">
 
-    </style>
+	</style>
 
-    <style name="MovieTitleStyle" parent="Base.TextAppearance.AppCompat.Large">
-        <item name="android:layout_marginTop">15dp</item>
-        <item name="android:layout_marginBottom">15dp</item>
-        <item name="android:textSize">30dp</item>
+	<style name="MovieTitleStyle" parent="Base.TextAppearance.AppCompat.Large">
+		<item name="android:layout_marginTop">15dp</item>
+		<item name="android:layout_marginBottom">15dp</item>
+		<item name="android:textSize">30dp</item>
 
-    </style>
+	</style>
 
-    <style name="MovieYearStyle" parent="Base.TextAppearance.AppCompat.Large">
+	<style name="MovieYearStyle" parent="Base.TextAppearance.AppCompat.Large">
 
-        <item name="android:textSize">15dp</item>
+		<item name="android:textSize">15dp</item>
 
-    </style>
+	</style>
 
-    <style name="MovieOverviewStyle">
-        <item name="android:layout_marginBottom">@dimen/movie_detail_outer_margins</item>
+	<style name="MovieOverviewStyle">
+		<item name="android:layout_marginBottom">@dimen/movie_detail_outer_margins</item>
 
-    </style>
+	</style>
 
-    <style name="MovieOriginalTitleStyle">
-        <item name="android:layout_marginTop">15dp</item>
-        <item name="android:layout_marginBottom">15dp</item>
-        <item name="android:textSize">20dp</item>
-    </style>
+	<style name="MovieOriginalTitleStyle">
+		<item name="android:layout_marginTop">15dp</item>
+		<item name="android:layout_marginBottom">15dp</item>
+		<item name="android:textSize">20dp</item>
+	</style>
 
-    <style name="MoviesListStyle">
-    </style>
+	<style name="MoviesListStyle">
+	</style>
 
 </resources>

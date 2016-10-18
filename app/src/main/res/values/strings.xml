@@ -1,53 +1,54 @@
 <resources>
-    <string name="app_name">Popular Movies</string>
-    <string name="action_settings">Settings</string>
-    <string name="title_activity_settings">Settings</string>
+	<string name="app_name">Popular Movies</string>
+	<string name="action_settings">Settings</string>
+	<string name="title_activity_settings">Settings</string>
 
-    <string name="action_refresh">Refresh</string>
-    <string name="action_sort_by_popularity">Most popular</string>
-    <string name="action_sort_by_rating">Top rated</string>
-    <string name="action_favorites">Favorites</string>
-    <string name="no_internet_connection">No connection available</string>
-    <string name="error_getting_data">Error getting remote data, sorry :-(</string>
-
-
-    <!-- Strings related to Settings -->
-
-    <!-- Example General settings -->
-    <string name="pref_header_general">General</string>
-
-    <string name="pref_key_movies_language" translatable="false">movies_db_language</string>
-    <string name="pref_description_movies_language">Language to download movie\'s information</string>
-    <string name="pref_title_movies_language">Movies language</string>
-    <string-array name="pref_titles_movies_language">
-        <item>English</item>
-        <item>Portuguese</item>
-    </string-array>
-    <string-array name="pref_values_movies_language">
-        <item>en</item>
-        <item>pt</item>
-    </string-array>
-
-    <string name="pref_key_default_sorting" translatable="false">default_sorting</string>
-
-    <string name="pref_title_default_sorting">Default sorting</string>
-    <string-array name="pref_titles_sorting">
-        <item>Most popular</item>
-        <item>Top rated</item>
-    </string-array>
-    <string-array name="pref_values_sorting">
-        <item>popularity.desc</item>
-        <item>vote_average.desc</item>
-    </string-array>
+	<string name="action_refresh">Refresh</string>
+	<string name="action_sort_by_popularity">Most popular</string>
+	<string name="action_sort_by_rating">Top rated</string>
+	<string name="action_favorites">Favorites</string>
+	<string name="no_internet_connection">No connection available</string>
+	<string name="error_getting_data">Error getting remote data, sorry :-(</string>
 
 
+	<!-- Strings related to Settings -->
+
+	<!-- Example General settings -->
+	<string name="pref_header_general">General</string>
+
+	<string name="pref_key_movies_language" translatable="false">movies_db_language</string>
+	<string name="pref_description_movies_language">Language to download movie\'s information</string>
+	<string name="pref_title_movies_language">Movies language</string>
+	<string-array name="pref_titles_movies_language">
+		<item>English</item>
+		<item>Portuguese</item>
+	</string-array>
+	<string-array name="pref_values_movies_language">
+		<item>en</item>
+		<item>pt</item>
+	</string-array>
+
+	<!-- flag to indicate that the movies language has changed and in the next remote fetch should update movies data  -->
+	<string name="pref_key_movies_language_changed" translatable="false">movies_language_changed</string>
+
+	<string name="pref_key_default_sorting" translatable="false">default_sorting</string>
+
+	<string name="pref_title_default_sorting">Default sorting</string>
+	<string-array name="pref_titles_sorting">
+		<item>Most popular</item>
+		<item>Top rated</item>
+	</string-array>
+	<string-array name="pref_values_sorting">
+		<item>popularity.desc</item>
+		<item>vote_average.desc</item>
+	</string-array>
 
 
-    <!-- Example settings for Data & Sync -->
-    <string name="pref_header_data_sync">Data &amp; sync</string>
+	<!-- Example settings for Data & Sync -->
+	<string name="pref_header_data_sync">Data &amp; sync</string>
 
-    <string name="pref_key_sync_on_start" translatable="false">sync_on_start</string>
-    <string name="pref_title_sync_on_start">Sync on start</string>
+	<string name="pref_key_sync_on_start" translatable="false">sync_on_start</string>
+	<string name="pref_title_sync_on_start">Sync on start</string>
     <string name="pref_description_sync_on_start">Automatically synchronize when application starts
     </string>
 
@@ -55,47 +56,49 @@
 	<string name="pref_description_wifi_only">Downloads movie information only when connected through WIFI</string>
 	<string name="pref_title_wifi_only">Download via WIFI only</string>
 
-    <string name="pref_key_sync_frequency" translatable="false">sync_frequency</string>
-    <string name="pref_title_sync_frequency">Sync frequency</string>
-    <string-array name="pref_sync_frequency_titles">
-        <item>15 minutes</item>
-        <item>30 minutes</item>
-        <item>1 hour</item>
-        <item>3 hours</item>
-        <item>6 hours</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="pref_sync_frequency_values">
-        <item>15</item>
-        <item>30</item>
-        <item>60</item>
-        <item>180</item>
-        <item>360</item>
-        <item>-1</item>
-    </string-array>
+	<string name="pref_key_sync_frequency" translatable="false">sync_frequency</string>
+	<string name="pref_title_sync_frequency">Sync frequency</string>
+	<string-array name="pref_sync_frequency_titles">
+		<item>15 minutes</item>
+		<item>30 minutes</item>
+		<item>1 hour</item>
+		<item>3 hours</item>
+		<item>6 hours</item>
+		<item>Never</item>
+	</string-array>
+	<string-array name="pref_sync_frequency_values">
+		<item>15</item>
+		<item>30</item>
+		<item>60</item>
+		<item>180</item>
+		<item>360</item>
+		<item>-1</item>
+	</string-array>
 
-    <string name="pref_title_system_sync_settings">System sync settings</string>
-    <string name="action_clear">Clear</string>
-    <string name="title_activity_movie_detail">MovieDetailActivity</string>
+	<string name="pref_title_system_sync_settings">System sync settings</string>
+	<string name="action_clear">Clear</string>
+	<string name="title_activity_movie_detail">MovieDetailActivity</string>
 
-    <string name="pref_key_movies_to_download" translatable="false">movies_to_download</string>
-    <string name="pref_title_movies_to_download">Movies to download</string>
-    <string name="pref_description_movies_to_download">How many movies to download at once</string>
+	<string name="pref_key_movies_to_download" translatable="false">movies_to_download</string>
+	<string name="pref_title_movies_to_download">Movies to download</string>
+	<string name="pref_description_movies_to_download">How many movies to download at once</string>
 
-    <string-array name="pref_titles_movies_to_download">
-        <item>20</item>
-        <item>40</item>
-        <item>60</item>
-        <item>80</item>
-        <item>100</item>
-    </string-array>
-    <string-array name="pref_values_movies_to_download">
-        <item>20</item>
-        <item>40</item>
-        <item>60</item>
-        <item>80</item>
-        <item>100</item>
-    </string-array>
+
+	<string-array name="pref_titles_movies_to_download">
+		<item>20</item>
+		<item>40</item>
+		<item>60</item>
+		<item>80</item>
+		<item>100</item>
+	</string-array>
+	<string-array name="pref_values_movies_to_download">
+		<item>20</item>
+		<item>40</item>
+		<item>60</item>
+		<item>80</item>
+		<item>100</item>
+	</string-array>
+	<string name="title_activity_main2">Main2Activity</string>
 
 
 

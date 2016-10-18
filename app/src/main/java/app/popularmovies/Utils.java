@@ -34,10 +34,15 @@ public class Utils {
 				, IMovieSearch.DEFAULT_LANGUAGE);
 	}
 
-	public static void changeLanguageAccordingToPrefs(Context context, SearchParams params) {
+	public static void changeParamsFromPrefs(Context context, SearchParams params) {
 
 		if (!getPreferredLanguage(context).equals(params.getLanguage())) {
 			params.setLanguage(getPreferredLanguage(context));
+			Utils.setMoviesLanguageChanged(context,true);
+		}
+
+		if (getMoviesToDownload(context) != params.getMoviesToDownload()) {
+			params.setMoviesToDownload(getMoviesToDownload(context));
 		}
 
 	}
@@ -60,8 +65,20 @@ public class Utils {
 
 	public static int getMoviesToDownload(Context context) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		return prefs.getInt(context.getString(R.string.pref_key_movies_to_download),20);
+		String str = prefs.getString(context.getString(R.string.pref_key_movies_to_download),"20");
+		return Integer.parseInt(str);
 	}
+
+	public static boolean hasMoviesLanguageChanged(Context context) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		return prefs.getBoolean(context.getString(R.string.pref_key_movies_language_changed), false);
+	}
+
+	public static void setMoviesLanguageChanged(Context context, boolean changed) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		prefs.edit().putBoolean(context.getString(R.string.pref_key_movies_language_changed), changed);
+	}
+
 
 	public static boolean isOnline(Context context) {
 
@@ -146,10 +163,18 @@ public class Utils {
 	public static Date toDate(String releaseDateString) {
 
 		try {
-			return ISO_DATE.parse(releaseDateString);
+			return releaseDateString == null ? null : ISO_DATE.parse(releaseDateString);
 		} catch (ParseException e) {
 			return null;
 		}
 
+	}
+
+	public static String toIsoDate(Long longDate) {
+		return longDate == null ? null :  ISO_DATE.format(new Date(longDate));
+	}
+
+	public static String toIsoDate(Date date) {
+		return date == null ? null :  ISO_DATE.format(date);
 	}
 }

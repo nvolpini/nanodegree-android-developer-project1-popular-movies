@@ -1,6 +1,7 @@
 package app.popularmovies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -135,9 +136,9 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
             //TODO Do this here or at onStart() - neither seem to be right - check loaders
 
             //auto sync on start
-            if(Utils.isSyncOnStart(getActivity())) {
-                downloadMovies();
-            }
+            //if(Utils.isSyncOnStart(getActivity())) {
+              //  downloadMovies();
+            //}
 
         } else { //previous state saved, restore
 
@@ -400,8 +401,12 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
 			noConnection = false;
 
-            FetchMoviesTask task = new FetchMoviesTask(getActivity());
-			task.execute(searchParams);
+            //FetchMoviesTask task = new FetchMoviesTask(getActivity());
+			//task.execute(searchParams);
+
+			Intent intent = new Intent(getActivity(),FetchMoviesService.class);
+			intent.putExtra(FetchMoviesService.SEARCH_PARAMS_PARCELABLE_KEY, searchParams);
+			getActivity().startService(intent);
 
 
 		} else {

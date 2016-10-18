@@ -54,13 +54,24 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
 
 	private Movie getMovie() {
 		Bundle arguments = getArguments();
-		if (arguments != null) {
+
+		if (getActivity().getIntent() != null && getActivity().getIntent()
+				.hasExtra(MovieDetailsActivity.MOVIE_EXTRA_KEY)) {
+
+			return getActivity().getIntent().getParcelableExtra(MovieDetailsActivity.MOVIE_EXTRA_KEY);
+
+		} else if (arguments != null) {
+
 			return arguments.getParcelable(MovieDetailsActivity.MOVIE_EXTRA_KEY);
+
 		}
+
 		return null;
 	}
 
 	public FavoriteInformation setFavorite(Movie movie, boolean activated) {
+
+		log.trace("set favorite, movieId: {}, activated: {}",movie.getId(), activated);
 
 		FavoriteInformation f = new FavoriteInformation();
 
@@ -78,10 +89,10 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
 		if (cursor.moveToFirst()) {
 			int movieIdIndex = cursor.getColumnIndex(MovieContract.FavoriteMoviesEntry._ID);
 			f.setId(cursor.getLong(movieIdIndex));
-			log.trace("movie already is a favorite: {}",movie);
+			log.trace("movie is already a favorite, movieId: {}, favId: {}",movie.getId(), f.getId());
 
 			if (!activated) {
-				log.debug("removing favorite: {}", movieIdIndex);
+				log.debug("removing favorite: {}", f.getId());
 
 				getActivity().getContentResolver().delete(MovieContract.FavoriteMoviesEntry.CONTENT_URI
 						,MovieContract.FavoriteMoviesEntry.TABLE_NAME+ "."+
@@ -94,7 +105,7 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
 			f.setDateAdded(new Date());
 			f.setVotes(0);
 			f.setPosition(1);
-			movie.setFavorite(f);
+			movie.setFavoriteInformation(f);
 
 			ContentValues movieValues = new ContentValues();
 			movieValues.put(MovieContract.FavoriteMoviesEntry.COLUMN_DATE_ADD,f.getDateAdded().getTime());
@@ -122,7 +133,7 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
 		if (v.getId()==R.id.action_set_favorite) {
 			ToggleButton b = (ToggleButton) v.findViewById(R.id.action_set_favorite);
 
-			setFavorite(getMovie(), b.isActivated());
+			setFavorite(getMovie(), b.isChecked());
 		}
 	}
 }

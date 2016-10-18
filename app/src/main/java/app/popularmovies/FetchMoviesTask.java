@@ -1,10 +1,7 @@
 package app.popularmovies;
 
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 
 import org.slf4j.Logger;
@@ -30,6 +27,7 @@ public class FetchMoviesTask extends AsyncTask<SearchParams,Void,Void> {
 	private static final Logger log = LoggerFactory.getLogger(FetchMoviesTask.class);
 
 	private final Context mContext;
+	private SearchParams searchParams;
 
 	public FetchMoviesTask(Context context) {
 		mContext = context;
@@ -42,7 +40,7 @@ public class FetchMoviesTask extends AsyncTask<SearchParams,Void,Void> {
 			return null;
 		}
 
-		SearchParams searchParams = params[0];
+		searchParams = params[0];
 
 		log.debug("fetching remote movies: {}", searchParams);
 
@@ -61,11 +59,12 @@ public class FetchMoviesTask extends AsyncTask<SearchParams,Void,Void> {
 			return null;
 
 		}
+
 		Vector<ContentValues> regs = new Vector<ContentValues>(moviesList.size());
 
 		for (Movie movie : moviesList) {
 
-			long movieId = addMovie(movie);
+			long movieId = MoviesDbHelper.addMovie(mContext,movie, Utils.hasMoviesLanguageChanged(mContext));
 
 			ContentValues values = new ContentValues();
 
@@ -100,44 +99,10 @@ public class FetchMoviesTask extends AsyncTask<SearchParams,Void,Void> {
 		log.debug("Inserted {} movies",inserted);
 
 
+		//Utils.setMoviesLanguageChanged(context,true);
+
 		return null;
 	}
 
-	private long addMovie(Movie movie) {
-
-		long movieId;
-
-		// First, check if the movie already exists
-		Cursor cursor = mContext.getContentResolver().query(
-				MovieContract.MovieEntry.CONTENT_URI,
-				new String[]{MovieContract.MovieEntry._ID},
-				MovieContract.MovieEntry.COLUMN_MOVIESDB_ID + " = ?",
-				new String[]{Integer.toString(movie.getMoviesDbId())},
-				null);
-
-		if (cursor.moveToFirst()) {
-			int movieIdIndex = cursor.getColumnIndex(MovieContract.MovieEntry._ID);
-			movieId = cursor.getLong(movieIdIndex);
-			movie.setId(movieId);
-			log.trace("movie already exists: {}",movie);
-		} else {
-
-			ContentValues movieValues = MoviesDbHelper.getContentValues(movie);
-
-			Uri insertedUri = mContext.getContentResolver().insert(
-					MovieContract.MovieEntry.CONTENT_URI,
-					movieValues
-			);
-
-			// The resulting URI contains the ID for the row.  Extract the locationId from the Uri.
-			movieId = ContentUris.parseId(insertedUri);
-			movie.setId(movieId);
-			log.trace("Movie created: {}",movie);
-		}
-
-		cursor.close();
-
-		return movieId;
-	}
 
 }

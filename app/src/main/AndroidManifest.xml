@@ -1,44 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="app.popularmovies">
+          package="app.popularmovies">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.INTERNET"/>
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
-    <application
-        android:name=".PopularMoviesApplication"
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+	<application
+		android:name=".PopularMoviesApplication"
+		android:allowBackup="true"
+		android:icon="@mipmap/ic_launcher"
+		android:label="@string/app_name"
+		android:supportsRtl="true"
+		android:theme="@style/AppTheme">
+		<activity android:name=".MainActivity">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings"
-            android:parentActivityName="app.popularmovies.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="app.popularmovies.MainActivity" />
-            </activity>
-        <activity
-            android:name=".MovieDetailsActivity"
-            android:label="@string/title_activity_movie_detail"
-            android:parentActivityName="app.popularmovies.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="app.popularmovies.MainActivity" />
-        </activity>
-        <provider
-            android:authorities="app.popularmovies"
-            android:name=".data.MoviesProvider" />
-    </application>
+				<category android:name="android.intent.category.LAUNCHER"/>
+			</intent-filter>
+		</activity>
+		<activity
+			android:name=".SettingsActivity"
+			android:label="@string/title_activity_settings"
+			android:parentActivityName=".MainActivity">
+			<meta-data
+				android:name="android.support.PARENT_ACTIVITY"
+				android:value="app.popularmovies.MainActivity"/>
+		</activity>
+		<activity
+			android:name=".MovieDetailsActivity"
+			android:label="@string/title_activity_movie_detail"
+			android:parentActivityName=".MainActivity"
+			android:theme="@style/AppTheme.NoActionBar">
+			<meta-data
+				android:name="android.support.PARENT_ACTIVITY"
+				android:value="app.popularmovies.MainActivity"/>
+		</activity>
+
+		<provider
+			android:name=".data.MoviesProvider"
+			android:authorities="app.popularmovies"/>
+
+		<activity
+			android:name=".Main2Activity"
+			android:label="@string/title_activity_main2"
+			android:parentActivityName=".MainActivity"
+			android:theme="@style/AppTheme.NoActionBar">
+			<meta-data
+				android:name="android.support.PARENT_ACTIVITY"
+				android:value="app.popularmovies.MainActivity"/>
+		</activity>
+
+		<service
+			android:name=".FetchMoviesService"
+			android:enabled="true"
+			android:exported="false">
+		</service>
+	</application>
 
 </manifest>

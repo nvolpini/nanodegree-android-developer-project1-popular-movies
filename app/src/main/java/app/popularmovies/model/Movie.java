@@ -57,12 +57,13 @@ public class Movie implements Parcelable {
     private String posterPath;
 
 	@JsonIgnore
-	private FavoriteInformation favorite;
+	private FavoriteInformation favoriteInformation;
 
 	public Movie() {
     }
 
     private Movie(Parcel in){
+		id = in.readLong();
         moviesDbId = in.readInt();
         title = in.readString();
         originalTitle = in.readString();
@@ -71,11 +72,12 @@ public class Movie implements Parcelable {
 		releaseDate = new Date(in.readLong());
         voteAverage = in.readDouble();
         posterPath = in.readString();
-		favorite = in.readParcelable(null);
+		favoriteInformation = in.readParcelable(getClass().getClassLoader());
     }
 
-    public Movie(int moviesDbId, String title, String originalTitle, String overview, Date releaseDate, double voteAverage) {
-        this.moviesDbId = moviesDbId;
+    public Movie(long id, int moviesDbId, String title, String originalTitle, String overview, Date releaseDate, double voteAverage) {
+        this.id = id;
+		this.moviesDbId = moviesDbId;
         this.title = title;
         this.originalTitle = originalTitle;
         this.overview = overview;
@@ -150,7 +152,7 @@ public class Movie implements Parcelable {
 
 	@Deprecated
     public void setReleaseDateString(String releaseDateString) {
-        this.releaseDateString = releaseDateString;
+        //this.releaseDateString = releaseDateString;
 		this.releaseDate = Utils.toDate(releaseDateString);
     }
 
@@ -178,16 +180,16 @@ public class Movie implements Parcelable {
 		this.releaseDate = releaseDate;
 	}
 
-	public FavoriteInformation getFavorite() {
-		return favorite;
+	public FavoriteInformation getFavoriteInformation() {
+		return favoriteInformation;
 	}
 
-	public void setFavorite(FavoriteInformation favorite) {
-		this.favorite = favorite;
+	public void setFavoriteInformation(FavoriteInformation favoriteInformation) {
+		this.favoriteInformation = favoriteInformation;
 	}
 
 	public boolean isFavorite() {
-		return favorite != null;
+		return favoriteInformation != null;
 	}
 
 	public String toString() {
@@ -196,11 +198,12 @@ public class Movie implements Parcelable {
 		sb.append(", moviesDbId=").append(moviesDbId);
 		sb.append(", title='").append(title).append('\'');
 		sb.append(", originalTitle='").append(originalTitle).append('\'');
-		sb.append(", overview='").append(overview).append('\'');
-		sb.append(", releaseDateString='").append(releaseDateString).append('\'');
-		sb.append(", releaseDate=").append(releaseDate);
+		//sb.append(", overview='").append(overview).append('\'');
+		sb.append(", releaseDateString='").append(Utils.toIsoDate(releaseDate)).append('\'');
+		//sb.append(", releaseDate=").append(releaseDate);
 		sb.append(", voteAverage=").append(voteAverage);
-		sb.append(", posterPath='").append(posterPath).append('\'');
+		//sb.append(", posterPath='").append(posterPath).append('\'');
+		sb.append(", favorite=").append(isFavorite());
 		sb.append('}');
 		return sb.toString();
 	}
@@ -213,7 +216,7 @@ public class Movie implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-
+		dest.writeLong(id);
         dest.writeInt(moviesDbId);
         dest.writeString(title);
         dest.writeString(originalTitle);
@@ -222,7 +225,7 @@ public class Movie implements Parcelable {
 		dest.writeLong(releaseDate.getTime());
         dest.writeDouble(voteAverage);
         dest.writeString(posterPath);
-		dest.writeParcelable(favorite,0);
+		dest.writeParcelable(favoriteInformation,0);
 
     }
 

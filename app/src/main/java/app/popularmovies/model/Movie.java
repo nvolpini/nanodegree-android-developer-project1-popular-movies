@@ -1,10 +1,13 @@
 package app.popularmovies.model;
 
+import android.databinding.BaseObservable;
+import android.databinding.Bindable;
 import android.databinding.BindingAdapter;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.widget.ImageView;
 
+import com.android.databinding.library.baseAdapters.BR;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -23,7 +26,7 @@ import app.popularmovies.service.MoviesService;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
-public class Movie implements Parcelable {
+public class Movie extends BaseObservable implements Parcelable {
 
 	/**
 	 * internal id
@@ -180,17 +183,22 @@ public class Movie implements Parcelable {
 		this.releaseDate = releaseDate;
 	}
 
+	@Bindable
 	public FavoriteInformation getFavoriteInformation() {
 		return favoriteInformation;
 	}
 
 	public void setFavoriteInformation(FavoriteInformation favoriteInformation) {
 		this.favoriteInformation = favoriteInformation;
+		notifyPropertyChanged(BR.favoriteInformation);
+		notifyPropertyChanged(BR.favorite);
 	}
 
+	@Bindable
 	public boolean isFavorite() {
 		return favoriteInformation != null;
 	}
+
 
 	public String toString() {
 		final StringBuilder sb = new StringBuilder("Movie{");

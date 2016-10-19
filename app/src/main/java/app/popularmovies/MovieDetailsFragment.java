@@ -11,8 +11,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RatingBar;
-import android.widget.ToggleButton;
+import android.widget.ImageButton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +32,17 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
 
 	private static final Logger log = LoggerFactory.getLogger(MovieDetailsFragment.class);
 
+	/**
+	 * The parameters.
+	 * from extras/arguments
+	 */
 	private SearchParams params;
+
+	/**
+	 * The current movie.
+	 * from extras/arguments
+	 */
+	private Movie movie;
 
     public MovieDetailsFragment() {
     }
@@ -48,46 +57,53 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
 		View rootView = binding.getRoot();
 
 		Bundle arguments = getArguments();
-		if (getActivity().getIntent() != null && getActivity().getIntent()
-				.hasExtra(MovieDetailsActivity.PARAMS_EXTRA_KEY)) {
+
+
+	/*	if (getActivity().getIntent() != null) { //Activity created via Intent
 
 			params = getActivity().getIntent().getParcelableExtra(MovieDetailsActivity.PARAMS_EXTRA_KEY);
 
-		} else if (arguments != null) {
+			movie = getActivity().getIntent().getParcelableExtra(MovieDetailsActivity.MOVIE_EXTRA_KEY);
+
+		} else */if (arguments != null) { //Fragment replaced
 
 			params = arguments.getParcelable(MovieDetailsActivity.PARAMS_EXTRA_KEY);
 
+			movie = arguments.getParcelable(MovieDetailsActivity.MOVIE_EXTRA_KEY);
 		}
 
-		Movie movie = getMovie();
+		log.trace("movie detail: {}",movie);
 
 		if (movie != null) {
 			binding.setMovie(movie);
 		}
 
-		rootView.findViewById(R.id.action_set_favorite).setOnClickListener(this);
-		rootView.findViewById(R.id.movieNote).setOnClickListener(this);
+		rootView.findViewById(R.id.favoriteIcon).setOnClickListener(this);
+
 		rootView.findViewById(R.id.downloadVideos).setOnClickListener(this);
 
         return rootView;
     }
 
-	private Movie getMovie() {
-		Bundle arguments = getArguments();
 
-		if (getActivity().getIntent() != null && getActivity().getIntent()
-				.hasExtra(MovieDetailsActivity.MOVIE_EXTRA_KEY)) {
+	@Override
+	public void onClick(View v) {
 
-			return getActivity().getIntent().getParcelableExtra(MovieDetailsActivity.MOVIE_EXTRA_KEY);
+	 	 if (v.getId()==R.id.favoriteIcon) {
 
-		} else if (arguments != null) {
+			ImageButton bar = (ImageButton) v.findViewById(R.id.favoriteIcon);
 
-			return arguments.getParcelable(MovieDetailsActivity.MOVIE_EXTRA_KEY);
+			setFavorite(movie,!movie.isFavorite());
+
+		} else if (v.getId()==R.id.downloadVideos) {
+
+			FetchVideosTask task = new FetchVideosTask();
+			task.execute();
 
 		}
-
-		return null;
 	}
+
+
 
 	/**
 	 * TODO MOVER PARA OUTRA CLASSE
@@ -124,6 +140,7 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
 						,MovieContract.FavoriteMoviesEntry.TABLE_NAME+ "."+
 								MovieContract.FavoriteMoviesEntry._ID+"=?",new String[]{Long.toString(f.getId())});
 
+				movie.setFavoriteInformation(null);
 			}
 
 		} else {
@@ -154,27 +171,6 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
 		return f;
 	}
 
-	@Override
-	public void onClick(View v) {
-		if (v.getId()==R.id.action_set_favorite) {
-			ToggleButton b = (ToggleButton) v.findViewById(R.id.action_set_favorite);
-
-			setFavorite(getMovie(), b.isChecked());
-
-		} else if (v.getId()==R.id.movieNote) {
-
-			RatingBar bar = (RatingBar) v.findViewById(R.id.movieNote);
-
-			log.trace("bars: {}", bar.getNumStars());
-
-		} else if (v.getId()==R.id.downloadVideos) {
-
-			FetchVideosTask task = new FetchVideosTask();
-			task.execute();
-
-		}
-	}
-
 
 
 	public class FetchVideosTask extends AsyncTask<Void,Void,Void> {
@@ -185,7 +181,7 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
 
 			RetrofitSearchImpl s = new RetrofitSearchImpl(params);
 
-			s.fetchVideos(getMovie());
+			s.fetchVideos(movie);
 
 			return null;
 		}

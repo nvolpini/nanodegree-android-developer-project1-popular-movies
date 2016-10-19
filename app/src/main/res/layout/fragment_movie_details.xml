@@ -31,6 +31,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:text="@{movie.title}"
+			    tools:text="Movie Title Goes Here"
 				/>
 
 
@@ -68,32 +69,29 @@
 						android:layout_height="wrap_content"
 						android:layout_marginBottom="@dimen/activity_vertical_margin"
 						android:layout_marginTop="@dimen/activity_vertical_margin"
-						android:text="@{movie.year}"/>
+						android:text="@{movie.year}"
+						tools:text="2016"/>
+
+
 
 					<TextView
 						android:id="@+id/voteAverage"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:text='@{String.format("%1$.1f/10", movie.voteAverage)}'/>
+						android:text='@{String.format("%1$.1f/10", movie.voteAverage)}'
+						tools:text="5/10"/>
 
-					<ToggleButton
-						android:text="ToggleButton"
+					<ImageButton
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:id="@+id/action_set_favorite"
-					    android:checked="@{movie.favorite}"
-						/>
-
-					<RatingBar
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:id="@+id/movieNote"
-						android:numStars="1"
-						android:rating="0"
-						style="@style/Widget.AppCompat.RatingBar.Indicator"
-						android:stepSize="1"
-						android:clickable="true"/>
-
+						android:src="@{movie.favorite ? @android:drawable/btn_star_big_on : @android:drawable/btn_star_big_off}"
+						tools:src="@android:drawable/btn_star_big_on"
+						android:id="@+id/favoriteIcon"
+						android:adjustViewBounds="true"
+						android:background="@android:color/transparent"
+						android:layout_marginBottom="@dimen/activity_vertical_margin"
+						android:layout_marginTop="@dimen/activity_vertical_margin"
+						android:contentDescription="set @string/action_favorites"/>
 
 				</LinearLayout>
 
@@ -106,7 +104,8 @@
 				style="@style/MovieOriginalTitleStyle"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:text="@{movie.originalTitle}"/>
+				android:text="@{movie.originalTitle}"
+				tools:text="Original Movie Title Goes Here"/>
 
 			<TextView
 				android:id="@+id/overview"
@@ -114,6 +113,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:text="@{movie.overview}"
+				tools:text="Movie overview goes here and usually contains a long text, so scrollview is needed to avoid text to be truncated. That being said..."
 				/>
 
 

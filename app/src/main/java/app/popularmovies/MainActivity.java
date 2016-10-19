@@ -193,7 +193,9 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         } else if (id == R.id.action_main2) {
-			startActivity(new Intent(this, Main2Activity.class));
+			Intent intent = new Intent(this, Main2Activity.class);
+			intent.putExtra(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY, searchParams);
+			startActivity(intent);
 			return true;
 		}
 
@@ -210,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
 
 			Bundle args = new Bundle();
 			args.putParcelable(MovieDetailsActivity.MOVIE_EXTRA_KEY, movie);
+			args.putParcelable(MovieDetailsActivity.PARAMS_EXTRA_KEY, searchParams);
 
 			MovieDetailsFragment df = new MovieDetailsFragment();
 			df.setArguments(args);
@@ -222,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
 
 			Intent intent = new Intent(this, MovieDetailsActivity.class);
 			intent.putExtra(MovieDetailsActivity.MOVIE_EXTRA_KEY, movie);
+			intent.putExtra(MovieDetailsActivity.PARAMS_EXTRA_KEY, searchParams);
 
 			startActivity(intent);
 		}

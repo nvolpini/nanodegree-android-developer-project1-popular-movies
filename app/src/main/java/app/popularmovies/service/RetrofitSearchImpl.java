@@ -21,7 +21,10 @@ import app.popularmovies.BuildConfig;
 import app.popularmovies.data.MovieContract;
 import app.popularmovies.data.MoviesDbHelper;
 import app.popularmovies.model.Movie;
+import app.popularmovies.model.ResultsPage;
+import app.popularmovies.model.Review;
 import app.popularmovies.model.SearchParams;
+import app.popularmovies.model.Video;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -44,6 +47,7 @@ public class RetrofitSearchImpl extends AbstractSearchImpl {
 	private static final Logger log = getLogger(RetrofitSearchImpl.class);
 
 	private static final String API_URL = "https://api.themoviedb.org/3/";
+
 
 	private enum MoviesEndPoint {
 		POPULAR("popular"), TOP_RATED("top_rated");
@@ -173,7 +177,7 @@ public class RetrofitSearchImpl extends AbstractSearchImpl {
 
 		log.trace("pages to download: {}",pagesToDownload);
 
-		Call<MoviesResult> resultCall = null;
+		Call<ResultsPage<Movie>> resultCall = null;
 
 
 		for (int page = 1; page <= pagesToDownload; page++) {
@@ -188,7 +192,7 @@ public class RetrofitSearchImpl extends AbstractSearchImpl {
 
 			try {
 
-				MoviesResult res = resultCall.execute().body();
+				ResultsPage<Movie> res = resultCall.execute().body();
 
 				results.addAll(res.getResults());
 
@@ -247,9 +251,36 @@ public class RetrofitSearchImpl extends AbstractSearchImpl {
 	}
 
 
-	public interface MoviesDBService {
+	public List<Video> fetchVideos(Movie movie) {
 
-		//TODO page number param
+		log.debug("Fetching movie videos, movie: {}, Lang: '{}'"
+				, movie, params.getLanguage());
+
+		ArrayList<Video> results = new ArrayList<>();
+
+		Call<Video.Results> resultCall = null;
+
+			resultCall = service.videos(Integer.toString(movie.getMoviesDbId()),BuildConfig.MOVIESDB_API_KEY
+					, params.getLanguage());
+
+
+			try {
+
+				Video.Results res = resultCall.execute().body();
+
+				results.addAll(res.getVideos());
+
+			} catch (IOException e) {
+				log.error("error fetching movie videos '{}'.",movie,e);
+				throw new MoviesDataException("Error fetching movie videos: "+movie,e);
+			}
+
+		return results;
+
+	}
+
+
+	public interface MoviesDBService {
 
 		@GET("movie/popular")
 		Call<MoviesResult> popularMovies(@Query("api_key") String apiKey, @Query("language") String language, @Query("page") int page);
@@ -259,8 +290,14 @@ public class RetrofitSearchImpl extends AbstractSearchImpl {
 
 
 		@GET("movie/{end_point}")
-		Call<MoviesResult> movies(@Path("end_point") String endPoint, @Query("api_key") String apiKey, @Query("language") String language, @Query("page") int page);
+		Call<ResultsPage<Movie>> movies(@Path("end_point") String endPoint, @Query("api_key") String apiKey, @Query("language") String language, @Query("page") int page);
+		//Call<MoviesResult> movies(@Path("end_point") String endPoint, @Query("api_key") String apiKey, @Query("language") String language, @Query("page") int page);
 
+		@GET("movie/{movie_id}/videos")
+		Call<Video.Results> videos(@Path("movie_id") String movieId, @Query("api_key") String apiKey, @Query("language") String language);
+
+		@GET("movie/{movie_id}/reviews")
+		Call<ResultsPage<Review>> reviews(@Path("movie_id") String movieId, @Query("api_key") String apiKey, @Query("language") String language, @Query("page") int page);
 
 	}
 

@@ -11,5 +11,4 @@
 	android:layout_marginRight="0dp"
 	app:layoutManager="LinearLayoutManager"
 	tools:context=".MoviesFragment"
-	android:background="@drawable/image_selector"
 	tools:listitem="@layout/movies_fragment_item"/>

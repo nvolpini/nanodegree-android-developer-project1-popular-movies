@@ -5,11 +5,13 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RatingBar;
 import android.widget.ToggleButton;
 
 import org.slf4j.Logger;
@@ -21,6 +23,8 @@ import app.popularmovies.data.MovieContract;
 import app.popularmovies.databinding.FragmentMovieDetailsBinding;
 import app.popularmovies.model.FavoriteInformation;
 import app.popularmovies.model.Movie;
+import app.popularmovies.model.SearchParams;
+import app.popularmovies.service.RetrofitSearchImpl;
 
 /**
  * Show the movie details.
@@ -28,6 +32,8 @@ import app.popularmovies.model.Movie;
 public class MovieDetailsFragment extends Fragment implements View.OnClickListener {
 
 	private static final Logger log = LoggerFactory.getLogger(MovieDetailsFragment.class);
+
+	private SearchParams params;
 
     public MovieDetailsFragment() {
     }
@@ -41,6 +47,18 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
         FragmentMovieDetailsBinding binding = DataBindingUtil.inflate(inflater,R.layout.fragment_movie_details, container, false);
 		View rootView = binding.getRoot();
 
+		Bundle arguments = getArguments();
+		if (getActivity().getIntent() != null && getActivity().getIntent()
+				.hasExtra(MovieDetailsActivity.PARAMS_EXTRA_KEY)) {
+
+			params = getActivity().getIntent().getParcelableExtra(MovieDetailsActivity.PARAMS_EXTRA_KEY);
+
+		} else if (arguments != null) {
+
+			params = arguments.getParcelable(MovieDetailsActivity.PARAMS_EXTRA_KEY);
+
+		}
+
 		Movie movie = getMovie();
 
 		if (movie != null) {
@@ -48,6 +66,8 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
 		}
 
 		rootView.findViewById(R.id.action_set_favorite).setOnClickListener(this);
+		rootView.findViewById(R.id.movieNote).setOnClickListener(this);
+		rootView.findViewById(R.id.downloadVideos).setOnClickListener(this);
 
         return rootView;
     }
@@ -69,6 +89,12 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
 		return null;
 	}
 
+	/**
+	 * TODO MOVER PARA OUTRA CLASSE
+	 * @param movie
+	 * @param activated
+	 * @return
+	 */
 	public FavoriteInformation setFavorite(Movie movie, boolean activated) {
 
 		log.trace("set favorite, movieId: {}, activated: {}",movie.getId(), activated);
@@ -134,6 +160,36 @@ public class MovieDetailsFragment extends Fragment implements View.OnClickListen
 			ToggleButton b = (ToggleButton) v.findViewById(R.id.action_set_favorite);
 
 			setFavorite(getMovie(), b.isChecked());
+
+		} else if (v.getId()==R.id.movieNote) {
+
+			RatingBar bar = (RatingBar) v.findViewById(R.id.movieNote);
+
+			log.trace("bars: {}", bar.getNumStars());
+
+		} else if (v.getId()==R.id.downloadVideos) {
+
+			FetchVideosTask task = new FetchVideosTask();
+			task.execute();
+
 		}
 	}
+
+
+
+	public class FetchVideosTask extends AsyncTask<Void,Void,Void> {
+
+
+		@Override
+		protected Void doInBackground(Void... taskParams) {
+
+			RetrofitSearchImpl s = new RetrofitSearchImpl(params);
+
+			s.fetchVideos(getMovie());
+
+			return null;
+		}
+	}
+
 }
+

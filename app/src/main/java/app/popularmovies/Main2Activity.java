@@ -1,5 +1,6 @@
 package app.popularmovies;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -23,10 +24,24 @@ public class Main2Activity extends AppCompatActivity implements MoviesFragment.O
 
 	private static final Logger log = LoggerFactory.getLogger(Main2Activity.class);
 
+	private SearchParams searchParams;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main2);
+
+		if (savedInstanceState != null && savedInstanceState.containsKey(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY)) {
+
+			searchParams = savedInstanceState.getParcelable(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY);
+
+			log.trace("loading params from state: {}",searchParams);
+
+		} else if (savedInstanceState == null) {
+
+			searchParams = getIntent().getParcelableExtra(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY);
+
+		}
 
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
@@ -45,6 +60,16 @@ public class Main2Activity extends AppCompatActivity implements MoviesFragment.O
 		tabLayout.setupWithViewPager(viewPager);
 	}
 
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+
+		log.trace("saving state...");
+
+		outState.putParcelable(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY, searchParams);
+
+		super.onSaveInstanceState(outState);
+
+	}
 
 	static SearchParams popularParams = new SearchParams();
 	static SearchParams topRatedParams = new SearchParams();
@@ -67,6 +92,12 @@ public class Main2Activity extends AppCompatActivity implements MoviesFragment.O
 	@Override
 	public void onListFragmentInteraction(Movie movie) {
 		log.trace("iteracao, movie: {}",movie.getOriginalTitle());
+
+		Intent intent = new Intent(this, MovieDetailsActivity.class);
+		intent.putExtra(MovieDetailsActivity.MOVIE_EXTRA_KEY, movie);
+		intent.putExtra(MovieDetailsActivity.PARAMS_EXTRA_KEY, searchParams);
+
+		startActivity(intent);
 	}
 
 

@@ -88,10 +88,11 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:id="@+id/movieNote"
-						android:numStars="5"
-						android:rating="4"
-						style="@style/Widget.AppCompat.RatingBar.Small"
-						android:stepSize="1"/>
+						android:numStars="1"
+						android:rating="0"
+						style="@style/Widget.AppCompat.RatingBar.Indicator"
+						android:stepSize="1"
+						android:clickable="true"/>
 
 
 				</LinearLayout>
@@ -116,6 +117,22 @@
 				/>
 
 
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical">
+
+
+				<Button
+					android:text="Videos"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:id="@+id/downloadVideos"
+					/>
+			</LinearLayout>
+
 		</LinearLayout>
+
+
 	</ScrollView>
 </layout>

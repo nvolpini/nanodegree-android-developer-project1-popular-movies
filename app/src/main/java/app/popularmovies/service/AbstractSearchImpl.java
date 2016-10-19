@@ -60,4 +60,6 @@ public abstract class AbstractSearchImpl implements IMovieSearch {
 			params.setMoviesToDownload(20);
 		}
 	}
+
+
 }

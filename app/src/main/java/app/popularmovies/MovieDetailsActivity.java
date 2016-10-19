@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 public class MovieDetailsActivity extends AppCompatActivity {
 
     public static final String MOVIE_EXTRA_KEY = "app.popularmovies.movie";
+	public static final String PARAMS_EXTRA_KEY = "app.popularmovies.params";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,7 +19,11 @@ public class MovieDetailsActivity extends AppCompatActivity {
 			args.putParcelable(MovieDetailsActivity.MOVIE_EXTRA_KEY
 					, getIntent().getParcelableExtra(MOVIE_EXTRA_KEY));
 
-            MovieDetailsFragment f = new MovieDetailsFragment();
+			args.putParcelable(MovieDetailsActivity.PARAMS_EXTRA_KEY
+					, getIntent().getParcelableExtra(PARAMS_EXTRA_KEY));
+
+
+			MovieDetailsFragment f = new MovieDetailsFragment();
 			f.setArguments(args);
 
             getSupportFragmentManager().beginTransaction()

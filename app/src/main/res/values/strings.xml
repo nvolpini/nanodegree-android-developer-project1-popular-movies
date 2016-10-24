@@ -9,7 +9,7 @@
 	<string name="action_favorites">Favorites</string>
 	<string name="no_internet_connection">No connection available</string>
 	<string name="error_getting_data">Error getting remote data, sorry :-(</string>
-
+	<string name="cannot_handle_video">Cannot handle video site: %s</string>
 
 	<!-- Strings related to Settings -->
 

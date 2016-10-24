@@ -1,19 +1,43 @@
 package app.popularmovies;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MovieDetailsActivity extends AppCompatActivity {
+import app.popularmovies.model.Movie;
+import app.popularmovies.model.Review;
+import app.popularmovies.model.SearchParams;
+import app.popularmovies.model.Video;
 
-	private static final Logger log = LoggerFactory.getLogger(MovieDetailsFragment.class);
+public class MovieDetailsActivity extends AppCompatActivity implements MovieDetailsFragment.OnMovieDetailsInteractionListener {
 
-    public static final String MOVIE_EXTRA_KEY = "app.popularmovies.movie";
-	public static final String PARAMS_EXTRA_KEY = "app.popularmovies.params";
+	private static final Logger log = LoggerFactory.getLogger(MovieDetailsActivity.class);
 
-    @Override
+	private static final String MOVIE_EXTRA_KEY = MovieDetailsActivity.class.getName().concat(".movieExtra");
+	private static final String PARAMS_EXTRA_KEY = MovieDetailsActivity.class.getName().concat(".params");
+
+	public static Intent newIntent(Context context, Movie movie, SearchParams searchParams) {
+		Intent intent = new Intent(context, MovieDetailsActivity.class);
+		intent.putExtra(MOVIE_EXTRA_KEY, movie);
+		intent.putExtra(PARAMS_EXTRA_KEY, searchParams);
+		return intent;
+	}
+
+	private Movie getMovieExtra() {
+		return getIntent().getParcelableExtra(MOVIE_EXTRA_KEY);
+	}
+
+	private SearchParams getSearchParamsExtra() {
+		return getIntent().getParcelableExtra(PARAMS_EXTRA_KEY);
+	}
+
+	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_details);
@@ -22,16 +46,8 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
 			log.trace("setting MovieDetailsFragment args... ");
 
-			Bundle args = new Bundle();
-			args.putParcelable(MovieDetailsActivity.MOVIE_EXTRA_KEY
-					, getIntent().getParcelableExtra(MOVIE_EXTRA_KEY));
-
-			args.putParcelable(MovieDetailsActivity.PARAMS_EXTRA_KEY
-					, getIntent().getParcelableExtra(PARAMS_EXTRA_KEY));
-
-
-			MovieDetailsFragment f = new MovieDetailsFragment();
-			f.setArguments(args);
+			MovieDetailsFragment f = MovieDetailsFragment.newInstance(getMovieExtra()
+					, getSearchParamsExtra());
 
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, f)
@@ -39,4 +55,27 @@ public class MovieDetailsActivity extends AppCompatActivity {
         }
     }
 
+
+	@Override
+	public void onVideoInteraction(Video video) {
+		log.trace("iteracao, video: {}",video.getName());
+		Intent i = Utils.newVideoIntent(this,video);
+
+		if (i != null) {
+			startActivity(i);
+
+		} else {
+
+			Toast.makeText(this,getString(R.string.cannot_handle_video,video.getSite()),Toast.LENGTH_LONG).show();
+		}
+	}
+
+	@Override
+	public void onReviewInteraction(Review review) {
+		log.trace("iteracao, review: {}",review.getId());
+
+		Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(review.getUrl()));
+		startActivity(i);
+
+	}
 }

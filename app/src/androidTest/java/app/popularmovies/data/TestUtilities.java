@@ -97,14 +97,39 @@ public class TestUtilities extends AndroidTestCase {
         return values;
     }
 
-    /*
-        Students: The functions we provide inside of TestProvider use this utility class to test
-        the ContentObserver callbacks using the PollingCheck class that we grabbed from the Android
-        CTS tests.
+    public static ContentValues createMovieVideoValues(long movieId, int i) {
+        ContentValues values = new ContentValues();
+        values.put(MovieContract.VideoEntry.COLUMN_MOVIE_ID, movieId);
+        values.put(MovieContract.VideoEntry.COLUMN_MOVIESDB_ID, "abcd"+i);
+        values.put(MovieContract.VideoEntry.COLUMN_NAME, "video"+i);
+        values.put(MovieContract.VideoEntry.COLUMN_LANGUAGE, "pt");
+        values.put(MovieContract.VideoEntry.COLUMN_REGION, "BR");
+        values.put(MovieContract.VideoEntry.COLUMN_SITE, "youtube");
+		values.put(MovieContract.VideoEntry.COLUMN_KEY, "abcd");
+		values.put(MovieContract.VideoEntry.COLUMN_SIZE, 720);
+		values.put(MovieContract.VideoEntry.COLUMN_TYPE, "Trailer");
 
-        Note that this only tests that the onChange function is called; it does not test that the
-        correct Uri is returned.
-     */
+        return values;
+	}
+
+	public static ContentValues createMovieReviewValues(long movieId, int i) {
+		ContentValues values = new ContentValues();
+		values.put(MovieContract.ReviewEntry.COLUMN_MOVIE_ID, movieId);
+		values.put(MovieContract.ReviewEntry.COLUMN_MOVIESDB_ID, "abcd"+i);
+		values.put(MovieContract.ReviewEntry.COLUMN_AUTHOR, "myself");
+		values.put(MovieContract.ReviewEntry.COLUMN_CONTENT, "some review....");
+		values.put(MovieContract.ReviewEntry.COLUMN_URL, "http://www.themoviesdb.com/review/");
+		return values;
+	}
+
+	/*
+		Students: The functions we provide inside of TestProvider use this utility class to test
+		the ContentObserver callbacks using the PollingCheck class that we grabbed from the Android
+		CTS tests.
+
+		Note that this only tests that the onChange function is called; it does not test that the
+		correct Uri is returned.
+	 */
     static class TestContentObserver extends ContentObserver {
         final HandlerThread mHT;
         boolean mContentChanged;

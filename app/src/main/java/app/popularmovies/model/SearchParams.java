@@ -3,8 +3,6 @@ package app.popularmovies.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import app.popularmovies.service.IMovieSearch;
-
 /**
  * Created by neimar on 19/09/16.
  */

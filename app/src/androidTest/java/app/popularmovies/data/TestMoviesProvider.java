@@ -53,6 +53,8 @@ public class TestMoviesProvider extends AndroidTestCase {
 				null
 		);
 
+
+
 		Cursor cursor = mContext.getContentResolver().query(
 				MovieContract.PopularMoviesEntry.CONTENT_URI,
 				null,
@@ -144,7 +146,7 @@ public class TestMoviesProvider extends AndroidTestCase {
 				MovieContract.MovieEntry.CONTENT_TYPE, type);
 
 		long movieId = 1L; //
-		// content://app.popularmovies/movies/94074/20140612
+		// content://app.popularmovies/movies/94074
 		type = mContext.getContentResolver().getType(
 				MovieContract.MovieEntry.buildMovieUri(movieId));
 		// vnd.android.cursor.item/app.popularmovies/movies/1419120000
@@ -169,6 +171,18 @@ public class TestMoviesProvider extends AndroidTestCase {
 		assertEquals("Error: the FavoriteMoviesEntry CONTENT_URI should return FavoriteMoviesEntry.CONTENT_TYPE",
 				MovieContract.FavoriteMoviesEntry.CONTENT_TYPE, type);
 
+		// content://app.popularmovies/movies/videos/1111
+		type = mContext.getContentResolver().getType(MovieContract.VideoEntry.buildVideosUri(1111));
+		// vnd.android.cursor.dir/app.popularmovies/movies/videos/1111
+		assertEquals("Error: the VideoEntry CONTENT_URI should return VideoEntry.CONTENT_TYPE",
+				MovieContract.VideoEntry.CONTENT_TYPE, type);
+
+
+		// content://app.popularmovies/movies/reviews/1111
+		type = mContext.getContentResolver().getType(MovieContract.ReviewEntry.buildReviewsUri(1111));
+		// vnd.android.cursor.dir/app.popularmovies/movies/reviews/1111
+		assertEquals("Error: the ReviewEntry CONTENT_URI should return ReviewEntry.CONTENT_TYPE",
+				MovieContract.ReviewEntry.CONTENT_TYPE, type);
 
 	}
 

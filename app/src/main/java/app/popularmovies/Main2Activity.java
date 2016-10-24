@@ -18,7 +18,6 @@ import java.util.List;
 
 import app.popularmovies.model.Movie;
 import app.popularmovies.model.SearchParams;
-import app.popularmovies.service.IMovieSearch;
 
 public class Main2Activity extends AppCompatActivity implements MoviesFragment.OnListFragmentInteractionListener {
 
@@ -93,9 +92,7 @@ public class Main2Activity extends AppCompatActivity implements MoviesFragment.O
 	public void onListFragmentInteraction(Movie movie) {
 		log.trace("iteracao, movie: {}",movie.getOriginalTitle());
 
-		Intent intent = new Intent(this, MovieDetailsActivity.class);
-		intent.putExtra(MovieDetailsActivity.MOVIE_EXTRA_KEY, movie);
-		intent.putExtra(MovieDetailsActivity.PARAMS_EXTRA_KEY, searchParams);
+		Intent intent = MovieDetailsActivity.newIntent(this,movie,searchParams);
 
 		startActivity(intent);
 	}

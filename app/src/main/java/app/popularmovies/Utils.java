@@ -1,10 +1,12 @@
 package app.popularmovies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.text.format.Time;
 
@@ -16,7 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import app.popularmovies.model.SearchParams;
-import app.popularmovies.service.IMovieSearch;
+import app.popularmovies.model.Video;
 
 /**
  * Created by neimar on 24/09/16.
@@ -180,5 +182,22 @@ public class Utils {
 
 	public static String toIsoDate(Date date) {
 		return date == null ? null :  ISO_DATE.format(date);
+	}
+
+	public static Intent newVideoIntent(Context context, Video video) {
+
+		String url = null;
+
+		if ("youtube".equalsIgnoreCase(video.getSite())) {
+			url = String.format("https://www.youtube.com/watch?v=%s",video.getKey());
+		}
+
+		Intent i = null;
+
+		if (url != null) {
+			i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+		}
+
+		return i;
 	}
 }

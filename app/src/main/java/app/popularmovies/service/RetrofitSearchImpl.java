@@ -4,15 +4,10 @@ import android.content.ContentValues;
 import android.content.Context;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -38,16 +33,22 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Implementation based on retrofit (http://square.github.io/retrofit/)
- *
+ * <p>
  * Created by neimar on 26/09/16.
  */
 
-public class RetrofitSearchImpl extends AbstractSearchImpl {
+public class RetrofitSearchImpl {
 
 	private static final Logger log = getLogger(RetrofitSearchImpl.class);
 
 	private static final String API_URL = "https://api.themoviedb.org/3/";
 
+	private final SearchParams params;
+
+
+	public RetrofitSearchImpl(SearchParams params) {
+		this.params = params;
+	}
 
 	private enum MoviesEndPoint {
 		POPULAR("popular"), TOP_RATED("top_rated");
@@ -98,84 +99,37 @@ public class RetrofitSearchImpl extends AbstractSearchImpl {
 
 	}
 
-	public RetrofitSearchImpl(SearchParams params) {
-		super(params);
-	}
 
-	@Override
-	public List<Movie> list() throws MoviesDataException {
+	private void validate() {
 
-
-		validate();
-
-		log.debug("Fetching movies. Lang: {}, sort by: {} ", params.getLanguage()
-				, params.getSortBy());
-
-		ArrayList<Movie> results = new ArrayList<>(params.getMoviesToDownload());
-
-		int pagesToDownload = params.getMoviesToDownload()/20;
-
-		log.trace("pages to download: {}",pagesToDownload);
-
-		Call<MoviesResult> resultCall = null;
-
-
-		for (int page = 1; page <= pagesToDownload; page++) {
-
-
-			log.debug("downloading results page {}",page);
-
-			if (params.getSortBy().equals(SORT_BY_POPULARITY)) {
-
-				resultCall = service.popularMovies(BuildConfig.MOVIESDB_API_KEY, params.getLanguage(), page);
-
-			} else {
-
-				resultCall = service.topRatedMovies(BuildConfig.MOVIESDB_API_KEY, params.getLanguage(), page);
-			}
-
-
-			try {
-
-				MoviesResult res = resultCall.execute().body();
-
-				results.addAll(res.getResults());
-
-			} catch (IOException e) {
-				log.error("error querying movies ({}).",params.getSortBy(),e);
-				throw new MoviesDataException("Error querying movies",e);
-			}
+		if (params.getMoviesToDownload()==0) { //TODO VALIDAR RESTO DE 20 == 0
+			params.setMoviesToDownload(20);
 		}
-
-		return results;
-
 	}
 
-	@Override
-	public Movie getMovieById(int movieId) throws MoviesDataException {
-		return null;
-	}
 
 	public void fetchMovies(Context context) throws MoviesDataException {
 
+		validate();
+
 		List<Movie> movies = fetchMovies(MoviesEndPoint.POPULAR);
-		saveMovies(context,movies,MoviesEndPoint.POPULAR);
+		saveMovies(context, movies, MoviesEndPoint.POPULAR);
 
 		movies = fetchMovies(MoviesEndPoint.TOP_RATED);
-		saveMovies(context,movies,MoviesEndPoint.TOP_RATED);
+		saveMovies(context, movies, MoviesEndPoint.TOP_RATED);
 
 	}
 
-	private List<Movie> fetchMovies(MoviesEndPoint endPoint) {
+	private List<Movie> fetchMovies(MoviesEndPoint endPoint) throws MoviesDataException {
 
 		log.debug("Fetching movies from '{}', Lang: '{}', movies count: {}, "
-				, endPoint, params.getLanguage(),params.getMoviesToDownload());
+				, endPoint, params.getLanguage(), params.getMoviesToDownload());
 
 		ArrayList<Movie> results = new ArrayList<>(params.getMoviesToDownload());
 
-		int pagesToDownload = params.getMoviesToDownload()/20;
+		int pagesToDownload = params.getMoviesToDownload() / 20;
 
-		log.trace("pages to download: {}",pagesToDownload);
+		log.trace("pages to download: {}", pagesToDownload);
 
 		Call<ResultsPage<Movie>> resultCall = null;
 
@@ -183,10 +137,10 @@ public class RetrofitSearchImpl extends AbstractSearchImpl {
 		for (int page = 1; page <= pagesToDownload; page++) {
 
 
-			log.debug("downloading results page {}",page);
+			log.debug("downloading results page {}", page);
 
 
-			resultCall = service.movies(endPoint.getPath(),BuildConfig.MOVIESDB_API_KEY
+			resultCall = service.movies(endPoint.getPath(), BuildConfig.MOVIESDB_API_KEY
 					, params.getLanguage(), page);
 
 
@@ -197,8 +151,8 @@ public class RetrofitSearchImpl extends AbstractSearchImpl {
 				results.addAll(res.getResults());
 
 			} catch (IOException e) {
-				log.error("error querying movies from '{}'.",endPoint,e);
-				throw new MoviesDataException("Error querying movies from "+endPoint,e);
+				log.error("error querying movies from '{}'.", endPoint, e);
+				throw new MoviesDataException("Error querying movies from " + endPoint, e);
 			}
 		}
 
@@ -207,27 +161,26 @@ public class RetrofitSearchImpl extends AbstractSearchImpl {
 	}
 
 
-	private void saveMovies(Context context, List<Movie> moviesList, MoviesEndPoint endPoint) {
-
+	private void saveMovies(Context context, List<Movie> moviesList, MoviesEndPoint endPoint) throws MoviesDataException {
 
 
 		Vector<ContentValues> regs = new Vector<ContentValues>(moviesList.size());
 
 		for (Movie movie : moviesList) {
 
-			long movieId = MoviesDbHelper.addMovie(context,movie, moviesLanguageChanged);
+			long movieId = MoviesDbHelper.addMovie(context, movie, moviesLanguageChanged);
 
 			ContentValues values = new ContentValues();
 
 			if (endPoint == MoviesEndPoint.POPULAR) {
 
-				values.put(MovieContract.PopularMoviesEntry.COLUMN_MOVIE_ID,movieId);
-				values.put(MovieContract.PopularMoviesEntry.COLUMN_POSITION,regs.size()+1);
+				values.put(MovieContract.PopularMoviesEntry.COLUMN_MOVIE_ID, movieId);
+				values.put(MovieContract.PopularMoviesEntry.COLUMN_POSITION, regs.size() + 1);
 
 			} else {
 
-				values.put(MovieContract.TopRatedMoviesEntry.COLUMN_MOVIE_ID,movieId);
-				values.put(MovieContract.TopRatedMoviesEntry.COLUMN_POSITION,regs.size()+1);
+				values.put(MovieContract.TopRatedMoviesEntry.COLUMN_MOVIE_ID, movieId);
+				values.put(MovieContract.TopRatedMoviesEntry.COLUMN_POSITION, regs.size() + 1);
 
 			}
 
@@ -237,7 +190,7 @@ public class RetrofitSearchImpl extends AbstractSearchImpl {
 
 		int inserted = 0;
 		// add to database
-		if ( regs.size() > 0 ) {
+		if (regs.size() > 0) {
 			ContentValues[] cvArray = new ContentValues[regs.size()];
 			regs.toArray(cvArray);
 			inserted = context.getContentResolver().bulkInsert(
@@ -247,51 +200,139 @@ public class RetrofitSearchImpl extends AbstractSearchImpl {
 					, cvArray);
 		}
 
-		log.debug("Inserted {} movies into {}",inserted, endPoint);
+		log.debug("Inserted {} movies into {}", inserted, endPoint);
 	}
 
 
-	public List<Video> fetchVideos(Movie movie) {
+	public void fetchVideos(Context context, Movie movie) throws MoviesDataException {
+
+		List<Video> videos = fetchVideos(movie);
+		saveVideos(context, movie, videos);
+
+	}
+
+	private List<Video> fetchVideos(Movie movie) throws MoviesDataException {
 
 		log.debug("Fetching movie videos, movie: {}, Lang: '{}'"
 				, movie, params.getLanguage());
 
 		ArrayList<Video> results = new ArrayList<>();
 
-		Call<Video.Results> resultCall = null;
+		try {
+			//TODO tratar fallback do idioma - so baixa no idioma passado
 
-			resultCall = service.videos(Integer.toString(movie.getMoviesDbId()),BuildConfig.MOVIESDB_API_KEY
-					, params.getLanguage());
+			Call<Video.Results> resultCall = service.videos(Integer.toString(movie.getMoviesDbId())
+					, BuildConfig.MOVIESDB_API_KEY, params.getLanguage());
 
+			Video.Results res = resultCall.execute().body();
 
-			try {
+			results.addAll(res.getVideos());
 
-				Video.Results res = resultCall.execute().body();
-
-				results.addAll(res.getVideos());
-
-			} catch (IOException e) {
-				log.error("error fetching movie videos '{}'.",movie,e);
-				throw new MoviesDataException("Error fetching movie videos: "+movie,e);
-			}
+		} catch (IOException e) {
+			log.error("error fetching movie videos '{}'.", movie, e);
+			throw new MoviesDataException("Error fetching movie videos: " + movie, e);
+		}
 
 		return results;
 
 	}
 
+	private void saveVideos(Context context, Movie movie, List<Video> videos) throws MoviesDataException {
+		Vector<ContentValues> regs = new Vector<ContentValues>(videos.size());
+
+		for (Video video : videos) {
+
+			//long movieId = MoviesDbHelper.addMovie(context,movie, moviesLanguageChanged);
+
+			video.setMovieId(movie.getId());
+
+			ContentValues values = MoviesDbHelper.getContentValues(video);
+
+			regs.add(values);
+
+		}//for
+
+		int inserted = 0;
+		// add to database
+		if (regs.size() > 0) {
+			ContentValues[] cvArray = new ContentValues[regs.size()];
+			regs.toArray(cvArray);
+			inserted = context.getContentResolver().bulkInsert(
+					MovieContract.VideoEntry.buildVideosUri(movie.getId())
+					, cvArray);
+		}
+
+		log.debug("Inserted {} videos for movie {}", inserted, movie.getTitle());
+	}
+
+
+	public void fetchReviews(Context context, Movie movie, int page) throws MoviesDataException {
+
+		List<Review> videos = fetchReviews(movie, page);
+		saveReviews(context, movie, videos);
+
+	}
+
+	private List<Review> fetchReviews(Movie movie, int page) throws MoviesDataException {
+
+		log.debug("Fetching movie reviews, movie: {}, Lang: '{}', page: {}"
+				, movie, params.getLanguage(), page);
+
+		ArrayList<Review> results = new ArrayList<>();
+
+		//TODO tratar fallback do idioma - so baixa no idioma passado e reviews em portugues sao raras
+
+		try {
+
+			Call<ResultsPage<Review>> resultCall = service.reviews(Integer.toString(movie.getMoviesDbId())
+					, BuildConfig.MOVIESDB_API_KEY
+					, params.getLanguage(), page);
+
+			ResultsPage<Review> res = resultCall.execute().body();
+
+			results.addAll(res.getResults());
+
+		} catch (IOException e) {
+			log.error("error fetching movie reviews '{}'.", movie, e);
+			throw new MoviesDataException("Error fetching movie reviews: " + movie, e);
+		}
+
+		return results;
+
+	}
+
+	private void saveReviews(Context context, Movie movie, List<Review> reviews) throws MoviesDataException {
+		Vector<ContentValues> regs = new Vector<ContentValues>(reviews.size());
+
+		for (Review review : reviews) {
+
+			review.setMovieId(movie.getId());
+
+			//TODO truncate the review content
+
+			ContentValues values = MoviesDbHelper.getContentValues(review);
+
+			regs.add(values);
+
+		}//for
+
+		int inserted = 0;
+		// add to database
+		if (regs.size() > 0) {
+			ContentValues[] cvArray = new ContentValues[regs.size()];
+			regs.toArray(cvArray);
+			inserted = context.getContentResolver().bulkInsert(
+					MovieContract.ReviewEntry.buildReviewsUri(movie.getId())
+					, cvArray);
+		}
+
+		log.debug("Inserted {} reviews for movie {}", inserted, movie.getTitle());
+	}
 
 	public interface MoviesDBService {
 
-		@GET("movie/popular")
-		Call<MoviesResult> popularMovies(@Query("api_key") String apiKey, @Query("language") String language, @Query("page") int page);
-
-		@GET("movie/top_rated")
-		Call<MoviesResult> topRatedMovies(@Query("api_key") String apiKey, @Query("language") String language, @Query("page") int page);
-
-
 		@GET("movie/{end_point}")
 		Call<ResultsPage<Movie>> movies(@Path("end_point") String endPoint, @Query("api_key") String apiKey, @Query("language") String language, @Query("page") int page);
-		//Call<MoviesResult> movies(@Path("end_point") String endPoint, @Query("api_key") String apiKey, @Query("language") String language, @Query("page") int page);
 
 		@GET("movie/{movie_id}/videos")
 		Call<Video.Results> videos(@Path("movie_id") String movieId, @Query("api_key") String apiKey, @Query("language") String language);
@@ -299,73 +340,6 @@ public class RetrofitSearchImpl extends AbstractSearchImpl {
 		@GET("movie/{movie_id}/reviews")
 		Call<ResultsPage<Review>> reviews(@Path("movie_id") String movieId, @Query("api_key") String apiKey, @Query("language") String language, @Query("page") int page);
 
-	}
-
-	@JsonIgnoreProperties(ignoreUnknown = true)
-	@JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
-	public static class MoviesResult implements Serializable {
-
-		@JsonProperty("page")
-		private int page;
-
-		@JsonProperty("total_pages")
-		private int totalPages;
-
-		@JsonProperty("total_results")
-		private int totalResults;
-
-		@JsonProperty("results")
-		private List<Movie> results;
-
-		public MoviesResult() {
-		}
-
-		public List<Movie> getResults() {
-			return results;
-		}
-
-		public void setResults(List<Movie> results) {
-			this.results = results;
-		}
-
-		public int getPage() {
-			return page;
-		}
-
-		public void setPage(int page) {
-			this.page = page;
-		}
-
-		public int getTotalPages() {
-			return totalPages;
-		}
-
-		public void setTotalPages(int totalPages) {
-			this.totalPages = totalPages;
-		}
-
-		public int getTotalResults() {
-			return totalResults;
-		}
-
-		public void setTotalResults(int totalResults) {
-			this.totalResults = totalResults;
-		}
-
-		/**
-		 * Handle unknown properties and print a message
-		 *
-		 * @param key
-		 * @param value
-		 */
-		@JsonAnySetter
-		public void handleUnknown(String key, Object value) {
-			StringBuilder sb = new StringBuilder();
-			sb.append("Unknown property: '").append(key);
-			sb.append("' value: '").append(value).append("'");
-
-			log.trace(sb.toString());
-		}
 	}
 
 

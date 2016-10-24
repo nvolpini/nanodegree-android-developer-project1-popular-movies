@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import app.popularmovies.data.MovieContract;
 import app.popularmovies.model.Movie;
 import app.popularmovies.model.SearchParams;
-import app.popularmovies.service.IMovieSearch;
 import app.popularmovies.service.MoviesService;
 
 /**
@@ -91,7 +90,6 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     }
 
 	/**
-	 * @deprecated agora a criacao é estatica - direto pelo layout
 	 * @param columnCount
 	 * @param searchParams
 	 * @return
@@ -268,7 +266,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
             mListener = (OnListFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
+                    + " must implement OnMovieDetailsInteractionListener");
         }
     }
 
@@ -306,6 +304,9 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
 		moviesListAdapter.swapCursor(data);
 		if (mPosition != RecyclerView.NO_POSITION) {
+
+			log.trace("position: {}", mPosition);
+
 			// If we don't need to restart the loader, and there's a desired position to restore
 			// to, do so now.
 			RecyclerView recyclerView = (RecyclerView) getView();

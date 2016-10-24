@@ -76,6 +76,8 @@ public class TestDb extends AndroidTestCase {
 		checkTablePopularMovies(db);
 		checkTableTopRatedMovies(db);
 		checkTableFavoriteMovies(db);
+		checkTableVideos(db);
+		checkTableReviews(db);
 
         db.close();
     }
@@ -92,6 +94,10 @@ public class TestDb extends AndroidTestCase {
 		doInsertTable(db, MovieContract.TopRatedMoviesEntry.TABLE_NAME,TestUtilities.createTopRatedMoviesValues(movieId,1));
 
 		doInsertTable(db, MovieContract.FavoriteMoviesEntry.TABLE_NAME,TestUtilities.createFavoriteMoviesValues(movieId,1));
+
+		doInsertTable(db, MovieContract.VideoEntry.TABLE_NAME,TestUtilities.createMovieVideoValues(movieId,1));
+
+		doInsertTable(db, MovieContract.ReviewEntry.TABLE_NAME,TestUtilities.createMovieReviewValues(movieId,1));
 
 		dbHelper.close();
 
@@ -181,6 +187,34 @@ public class TestDb extends AndroidTestCase {
 		checkTable(db,MovieContract.FavoriteMoviesEntry.TABLE_NAME,columns);
 	}
 
+
+	private void checkTableVideos(SQLiteDatabase db) {
+		final HashSet<String> columns = new HashSet<String>();
+		columns.add(MovieContract.VideoEntry._ID);
+		columns.add(MovieContract.VideoEntry.COLUMN_MOVIE_ID);
+		columns.add(MovieContract.VideoEntry.COLUMN_MOVIESDB_ID);
+		columns.add(MovieContract.VideoEntry.COLUMN_NAME);
+		columns.add(MovieContract.VideoEntry.COLUMN_LANGUAGE);
+		columns.add(MovieContract.VideoEntry.COLUMN_REGION);
+		columns.add(MovieContract.VideoEntry.COLUMN_SITE);
+		columns.add(MovieContract.VideoEntry.COLUMN_KEY);
+		columns.add(MovieContract.VideoEntry.COLUMN_SIZE);
+		columns.add(MovieContract.VideoEntry.COLUMN_TYPE);
+
+		checkTable(db,MovieContract.VideoEntry.TABLE_NAME,columns);
+	}
+
+	private void checkTableReviews(SQLiteDatabase db) {
+		final HashSet<String> columns = new HashSet<String>();
+		columns.add(MovieContract.ReviewEntry._ID);
+		columns.add(MovieContract.ReviewEntry.COLUMN_MOVIE_ID);
+		columns.add(MovieContract.ReviewEntry.COLUMN_MOVIESDB_ID);
+		columns.add(MovieContract.ReviewEntry.COLUMN_AUTHOR);
+		columns.add(MovieContract.ReviewEntry.COLUMN_CONTENT);
+		columns.add(MovieContract.ReviewEntry.COLUMN_URL);
+
+		checkTable(db,MovieContract.ReviewEntry.TABLE_NAME,columns);
+	}
 
 	private void checkTable(SQLiteDatabase db, String tableName, HashSet<String> expectedTableColumns) {
 		Cursor c = db.rawQuery("PRAGMA table_info(" + tableName + ")",

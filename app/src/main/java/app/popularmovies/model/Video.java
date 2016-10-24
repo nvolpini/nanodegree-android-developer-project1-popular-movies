@@ -1,5 +1,6 @@
 package app.popularmovies.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
@@ -13,9 +14,17 @@ import java.util.List;
 
 public class Video extends AbstractJsonMapping {
 
+	/**
+	 * internal id
+	 */
+	@JsonIgnore
+	private long id;
+
+	@JsonIgnore
+	private long movieId;
 
 	@JsonProperty("id")
-	private String id;
+	private String moviesDbId;
 
 	@JsonProperty("name")
 	private String name;
@@ -65,12 +74,28 @@ public class Video extends AbstractJsonMapping {
 		}
 	}
 
-	public String getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(long id) {
 		this.id = id;
+	}
+
+	public long getMovieId() {
+		return movieId;
+	}
+
+	public void setMovieId(long movieId) {
+		this.movieId = movieId;
+	}
+
+	public String getMoviesDbId() {
+		return moviesDbId;
+	}
+
+	public void setMoviesDbId(String moviesDbId) {
+		this.moviesDbId = moviesDbId;
 	}
 
 	public String getName() {
@@ -127,5 +152,18 @@ public class Video extends AbstractJsonMapping {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder("Video{");
+		sb.append("id=").append(id);
+		sb.append(", movieId='").append(movieId).append('\'');
+		sb.append(", moviesDbId='").append(moviesDbId).append('\'');
+		sb.append(", name='").append(name).append('\'');
+		sb.append(", type='").append(type).append('\'');
+		sb.append(", site='").append(site).append('\'');
+		sb.append('}');
+		return sb.toString();
 	}
 }

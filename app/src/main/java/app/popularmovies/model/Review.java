@@ -1,5 +1,6 @@
 package app.popularmovies.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -11,9 +12,17 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
 public class Review extends AbstractJsonMapping {
+	/**
+	 * internal id
+	 */
+	@JsonIgnore
+	private long id;
 
-	@JsonProperty
-	private String id;
+	@JsonIgnore
+	private long movieId;
+
+	@JsonProperty("id")
+	private String moviesDbId;
 
 	@JsonProperty
 	private String author;
@@ -26,6 +35,22 @@ public class Review extends AbstractJsonMapping {
 
 
 	public Review() {
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public long getMovieId() {
+		return movieId;
+	}
+
+	public void setMovieId(long movieId) {
+		this.movieId = movieId;
 	}
 
 	public String getAuthor() {
@@ -44,12 +69,12 @@ public class Review extends AbstractJsonMapping {
 		this.content = content;
 	}
 
-	public String getId() {
-		return id;
+	public String getMoviesDbId() {
+		return moviesDbId;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setMoviesDbId(String moviesDbId) {
+		this.moviesDbId = moviesDbId;
 	}
 
 	public String getUrl() {
@@ -63,8 +88,10 @@ public class Review extends AbstractJsonMapping {
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder("Review{");
-		sb.append("id='").append(id).append('\'');
+		sb.append("id=").append(id);
+		sb.append(", moviesDbId='").append(moviesDbId).append('\'');
 		sb.append(", author='").append(author).append('\'');
+		sb.append(", url='").append(url).append('\'');
 		sb.append('}');
 		return sb.toString();
 	}

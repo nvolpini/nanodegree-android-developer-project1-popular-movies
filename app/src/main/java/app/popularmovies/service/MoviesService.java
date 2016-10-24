@@ -41,27 +41,6 @@ public class MoviesService {
 
     }
 
-    private String getMovieDataKey(String name) {
-        return String.format("app.popularmovies.movie.%s",name);
-    }
-
-
-
-    public IMovieSearch newSearch() {
-
-		return newSearch(newSearchParams());
-
-    }
-
-    public IMovieSearch newSearch(SearchParams params) {
-
-		//to swap implementations, just change here
-
-		//return new TheMovieDBAPISearchImpl(params);
-
-		return new RetrofitSearchImpl(params);
-    }
-
     /**
      *
      * @return Default params

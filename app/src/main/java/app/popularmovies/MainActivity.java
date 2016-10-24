@@ -1,22 +1,30 @@
 package app.popularmovies;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.popularmovies.model.Movie;
+import app.popularmovies.model.Review;
 import app.popularmovies.model.SearchParams;
+import app.popularmovies.model.Video;
 import app.popularmovies.service.MoviesService;
 
 import static app.popularmovies.Utils.changeParamsFromPrefs;
 
-public class MainActivity extends AppCompatActivity implements MoviesFragment.OnListFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements
+		MoviesFragment.OnListFragmentInteractionListener
+		,MovieDetailsFragment.OnMovieDetailsInteractionListener
+		{
 
     private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
 
@@ -78,8 +86,12 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
 			// fragment transaction.
 			if (savedInstanceState == null) {
 				getSupportFragmentManager().beginTransaction()
-						.replace(R.id.movie_detail_container, new MovieDetailsFragment(), DETAILFRAGMENT_TAG)
+						.replace(R.id.movie_detail_container
+								, MovieDetailsFragment.newInstance(null,searchParams)
+								, DETAILFRAGMENT_TAG)
 						.commit();
+
+				findViewById(R.id.movie_detail_container).setVisibility(View.INVISIBLE);
 			}
 		} else {
 			mTwoPane = false;
@@ -210,12 +222,9 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
 
 		if(mTwoPane) {
 
-			Bundle args = new Bundle();
-			args.putParcelable(MovieDetailsActivity.MOVIE_EXTRA_KEY, movie);
-			args.putParcelable(MovieDetailsActivity.PARAMS_EXTRA_KEY, searchParams);
+			MovieDetailsFragment df = MovieDetailsFragment.newInstance(movie, searchParams);
 
-			MovieDetailsFragment df = new MovieDetailsFragment();
-			df.setArguments(args);
+			findViewById(R.id.movie_detail_container).setVisibility(View.VISIBLE);
 
 			getSupportFragmentManager().beginTransaction()
 					.replace(R.id.movie_detail_container, df, DETAILFRAGMENT_TAG)
@@ -223,13 +232,35 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.On
 
 		} else {
 
-			Intent intent = new Intent(this, MovieDetailsActivity.class);
-			intent.putExtra(MovieDetailsActivity.MOVIE_EXTRA_KEY, movie);
-			intent.putExtra(MovieDetailsActivity.PARAMS_EXTRA_KEY, searchParams);
+			Intent intent = MovieDetailsActivity.newIntent(this,movie,searchParams);
 
 			startActivity(intent);
 		}
 
     }
+
+
+	@Override
+	public void onVideoInteraction(Video video) {
+		log.trace("iteracao, video: {}",video.getName());
+
+		Intent i = Utils.newVideoIntent(this,video);
+
+		if (i != null) {
+			startActivity(i);
+
+		} else {
+
+			Toast.makeText(this,getString(R.string.cannot_handle_video,video.getSite()),Toast.LENGTH_LONG).show();
+		}
+	}
+
+	@Override
+	public void onReviewInteraction(Review review) {
+		log.trace("iteracao, review: {}",review.getId());
+
+		Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(review.getUrl()));
+		startActivity(i);
+	}
 
 }

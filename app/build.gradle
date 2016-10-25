@@ -68,18 +68,14 @@ dependencies {
     //debug
     //TODO ver build variants - deve ser apenas para debug
 
-    
-
     //already included on both deps bellow
     //compile 'com.fasterxml.jackson.core:jackson-databind:2.7.2'
-
 
     //used in TheMovieDBAPISearchImpl
     compile group: 'info.movito', name: 'themoviedbapi', version: '1.4'
 
     //used in TheMoviesDBService
     //for logging
-    
 
     //compile 'org.slf4j:slf4j-android:1.7.21'
     compile('com.github.tony19:logback-android-classic:1.1.1-6') {

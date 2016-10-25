@@ -343,4 +343,12 @@ public class TheMoviesDBService {
 	public void setMoviesLanguageChanged(boolean moviesLanguageChanged) {
 		this.moviesLanguageChanged = moviesLanguageChanged;
 	}
+
+	public static String getMoviePosterUrl(Context context, Movie movie) {
+
+		//TODO testar tamanho da tela do dispositivo e baixar a imagem do tamanho mais adequado
+
+		return movie == null ? null : String.format("http://image.tmdb.org/t/p/w500/%s"
+				,movie.getPosterPath());
+	}
 }

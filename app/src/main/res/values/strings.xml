@@ -38,18 +38,6 @@
 	<!-- flag to indicate that the movies language has changed and in the next remote fetch should update movies data  -->
 	<string name="pref_key_movies_language_changed" translatable="false">movies_language_changed</string>
 
-	<string name="pref_key_default_sorting" translatable="false">default_sorting</string>
-
-	<string name="pref_title_default_sorting">Default sorting</string>
-	<string-array name="pref_titles_sorting">
-		<item>Most popular</item>
-		<item>Top rated</item>
-	</string-array>
-	<string-array name="pref_values_sorting">
-		<item>popularity.desc</item>
-		<item>vote_average.desc</item>
-	</string-array>
-
 
 	<!-- Example settings for Data & Sync -->
 	<string name="pref_header_data_sync">Data &amp; sync</string>
@@ -107,6 +95,8 @@
 	</string-array>
 	<string name="title_activity_main2">Main2Activity</string>
 
+	<!-- TODO: Remove or change this placeholder text -->
+	<string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

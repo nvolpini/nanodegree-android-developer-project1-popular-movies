@@ -22,6 +22,10 @@ import android.view.ViewGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import app.popularmovies.model.Movie;
+import app.popularmovies.model.MoviesListFilter;
+import app.popularmovies.util.MoviesListCursorAdapter;
+
 /**
  * Created by neimar on 24/10/16.
  */
@@ -44,7 +48,7 @@ public class MoviesListFragment  extends Fragment implements LoaderManager.Loade
 	private int currentPosition = RecyclerView.NO_POSITION;
 
 	//TODO move interface here
-	private MoviesFragment.OnListFragmentInteractionListener mListener;
+	private OnListFragmentInteractionListener mListener;
 
 	public static MoviesListFragment newInstance(MoviesListFilter filter) {
 		MoviesListFragment fragment = new MoviesListFragment();
@@ -66,12 +70,12 @@ public class MoviesListFragment  extends Fragment implements LoaderManager.Loade
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		log.trace("onCreate");
 
 		//setHasOptionsMenu(true);
 
 		filter = getArguments().getParcelable(FILTER_KEY);
 
+		log.trace("onCreate, filter: {}", filter.toString());
 
 	}
 
@@ -172,8 +176,8 @@ public class MoviesListFragment  extends Fragment implements LoaderManager.Loade
 	@Override
 	public void onAttach(Context context) {
 		super.onAttach(context);
-		if (context instanceof MoviesFragment.OnListFragmentInteractionListener) {
-			mListener = (MoviesFragment.OnListFragmentInteractionListener) context;
+		if (context instanceof OnListFragmentInteractionListener) {
+			mListener = (OnListFragmentInteractionListener) context;
 		} else {
 			throw new RuntimeException(context.toString()
 					+ " must implement OnMovieDetailsInteractionListener");
@@ -196,7 +200,7 @@ public class MoviesListFragment  extends Fragment implements LoaderManager.Loade
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		moviesListAdapter.swapCursor(data);
 		if (currentPosition != RecyclerView.NO_POSITION) {
-			log.trace("returning to position: {}", currentPosition);
+			//log.trace("returning to position: {}", currentPosition);
 			RecyclerView recyclerView = (RecyclerView) getView();
 			recyclerView.smoothScrollToPosition(currentPosition);
 		}
@@ -207,21 +211,18 @@ public class MoviesListFragment  extends Fragment implements LoaderManager.Loade
 		moviesListAdapter.swapCursor(null);
 	}
 
-/*
-	private void downloadMovies() {
-		log.trace("downloading movies, params: {}",searchParams);
-
-		if (Utils.isOnline(getContext())) {
-
-			Intent intent = new Intent(getActivity(),FetchMoviesService.class);
-			intent.putExtra(FetchMoviesService.SEARCH_PARAMS_PARCELABLE_KEY, searchParams);
-			getActivity().startService(intent);
-
-
-		} else {
-			log.trace("no internet access.");
-			Toast.makeText(getActivity(),getString(R.string.no_internet_connection),Toast.LENGTH_LONG).show();
-		}
-	}*/
+	/**
+	 * This interface must be implemented by activities that contain this
+	 * fragment to allow an interaction in this fragment to be communicated
+	 * to the activity and potentially other fragments contained in that
+	 * activity.
+	 * <p>
+	 * See the Android Training lesson <a href=
+	 * "http://developer.android.com/training/basics/fragments/communicating.html"
+	 * >Communicating with Other Fragments</a> for more information.
+	 */
+	public interface OnListFragmentInteractionListener {
+		void onListFragmentInteraction(Movie movie);
+	}
 
 }

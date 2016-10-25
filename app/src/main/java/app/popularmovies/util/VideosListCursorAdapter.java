@@ -1,4 +1,4 @@
-package app.popularmovies;
+package app.popularmovies.util;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -12,21 +12,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.popularmovies.MovieDetailsFragment.OnMovieDetailsInteractionListener;
+import app.popularmovies.R;
 import app.popularmovies.data.MoviesDbHelper;
-import app.popularmovies.model.Review;
-import app.popularmovies.util.CursorRecyclerViewAdapter;
+import app.popularmovies.model.Video;
 
 /**
 
  */
-public class ReviewListCursorAdapter extends CursorRecyclerViewAdapter<ReviewListCursorAdapter.ViewHolder> {
+public class VideosListCursorAdapter extends CursorRecyclerViewAdapter<VideosListCursorAdapter.ViewHolder> {
 
-    private static final Logger log = LoggerFactory.getLogger(ReviewListCursorAdapter.class);
+    private static final Logger log = LoggerFactory.getLogger(VideosListCursorAdapter.class);
 
     private final OnMovieDetailsInteractionListener mListener;
 
 
-	public ReviewListCursorAdapter(Context context, Cursor cursor, OnMovieDetailsInteractionListener listener){
+	public VideosListCursorAdapter(Context context, Cursor cursor, OnMovieDetailsInteractionListener listener){
 		super(context,cursor);
 		this.mListener = listener;
 
@@ -42,12 +42,11 @@ public class ReviewListCursorAdapter extends CursorRecyclerViewAdapter<ReviewLis
     @Override
 	public void onBindViewHolder(final ViewHolder holder, Cursor cursor) {
 
-        Review review   = MoviesDbHelper.cursorToReview(cursor);
+		Video video = MoviesDbHelper.cursorToVideo(cursor);
 
-
-        holder.mItem = review;
-		holder.mIdView.setText(Long.toString(review.getId()));
-		holder.mContentView.setText(String.format("%s",review.getAuthor()));
+        holder.mItem = video;
+		holder.mIdView.setText(Long.toString(video.getId()));
+		holder.mContentView.setText(String.format("%s - %s - %s",video.getName(), video.getType(), video.getKey()));
 
 		//TODO mover isso para onCreateViewHolder ???
         holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -56,7 +55,7 @@ public class ReviewListCursorAdapter extends CursorRecyclerViewAdapter<ReviewLis
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onReviewInteraction(holder.mItem);
+                    mListener.onVideoInteraction(holder.mItem);
                 }
             }
         });
@@ -66,7 +65,7 @@ public class ReviewListCursorAdapter extends CursorRecyclerViewAdapter<ReviewLis
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
-        public Review mItem;
+        public Video mItem;
 
         public ViewHolder(View view) {
             super(view);

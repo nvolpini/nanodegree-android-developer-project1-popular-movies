@@ -1,4 +1,4 @@
-package app.popularmovies;
+package app.popularmovies.model;
 
 import android.net.Uri;
 import android.os.Parcel;
@@ -46,6 +46,14 @@ public class MoviesListFilter implements Parcelable {
 				return MovieContract.FavoriteMoviesEntry.CONTENT_URI;
 		}
 
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder("MoviesListFilter{");
+		sb.append("collection=").append(collection);
+		sb.append('}');
+		return sb.toString();
 	}
 
 	@Override

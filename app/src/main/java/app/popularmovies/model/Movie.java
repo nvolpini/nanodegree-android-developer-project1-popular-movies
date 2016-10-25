@@ -18,7 +18,7 @@ import java.util.Date;
 
 import app.popularmovies.R;
 import app.popularmovies.Utils;
-import app.popularmovies.service.MoviesService;
+import app.popularmovies.service.TheMoviesDBService;
 
 /**
  * Created by neimar on 10/09/16.
@@ -92,7 +92,7 @@ public class Movie extends BaseObservable implements Parcelable {
 	@BindingAdapter({"bind:moviePoster"})
 	public static void loadImage(ImageView view, Movie movie) {
 
-		String imageUrl = MoviesService.get().getMoviePosterUrl(movie);
+		String imageUrl = TheMoviesDBService.getMoviePosterUrl(view.getContext(), movie);
 
 		Picasso.with(view.getContext())
 				.load(imageUrl)

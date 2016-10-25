@@ -1,4 +1,4 @@
-package app.popularmovies;
+package app.popularmovies.service;
 
 import android.app.IntentService;
 import android.content.Context;
@@ -7,8 +7,8 @@ import android.content.Intent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import app.popularmovies.Utils;
 import app.popularmovies.model.SearchParams;
-import app.popularmovies.service.TheMoviesDBService;
 
 public class FetchMoviesService extends IntentService {
 

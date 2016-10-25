@@ -28,6 +28,8 @@ import app.popularmovies.model.Movie;
 import app.popularmovies.model.Review;
 import app.popularmovies.model.Video;
 import app.popularmovies.service.TheMoviesDBService;
+import app.popularmovies.util.ReviewListCursorAdapter;
+import app.popularmovies.util.VideosListCursorAdapter;
 
 /**
  * Show the movie details.

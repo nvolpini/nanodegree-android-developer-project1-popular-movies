@@ -17,9 +17,10 @@ import app.popularmovies.model.Movie;
 import app.popularmovies.model.Review;
 import app.popularmovies.model.SearchParams;
 import app.popularmovies.model.Video;
+import app.popularmovies.service.FetchMoviesService;
 
 public class MainActivity extends AppCompatActivity implements
-		MoviesFragment.OnListFragmentInteractionListener
+		MoviesListFragment.OnListFragmentInteractionListener
 		, MovieDetailsFragment.OnMovieDetailsInteractionListener {
 
 	private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
@@ -27,7 +28,6 @@ public class MainActivity extends AppCompatActivity implements
 	private static final String DETAILFRAGMENT_TAG = "DFTAG";
 
 	private boolean mTwoPane;
-	private String mLocation;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -68,37 +68,9 @@ public class MainActivity extends AppCompatActivity implements
 			getSupportActionBar().setElevation(0f);
 		}
 
-		MoviesFragment moviesFragment = ((MoviesFragment) getSupportFragmentManager()
-				.findFragmentById(R.id.fragment_movies));
-
-		//moviesFragment.setSearchParams(searchParams);
-
-		//Bundle args = new Bundle();
-		//args.putInt(MoviesFragment.ARG_COLUMN_COUNT, columnCount);
-		//args.putParcelable(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY, searchParams);
-		//moviesFragment.setArguments(args);
-
 
 	}
 
-
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-
-		//log.trace("saving state...");
-
-		//outState.putParcelable(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY, searchParams);
-
-		super.onSaveInstanceState(outState);
-
-	}
-
-	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-		//log.trace("restoring state...");
-
-	}
 
 	@Override
 	protected void onResume() {
@@ -154,11 +126,6 @@ public class MainActivity extends AppCompatActivity implements
 
 		if (id == R.id.action_settings) {
 			startActivity(new Intent(this, SettingsActivity.class));
-			return true;
-
-		} else if (id == R.id.action_main2) {
-			Intent intent = new Intent(this, Main2Activity.class);
-			startActivity(intent);
 			return true;
 
 		} else if (id == R.id.action_download) {

@@ -1,0 +1,19 @@
+stage2
+
+- download automatico se a base estiver vazia MainActivity.onCreate
+
+movies list
+- marcar na imagem os favoritos - uma estrela em overlay
+- marcar filme selecionado com contorno ou opacidade na imagem
+
+
+Details
+
+Videos/reviews
+- botão para atualizar/recarregar do site
+- pref para baixar automatico ao entrar no filme
+- controlar se já baixou - com campo na tabela
+- mostrar duração do filme
+
+- talvez usar tabs para reviews e videos
+

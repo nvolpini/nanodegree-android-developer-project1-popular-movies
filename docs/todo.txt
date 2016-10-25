@@ -5,9 +5,11 @@ stage2
 movies list
 - marcar na imagem os favoritos - uma estrela em overlay
 - marcar filme selecionado com contorno ou opacidade na imagem
-
+- 3 colunas para tablets, 2 para outros
 
 Details
+
+- definir estilos conforme mocks
 
 Videos/reviews
 - botão para atualizar/recarregar do site
@@ -17,3 +19,10 @@ Videos/reviews
 
 - talvez usar tabs para reviews e videos
 
+reviews
+- mostrar N caracteres do review (gravar apenas N no banco)
+- link para ir pro site
+
+videos
+- mostrar icone
+- botão para compartilhar no menu de detalhes.

@@ -77,7 +77,7 @@ dependencies {
     //used in TheMovieDBAPISearchImpl
     compile group: 'info.movito', name: 'themoviedbapi', version: '1.4'
 
-    //used in RetrofitSearchImpl
+    //used in TheMoviesDBService
     //for logging
     
 

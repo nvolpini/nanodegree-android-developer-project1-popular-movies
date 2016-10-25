@@ -1,6 +1,7 @@
 package app.popularmovies;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,30 +19,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.popularmovies.model.Movie;
-import app.popularmovies.model.SearchParams;
+import app.popularmovies.model.Review;
+import app.popularmovies.model.Video;
 
-public class Main2Activity extends AppCompatActivity implements MoviesFragment.OnListFragmentInteractionListener {
+public class Main2Activity extends AppCompatActivity implements
+		MoviesFragment.OnListFragmentInteractionListener
+		,MovieDetailsFragment.OnMovieDetailsInteractionListener {
 
 	private static final Logger log = LoggerFactory.getLogger(Main2Activity.class);
-
-	private SearchParams searchParams;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main2);
 
-		if (savedInstanceState != null && savedInstanceState.containsKey(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY)) {
-
-			searchParams = savedInstanceState.getParcelable(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY);
-
-			log.trace("loading params from state: {}",searchParams);
-
-		} else if (savedInstanceState == null) {
-
-			searchParams = getIntent().getParcelableExtra(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY);
-
-		}
 
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
@@ -62,39 +54,18 @@ public class Main2Activity extends AppCompatActivity implements MoviesFragment.O
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 
-		log.trace("saving state...");
-
-		outState.putParcelable(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY, searchParams);
+		//log.trace("saving state...");
 
 		super.onSaveInstanceState(outState);
 
 	}
 
-	static SearchParams popularParams = new SearchParams();
-	static SearchParams topRatedParams = new SearchParams();
-	static SearchParams favoriteParams = new SearchParams();
-
-	static {
-		popularParams.setSortBy(IMovieSearch.SORT_BY_POPULARITY);
-		topRatedParams.setSortBy(IMovieSearch.SORT_BY_RATING);
-		favoriteParams.setSortBy(IMovieSearch.SORT_BY_FAVORITES);
-	}
-
 	private void setupViewPager(ViewPager viewPager) {
 		Adapter adapter = new Adapter(getSupportFragmentManager());
-		adapter.addFragment(MoviesFragment.newInstance(2,popularParams), "Popular");
-		adapter.addFragment(MoviesFragment.newInstance(2,topRatedParams), "Top Rated");
-		adapter.addFragment(MoviesFragment.newInstance(2, favoriteParams), "Favorites");
+		adapter.addFragment(MoviesListFragment.newInstance(MoviesListFilter.POPULAR), getString(R.string.popular));
+		adapter.addFragment(MoviesListFragment.newInstance(MoviesListFilter.TOP_RATED), getString(R.string.topRated));
+		adapter.addFragment(MoviesListFragment.newInstance(MoviesListFilter.FAVORITES), getString(R.string.favorites));
 		viewPager.setAdapter(adapter);
-	}
-
-	@Override
-	public void onListFragmentInteraction(Movie movie) {
-		log.trace("iteracao, movie: {}",movie.getOriginalTitle());
-
-		Intent intent = MovieDetailsActivity.newIntent(this,movie,searchParams);
-
-		startActivity(intent);
 	}
 
 
@@ -125,5 +96,38 @@ public class Main2Activity extends AppCompatActivity implements MoviesFragment.O
 		public CharSequence getPageTitle(int position) {
 			return mFragmentTitles.get(position);
 		}
+	}
+
+
+	@Override
+	public void onListFragmentInteraction(Movie movie) {
+		log.trace("iteracao, movie: {}",movie.getOriginalTitle());
+
+		Intent intent = MovieDetailsActivity.newIntent(this,movie);
+
+		startActivity(intent);
+	}
+
+	@Override
+	public void onVideoInteraction(Video video) {
+		log.trace("iteracao, video: {}",video.getName());
+
+		Intent i = Utils.newVideoIntent(this,video);
+
+		if (i != null) {
+			startActivity(i);
+
+		} else {
+
+			Toast.makeText(this,getString(R.string.cannot_handle_video,video.getSite()),Toast.LENGTH_LONG).show();
+		}
+	}
+
+	@Override
+	public void onReviewInteraction(Review review) {
+		log.trace("iteracao, review: {}",review.getId());
+
+		Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(review.getUrl()));
+		startActivity(i);
 	}
 }

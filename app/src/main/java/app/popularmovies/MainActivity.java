@@ -17,63 +17,32 @@ import app.popularmovies.model.Movie;
 import app.popularmovies.model.Review;
 import app.popularmovies.model.SearchParams;
 import app.popularmovies.model.Video;
-import app.popularmovies.service.MoviesService;
-
-import static app.popularmovies.Utils.changeParamsFromPrefs;
 
 public class MainActivity extends AppCompatActivity implements
 		MoviesFragment.OnListFragmentInteractionListener
-		,MovieDetailsFragment.OnMovieDetailsInteractionListener
-		{
+		, MovieDetailsFragment.OnMovieDetailsInteractionListener {
 
-    private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
+	private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
 
-    private static final String DETAILFRAGMENT_TAG = "DFTAG";
+	private static final String DETAILFRAGMENT_TAG = "DFTAG";
 
-    private boolean mTwoPane;
-    private String mLocation;
+	private boolean mTwoPane;
+	private String mLocation;
 
-    private SearchParams searchParams;
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+		log.trace("onCreate");
 
-        log.trace("onCreate");
-
-        //reset all prefs
-        //PreferenceManager.getDefaultSharedPreferences(this).edit().clear().apply();
+		//reset all prefs
+		//PreferenceManager.getDefaultSharedPreferences(this).edit().clear().apply();
 
 		//initialize prefs
-        PreferenceManager.setDefaultValues(this,R.xml.pref_general,false);
-        PreferenceManager.setDefaultValues(this,R.xml.pref_data_sync,false);
+		PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
+		PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, false);
 
-
-        if (savedInstanceState != null && savedInstanceState.containsKey(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY)) {
-
-            searchParams = savedInstanceState.getParcelable(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY);
-
-            log.trace("loading params from state: {}",searchParams);
-
-        } else if (savedInstanceState == null) {
-
-            searchParams = MoviesService.get().newSearchParams();
-
-            searchParams.setLanguage(Utils.getPreferredLanguage(this));
-            searchParams.setSortBy(Utils.getDefaultSorting(this));
-			searchParams.setMoviesToDownload(Utils.getMoviesToDownload(this));
-
-            log.trace("params from prefs: {} ",searchParams);
-
-			/*
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container
-							//TODO talvez usar 3 colunas de dispositivos maiores
-                            ,MoviesFragmentOLD.newInstance(2, searchParams)
-                    )
-                    .commit();*/
-        }
 
 
 		if (findViewById(R.id.movie_detail_container) != null) {
@@ -87,10 +56,11 @@ public class MainActivity extends AppCompatActivity implements
 			if (savedInstanceState == null) {
 				getSupportFragmentManager().beginTransaction()
 						.replace(R.id.movie_detail_container
-								, MovieDetailsFragment.newInstance(null,searchParams)
+								, MovieDetailsFragment.newInstance(null)
 								, DETAILFRAGMENT_TAG)
 						.commit();
 
+				//do not show yet
 				findViewById(R.id.movie_detail_container).setVisibility(View.INVISIBLE);
 			}
 		} else {
@@ -98,131 +68,134 @@ public class MainActivity extends AppCompatActivity implements
 			getSupportActionBar().setElevation(0f);
 		}
 
-		MoviesFragment moviesFragment =  ((MoviesFragment)getSupportFragmentManager()
+		MoviesFragment moviesFragment = ((MoviesFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.fragment_movies));
 
-		moviesFragment.setSearchParams(searchParams);
+		//moviesFragment.setSearchParams(searchParams);
 
 		//Bundle args = new Bundle();
 		//args.putInt(MoviesFragment.ARG_COLUMN_COUNT, columnCount);
 		//args.putParcelable(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY, searchParams);
 		//moviesFragment.setArguments(args);
-    }
 
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-
-        log.trace("saving state...");
-
-        outState.putParcelable(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY, searchParams);
-
-        super.onSaveInstanceState(outState);
-
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        log.trace("restoring state...");
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        log.trace("onResume()");
-
-		//check if the user changed the preferred language in the preferences
-		//next time he hits refresh it will use the new language
-		//same for other prefs
-		changeParamsFromPrefs(this,searchParams);
+	}
 
 
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
 
-		/**
-		 *TODO testar se mudou:
-		 * - sortBy
-		 * - idioma
-		 */
+		//log.trace("saving state...");
 
-		MoviesFragment mf =  ((MoviesFragment)getSupportFragmentManager()
-				.findFragmentById(R.id.fragment_movies));
+		//outState.putParcelable(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY, searchParams);
 
-		//TODO mf.onChange
+		super.onSaveInstanceState(outState);
 
-		MovieDetailsFragment df = (MovieDetailsFragment)getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
+	}
 
-		//TODO mf.onChange
-    }
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		//log.trace("restoring state...");
 
+	}
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        log.trace("onPause()");
+	@Override
+	protected void onResume() {
+		super.onResume();
+		log.trace("onResume()");
 
-
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        log.trace("onStart()");
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        log.trace("onDestroy()");
-    }
+	}
 
 
-    @Override
-    protected void onRestart() {
-        log.trace("onRestart()");
-
-        super.onRestart();
-    }
+	@Override
+	protected void onPause() {
+		super.onPause();
+		log.trace("onPause()");
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+	}
 
-        getMenuInflater().inflate(R.menu.main,menu);
 
-        return true;
+	@Override
+	protected void onStart() {
+		super.onStart();
+		log.trace("onStart()");
+	}
 
-    }
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		log.trace("onDestroy()");
+	}
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
 
-        int id = item.getItemId();
+	@Override
+	protected void onRestart() {
+		log.trace("onRestart()");
 
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
-            return true;
-        } else if (id == R.id.action_main2) {
+		super.onRestart();
+	}
+
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+
+		getMenuInflater().inflate(R.menu.main, menu);
+
+		return true;
+
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		int id = item.getItemId();
+
+		if (id == R.id.action_settings) {
+			startActivity(new Intent(this, SettingsActivity.class));
+			return true;
+
+		} else if (id == R.id.action_main2) {
 			Intent intent = new Intent(this, Main2Activity.class);
-			intent.putExtra(MoviesFragment.SEARCH_PARAMS_PARCELABLE_KEY, searchParams);
 			startActivity(intent);
+			return true;
+
+		} else if (id == R.id.action_download) {
+			downloadMovies();
 			return true;
 		}
 
-        return super.onOptionsItemSelected(item);
+		return super.onOptionsItemSelected(item);
 
-    }
+	}
 
-    @Override
-    public void onListFragmentInteraction(Movie movie) {
+	private void downloadMovies() {
 
-        log.trace("iteracao, movie: {}",movie.getOriginalTitle());
+		SearchParams searchParams = Utils.newSearchParams(this);
 
-		if(mTwoPane) {
 
-			MovieDetailsFragment df = MovieDetailsFragment.newInstance(movie, searchParams);
+		log.trace("downloading movies, params: {}", searchParams);
+
+		if (Utils.isOnline(this)) {
+
+			Intent intent = FetchMoviesService.newIntent(this, searchParams);
+			startService(intent);
+
+		} else {
+			log.trace("no internet access.");
+			Toast.makeText(this, getString(R.string.no_internet_connection), Toast.LENGTH_LONG).show();
+		}
+	}
+
+	@Override
+	public void onListFragmentInteraction(Movie movie) {
+
+		log.trace("iteracao, movie: {}", movie.getOriginalTitle());
+
+		if (mTwoPane) {
+
+			MovieDetailsFragment df = MovieDetailsFragment.newInstance(movie);
 
 			findViewById(R.id.movie_detail_container).setVisibility(View.VISIBLE);
 
@@ -232,32 +205,32 @@ public class MainActivity extends AppCompatActivity implements
 
 		} else {
 
-			Intent intent = MovieDetailsActivity.newIntent(this,movie,searchParams);
+			Intent intent = MovieDetailsActivity.newIntent(this, movie);
 
 			startActivity(intent);
 		}
 
-    }
+	}
 
 
 	@Override
 	public void onVideoInteraction(Video video) {
-		log.trace("iteracao, video: {}",video.getName());
+		log.trace("iteracao, video: {}", video.getName());
 
-		Intent i = Utils.newVideoIntent(this,video);
+		Intent i = Utils.newVideoIntent(this, video);
 
 		if (i != null) {
 			startActivity(i);
 
 		} else {
 
-			Toast.makeText(this,getString(R.string.cannot_handle_video,video.getSite()),Toast.LENGTH_LONG).show();
+			Toast.makeText(this, getString(R.string.cannot_handle_video, video.getSite()), Toast.LENGTH_LONG).show();
 		}
 	}
 
 	@Override
 	public void onReviewInteraction(Review review) {
-		log.trace("iteracao, review: {}",review.getId());
+		log.trace("iteracao, review: {}", review.getId());
 
 		Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(review.getUrl()));
 		startActivity(i);

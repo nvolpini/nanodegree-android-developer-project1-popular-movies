@@ -8,6 +8,11 @@ import android.os.Parcelable;
  */
 public class SearchParams implements Parcelable {
 
+	public static final String SORT_BY_POPULARITY = "popularity.desc";
+	public static final String SORT_BY_RATING = "vote_average.desc";
+	public static final String DEFAULT_LANGUAGE = "en";
+	public static final String SORT_BY_FAVORITES = "favorites";
+
 	private String language;
 
 	private String sortBy;
@@ -25,23 +30,43 @@ public class SearchParams implements Parcelable {
 		moviesToDownload = in.readInt();
 	}
 
+	/**
+	 * @deprecated
+	 * @return
+	 */
 	public boolean isSortByPopularity() {
-		return IMovieSearch.SORT_BY_POPULARITY.equals(sortBy);
+		return SORT_BY_POPULARITY.equals(sortBy);
 	}
 
-
+	/**
+	 * @deprecated
+	 * @return
+	 */
 	public boolean isSortByRating() {
-		return IMovieSearch.SORT_BY_RATING.equals(sortBy);
+		return SORT_BY_RATING.equals(sortBy);
 	}
 
+	/**
+	 * @deprecated
+	 * @return
+	 */
 	public boolean isSortByFavorites() {
-		return IMovieSearch.SORT_BY_FAVORITES.equals(sortBy);
+		return SORT_BY_FAVORITES.equals(sortBy);
 	}
 
+	/**
+	 * @deprecated
+	 * @return
+	 */
 	public String getSortBy() {
 		return sortBy;
 	}
 
+	/**
+	 * @deprecated
+	 * @param sortBy
+	 * @return
+	 */
 	public SearchParams setSortBy(String sortBy) {
 		this.sortBy = sortBy;
 		return this;

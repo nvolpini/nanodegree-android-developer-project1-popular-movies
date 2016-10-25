@@ -1,7 +1,6 @@
 package app.popularmovies;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,7 +17,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import app.popularmovies.data.MovieContract;
 import app.popularmovies.model.Movie;
 import app.popularmovies.model.SearchParams;
-import app.popularmovies.service.MoviesService;
 
 /**
  * A fragment representing a list of movie posters.
@@ -128,7 +125,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
             if (searchParams == null) {
                 log.trace("no search params passed as argument. Getting default...");
-                searchParams = MoviesService.get().newSearchParams();
+                searchParams = Utils.newSearchParams(getActivity());
             }
 
             //TODO Do this here or at onStart() - neither seem to be right - check loaders
@@ -140,10 +137,6 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
         } else { //previous state saved, restore
 
-            if (savedInstanceState.containsKey(MOVIES_LIST_PARCELABLE_KEY)) {
-                log.trace("restoring moviesList from state...");
-                //moviesList = savedInstanceState.getParcelableArrayList(MOVIES_LIST_PARCELABLE_KEY);
-            }
 
             if (savedInstanceState.containsKey(SEARCH_PARAMS_PARCELABLE_KEY)) {
                 log.trace("restoring params from state...");
@@ -214,17 +207,9 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_refresh) {
+		if (id == R.id.action_sort_by_popularity) {
 
-            downloadMovies();
-
-			//getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
-
-            return true;
-
-        } else if (id == R.id.action_sort_by_popularity) {
-
-            searchParams.setSortBy(IMovieSearch.SORT_BY_POPULARITY);
+            searchParams.setSortBy(SearchParams.SORT_BY_POPULARITY);
 			getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
 			//downloadMovies();
 
@@ -232,7 +217,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
         } else if (id == R.id.action_sort_by_rating) {
 
-            searchParams.setSortBy(IMovieSearch.SORT_BY_RATING);
+            searchParams.setSortBy(SearchParams.SORT_BY_RATING);
 			getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
             //downloadMovies();
 
@@ -240,7 +225,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
 		} else if (id == R.id.action_favorites) {
 
-			searchParams.setSortBy(IMovieSearch.SORT_BY_FAVORITES);
+			searchParams.setSortBy(SearchParams.SORT_BY_FAVORITES);
 			getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
 			//downloadMovies();
 
@@ -392,29 +377,6 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         super.onDestroy();
         log.trace("onDestroy()");
 
-    }
-
-
-    private void downloadMovies() {
-        log.trace("updating movies, params: {}",searchParams);
-
-		if (Utils.isOnline(getContext())) {
-
-			noConnection = false;
-
-            //FetchMoviesTask task = new FetchMoviesTask(getActivity());
-			//task.execute(searchParams);
-
-			Intent intent = new Intent(getActivity(),FetchMoviesService.class);
-			intent.putExtra(FetchMoviesService.SEARCH_PARAMS_PARCELABLE_KEY, searchParams);
-			getActivity().startService(intent);
-
-
-		} else {
-			log.trace("no internet access.");
-			noConnection = true;
-			Toast.makeText(getActivity(),getString(R.string.no_internet_connection),Toast.LENGTH_LONG).show();
-		}
     }
 
 

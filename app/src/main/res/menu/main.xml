@@ -9,4 +9,10 @@
     <item android:id="@+id/action_main2" android:title="Main2 test"
           android:orderInCategory="100" app:showAsAction="never" />
 
+
+    <item android:id="@+id/action_download" android:title="@string/action_download"
+		  android:orderInCategory="102" app:showAsAction="ifRoom|withText"
+		  android:icon="@android:drawable/stat_sys_download"
+		  android:titleCondensed="@string/action_download"/>
+
 </menu>

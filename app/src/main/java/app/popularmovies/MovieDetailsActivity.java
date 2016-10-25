@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import app.popularmovies.model.Movie;
 import app.popularmovies.model.Review;
-import app.popularmovies.model.SearchParams;
 import app.popularmovies.model.Video;
 
 public class MovieDetailsActivity extends AppCompatActivity implements MovieDetailsFragment.OnMovieDetailsInteractionListener {
@@ -20,12 +19,10 @@ public class MovieDetailsActivity extends AppCompatActivity implements MovieDeta
 	private static final Logger log = LoggerFactory.getLogger(MovieDetailsActivity.class);
 
 	private static final String MOVIE_EXTRA_KEY = MovieDetailsActivity.class.getName().concat(".movieExtra");
-	private static final String PARAMS_EXTRA_KEY = MovieDetailsActivity.class.getName().concat(".params");
 
-	public static Intent newIntent(Context context, Movie movie, SearchParams searchParams) {
+	public static Intent newIntent(Context context, Movie movie) {
 		Intent intent = new Intent(context, MovieDetailsActivity.class);
 		intent.putExtra(MOVIE_EXTRA_KEY, movie);
-		intent.putExtra(PARAMS_EXTRA_KEY, searchParams);
 		return intent;
 	}
 
@@ -33,9 +30,6 @@ public class MovieDetailsActivity extends AppCompatActivity implements MovieDeta
 		return getIntent().getParcelableExtra(MOVIE_EXTRA_KEY);
 	}
 
-	private SearchParams getSearchParamsExtra() {
-		return getIntent().getParcelableExtra(PARAMS_EXTRA_KEY);
-	}
 
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +40,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements MovieDeta
 
 			log.trace("setting MovieDetailsFragment args... ");
 
-			MovieDetailsFragment f = MovieDetailsFragment.newInstance(getMovieExtra()
-					, getSearchParamsExtra());
+			MovieDetailsFragment f = MovieDetailsFragment.newInstance(getMovieExtra());
 
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, f)
@@ -66,7 +59,8 @@ public class MovieDetailsActivity extends AppCompatActivity implements MovieDeta
 
 		} else {
 
-			Toast.makeText(this,getString(R.string.cannot_handle_video,video.getSite()),Toast.LENGTH_LONG).show();
+			Toast.makeText(this,getString(R.string.cannot_handle_video,video.getSite())
+					,Toast.LENGTH_LONG).show();
 		}
 	}
 

@@ -26,9 +26,8 @@ import app.popularmovies.data.MoviesDbHelper;
 import app.popularmovies.databinding.FragmentMovieDetailsBinding;
 import app.popularmovies.model.Movie;
 import app.popularmovies.model.Review;
-import app.popularmovies.model.SearchParams;
 import app.popularmovies.model.Video;
-import app.popularmovies.service.RetrofitSearchImpl;
+import app.popularmovies.service.TheMoviesDBService;
 
 /**
  * Show the movie details.
@@ -39,13 +38,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 	private static final Logger log = LoggerFactory.getLogger(MovieDetailsFragment.class);
 
 	private static final String MOVIE_PARAM_KEY = MovieDetailsFragment.class.getName().concat(".movie");
-	private static final String PARAMS_PARAM_KEY = MovieDetailsFragment.class.getName().concat(".params");
 
-	/**
-	 * The parameters.
-	 * from extras/arguments
-	 */
-	private SearchParams params;
 
 	/**
 	 * The current movie.
@@ -64,10 +57,9 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 	public MovieDetailsFragment() {
 	}
 
-	public static MovieDetailsFragment newInstance(Movie movie, SearchParams searchParams) {
+	public static MovieDetailsFragment newInstance(Movie movie) {
 		Bundle args = new Bundle();
 		args.putParcelable(MOVIE_PARAM_KEY, movie);
-		args.putParcelable(PARAMS_PARAM_KEY, searchParams);
 
 		MovieDetailsFragment df = new MovieDetailsFragment();
 		df.setArguments(args);
@@ -85,8 +77,6 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 		Bundle arguments = getArguments();
 
 		if (arguments != null) { //Fragment replaced
-
-			params = arguments.getParcelable(PARAMS_PARAM_KEY);
 
 			movie = arguments.getParcelable(MOVIE_PARAM_KEY);
 		}
@@ -265,7 +255,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 		@Override
 		protected Void doInBackground(Void... taskParams) {
 
-			RetrofitSearchImpl s = new RetrofitSearchImpl(params);
+			TheMoviesDBService s = new TheMoviesDBService();
 
 			s.fetchVideos(getActivity(), movie);
 
@@ -280,7 +270,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 		@Override
 		protected Void doInBackground(Void... taskParams) {
 
-			RetrofitSearchImpl s = new RetrofitSearchImpl(params);
+			TheMoviesDBService s = new TheMoviesDBService();
 
 			//TODO page
 			s.fetchReviews(getActivity(), movie, 1);

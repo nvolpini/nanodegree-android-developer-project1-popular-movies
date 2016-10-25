@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.popularmovies.model.Movie;
-import app.popularmovies.model.SearchParams;
 
 /**
  * Created by neimar on 19/09/16.
@@ -39,16 +38,6 @@ public class MoviesService {
         return movie == null ? null : String.format("http://image.tmdb.org/t/p/w500/%s"
                 ,movie.getPosterPath());
 
-    }
-
-    /**
-     *
-     * @return Default params
-     */
-    public SearchParams newSearchParams() {
-        return new SearchParams()
-                .setLanguage(IMovieSearch.DEFAULT_LANGUAGE)
-                .setSortBy(IMovieSearch.SORT_BY_POPULARITY);
     }
 
 }

@@ -1,9 +1,16 @@
 <resources>
 	<string name="app_name">Popular Movies</string>
+
+	<string name="popular">Popular</string>
+	<string name="topRated">Top Rated</string>
+	<string name="favorites">Favorites</string>
+
 	<string name="action_settings">Settings</string>
 	<string name="title_activity_settings">Settings</string>
 
 	<string name="action_refresh">Refresh</string>
+	<string name="action_download">Download</string>
+	<string name="action_download_description">Download movies from the Internet</string>
 	<string name="action_sort_by_popularity">Most popular</string>
 	<string name="action_sort_by_rating">Top rated</string>
 	<string name="action_favorites">Favorites</string>

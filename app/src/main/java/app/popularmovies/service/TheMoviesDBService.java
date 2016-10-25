@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Vector;
 
 import app.popularmovies.BuildConfig;
+import app.popularmovies.Utils;
 import app.popularmovies.data.MovieContract;
 import app.popularmovies.data.MoviesDbHelper;
 import app.popularmovies.model.Movie;
@@ -37,17 +38,13 @@ import static org.slf4j.LoggerFactory.getLogger;
  * Created by neimar on 26/09/16.
  */
 
-public class RetrofitSearchImpl {
+public class TheMoviesDBService {
 
-	private static final Logger log = getLogger(RetrofitSearchImpl.class);
+	private static final Logger log = getLogger(TheMoviesDBService.class);
 
 	private static final String API_URL = "https://api.themoviedb.org/3/";
 
-	private final SearchParams params;
-
-
-	public RetrofitSearchImpl(SearchParams params) {
-		this.params = params;
+	public TheMoviesDBService() {
 	}
 
 	private enum MoviesEndPoint {
@@ -100,27 +97,21 @@ public class RetrofitSearchImpl {
 	}
 
 
-	private void validate() {
+	public void fetchMovies(Context context, SearchParams params) throws MoviesDataException {
 
-		if (params.getMoviesToDownload()==0) { //TODO VALIDAR RESTO DE 20 == 0
-			params.setMoviesToDownload(20);
-		}
-	}
-
-
-	public void fetchMovies(Context context) throws MoviesDataException {
-
-		validate();
-
-		List<Movie> movies = fetchMovies(MoviesEndPoint.POPULAR);
+		List<Movie> movies = fetchMovies(MoviesEndPoint.POPULAR, params);
 		saveMovies(context, movies, MoviesEndPoint.POPULAR);
 
-		movies = fetchMovies(MoviesEndPoint.TOP_RATED);
+		movies = fetchMovies(MoviesEndPoint.TOP_RATED, params);
 		saveMovies(context, movies, MoviesEndPoint.TOP_RATED);
 
 	}
 
-	private List<Movie> fetchMovies(MoviesEndPoint endPoint) throws MoviesDataException {
+	private List<Movie> fetchMovies(MoviesEndPoint endPoint, SearchParams params) throws MoviesDataException {
+
+		if (params.getMoviesToDownload()==0) { //TODO VALIDAR RESTO DE 20 == 0
+			params.setMoviesToDownload(20);
+		}
 
 		log.debug("Fetching movies from '{}', Lang: '{}', movies count: {}, "
 				, endPoint, params.getLanguage(), params.getMoviesToDownload());
@@ -206,15 +197,17 @@ public class RetrofitSearchImpl {
 
 	public void fetchVideos(Context context, Movie movie) throws MoviesDataException {
 
-		List<Video> videos = fetchVideos(movie);
+
+
+		List<Video> videos = fetchVideos(movie, Utils.getPreferredLanguage(context));
 		saveVideos(context, movie, videos);
 
 	}
 
-	private List<Video> fetchVideos(Movie movie) throws MoviesDataException {
+	private List<Video> fetchVideos(Movie movie, String language) throws MoviesDataException {
 
 		log.debug("Fetching movie videos, movie: {}, Lang: '{}'"
-				, movie, params.getLanguage());
+				, movie, language);
 
 		ArrayList<Video> results = new ArrayList<>();
 
@@ -222,7 +215,7 @@ public class RetrofitSearchImpl {
 			//TODO tratar fallback do idioma - so baixa no idioma passado
 
 			Call<Video.Results> resultCall = service.videos(Integer.toString(movie.getMoviesDbId())
-					, BuildConfig.MOVIESDB_API_KEY, params.getLanguage());
+					, BuildConfig.MOVIESDB_API_KEY, language);
 
 			Video.Results res = resultCall.execute().body();
 
@@ -268,15 +261,15 @@ public class RetrofitSearchImpl {
 
 	public void fetchReviews(Context context, Movie movie, int page) throws MoviesDataException {
 
-		List<Review> videos = fetchReviews(movie, page);
+		List<Review> videos = fetchReviews(movie, Utils.getPreferredLanguage(context), page);
 		saveReviews(context, movie, videos);
 
 	}
 
-	private List<Review> fetchReviews(Movie movie, int page) throws MoviesDataException {
+	private List<Review> fetchReviews(Movie movie, String language, int page) throws MoviesDataException {
 
 		log.debug("Fetching movie reviews, movie: {}, Lang: '{}', page: {}"
-				, movie, params.getLanguage(), page);
+				, movie, language, page);
 
 		ArrayList<Review> results = new ArrayList<>();
 
@@ -286,7 +279,7 @@ public class RetrofitSearchImpl {
 
 			Call<ResultsPage<Review>> resultCall = service.reviews(Integer.toString(movie.getMoviesDbId())
 					, BuildConfig.MOVIESDB_API_KEY
-					, params.getLanguage(), page);
+					, language, page);
 
 			ResultsPage<Review> res = resultCall.execute().body();
 

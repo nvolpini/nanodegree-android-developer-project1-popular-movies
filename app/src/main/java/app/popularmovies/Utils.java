@@ -33,7 +33,7 @@ public class Utils {
 	public static String getPreferredLanguage(Context context) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		return prefs.getString(context.getString(R.string.pref_key_movies_language)
-				, IMovieSearch.DEFAULT_LANGUAGE);
+				, SearchParams.DEFAULT_LANGUAGE);
 	}
 
 	public static void changeParamsFromPrefs(Context context, SearchParams params) {
@@ -48,12 +48,6 @@ public class Utils {
 			params.setMoviesToDownload(getMoviesToDownload(context));
 		}
 
-	}
-
-	public static String getDefaultSorting(Context context) {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		return prefs.getString(context.getString(R.string.pref_key_default_sorting)
-				, IMovieSearch.SORT_BY_POPULARITY);
 	}
 
 	public static boolean isSyncOnStart(Context context) {
@@ -199,5 +193,16 @@ public class Utils {
 		}
 
 		return i;
+	}
+
+	public static SearchParams newSearchParams(Context context) {
+
+		SearchParams searchParams = new SearchParams();
+
+		searchParams.setLanguage(Utils.getPreferredLanguage(context));
+		searchParams.setMoviesToDownload(Utils.getMoviesToDownload(context));
+
+		return searchParams;
+
 	}
 }

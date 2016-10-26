@@ -301,7 +301,10 @@ public class TheMoviesDBService {
 
 			review.setMovieId(movie.getId());
 
-			//TODO truncate the review content
+			//save locally only 200 characters of the review
+			if (review.getContent().length()>200) {
+				review.setContent(review.getContent().substring(0, 200));
+			}
 
 			ContentValues values = MoviesDbHelper.getContentValues(review);
 

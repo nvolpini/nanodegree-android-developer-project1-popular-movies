@@ -1,6 +1,9 @@
 stage2
 
-- download automatico se a base estiver vazia MainActivity.onCreate
+- application class com debug options
+- picasso logar no stheto - mover codigo para o TheMoviesDbService 
+
+- criar/upload das estrelas para icone favorito
 
 movies list
 - marcar na imagem os favoritos - uma estrela em overlay
@@ -26,3 +29,6 @@ reviews
 videos
 - mostrar icone
 - botão para compartilhar no menu de detalhes.
+
+
+

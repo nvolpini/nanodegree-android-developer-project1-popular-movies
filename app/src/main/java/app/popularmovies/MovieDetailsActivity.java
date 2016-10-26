@@ -14,7 +14,8 @@ import app.popularmovies.model.Movie;
 import app.popularmovies.model.Review;
 import app.popularmovies.model.Video;
 
-public class MovieDetailsActivity extends AppCompatActivity implements MovieDetailsFragment.OnMovieDetailsInteractionListener {
+public class MovieDetailsActivity extends AppCompatActivity implements
+		MovieDetailsFragment.OnMovieDetailsInteractionListener {
 
 	private static final Logger log = LoggerFactory.getLogger(MovieDetailsActivity.class);
 
@@ -70,6 +71,20 @@ public class MovieDetailsActivity extends AppCompatActivity implements MovieDeta
 
 		Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(review.getUrl()));
 		startActivity(i);
+
+	}
+
+
+	@Override
+	public void onShareVideoInteraction(Video video) {
+		log.trace("iteracao, share video: {}", video.getId());
+
+		Intent i = Utils.newShareVideoIntent(this, video);
+
+		if (i != null) {
+			startActivity(i);
+
+		}
 
 	}
 }

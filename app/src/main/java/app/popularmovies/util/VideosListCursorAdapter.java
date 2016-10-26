@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import org.slf4j.Logger;
@@ -21,62 +22,67 @@ import app.popularmovies.model.Video;
  */
 public class VideosListCursorAdapter extends CursorRecyclerViewAdapter<VideosListCursorAdapter.ViewHolder> {
 
-    private static final Logger log = LoggerFactory.getLogger(VideosListCursorAdapter.class);
+	private static final Logger log = LoggerFactory.getLogger(VideosListCursorAdapter.class);
 
-    private final OnMovieDetailsInteractionListener mListener;
+	private final OnMovieDetailsInteractionListener mListener;
 
 
-	public VideosListCursorAdapter(Context context, Cursor cursor, OnMovieDetailsInteractionListener listener){
-		super(context,cursor);
+	public VideosListCursorAdapter(Context context, Cursor cursor, OnMovieDetailsInteractionListener listener) {
+		super(context, cursor);
 		this.mListener = listener;
 
 	}
 
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_video, parent, false);
-        return new ViewHolder(view);
-    }
+	@Override
+	public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+		View view = LayoutInflater.from(parent.getContext())
+				.inflate(R.layout.fragment_video_item, parent, false);
+		return new ViewHolder(view);
+	}
 
-    @Override
+	@Override
 	public void onBindViewHolder(final ViewHolder holder, Cursor cursor) {
 
 		Video video = MoviesDbHelper.cursorToVideo(cursor);
 
-        holder.mItem = video;
-		holder.mIdView.setText(Long.toString(video.getId()));
-		holder.mContentView.setText(String.format("%s - %s - %s",video.getName(), video.getType(), video.getKey()));
+		holder.mItem = video;
+		holder.mContentView.setText(String.format("%s - %s", video.getName(), video.getType()));
 
-		//TODO mover isso para onCreateViewHolder ???
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onVideoInteraction(holder.mItem);
-                }
-            }
-        });
-    }
+		holder.mView.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (null != mListener) {
+					mListener.onVideoInteraction(holder.mItem);
+				}
+			}
+		});
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
-        public Video mItem;
+		holder.imageButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (null != mListener) {
+					mListener.onShareVideoInteraction(holder.mItem);
+				}
+			}
+		});
+	}
 
-        public ViewHolder(View view) {
-            super(view);
-            mView = view;
-            mIdView = (TextView) view.findViewById(R.id.videoId);
-            mContentView = (TextView) view.findViewById(R.id.videoName);
-        }
+	public class ViewHolder extends RecyclerView.ViewHolder {
+		public final View mView;
+		public final TextView mContentView;
+		public final ImageButton imageButton;
+		public Video mItem;
 
-        @Override
-        public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
-        }
-    }
+		public ViewHolder(View view) {
+			super(view);
+			mView = view;
+			mContentView = (TextView) view.findViewById(R.id.videoName);
+			imageButton = (ImageButton) view.findViewById(R.id.shareButton);
+		}
+
+		@Override
+		public String toString() {
+			return super.toString() + " '" + mContentView.getText() + "'";
+		}
+	}
 }

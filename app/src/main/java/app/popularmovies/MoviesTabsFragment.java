@@ -30,6 +30,8 @@ public class MoviesTabsFragment extends Fragment {
 
 	private ViewPager viewPager;
 
+	private boolean twoPaneLayout = false;
+
 	public MoviesTabsFragment() {
 		// Required empty public constructor
 	}
@@ -90,13 +92,17 @@ public class MoviesTabsFragment extends Fragment {
 
 	private void setupViewPager(ViewPager viewPager) {
 
+		log.trace("twoPane: {}", twoPaneLayout);
+
+		int cols = twoPaneLayout ? 3 : 2;
+
 		viewPager.setOffscreenPageLimit(2);
 
 		MyAdapter adapter = new MyAdapter(getChildFragmentManager());
 
-		adapter.addFragment(MoviesListFragment.newInstance(MoviesListFilter.POPULAR), getString(R.string.popular));
-		adapter.addFragment(MoviesListFragment.newInstance(MoviesListFilter.TOP_RATED), getString(R.string.topRated));
-		adapter.addFragment(MoviesListFragment.newInstance(MoviesListFilter.FAVORITES), getString(R.string.favorites));
+		adapter.addFragment(MoviesListFragment.newInstance(MoviesListFilter.POPULAR, cols), getString(R.string.popular));
+		adapter.addFragment(MoviesListFragment.newInstance(MoviesListFilter.TOP_RATED, cols), getString(R.string.topRated));
+		adapter.addFragment(MoviesListFragment.newInstance(MoviesListFilter.FAVORITES, cols), getString(R.string.favorites));
 
 		viewPager.setAdapter(adapter);
 
@@ -133,4 +139,7 @@ public class MoviesTabsFragment extends Fragment {
 		}
 	}
 
+	public void setTwoPaneLayout(boolean twoPaneLayout) {
+		this.twoPaneLayout = twoPaneLayout;
+	}
 }

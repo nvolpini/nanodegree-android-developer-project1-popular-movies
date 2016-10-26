@@ -236,6 +236,8 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 		 * @param review
 		 */
 		void onReviewInteraction(Review review);
+
+		void onShareVideoInteraction(Video video);
 	}
 
 

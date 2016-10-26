@@ -38,6 +38,9 @@
 	<!-- flag to indicate that the movies language has changed and in the next remote fetch should update movies data  -->
 	<string name="pref_key_movies_language_changed" translatable="false">movies_language_changed</string>
 
+	<!-- flag to indicate the last time data was downloaded   -->
+	<string name="pref_key_last_download" translatable="false">last_download</string>
+
 
 	<!-- Example settings for Data & Sync -->
 	<string name="pref_header_data_sync">Data &amp; sync</string>
@@ -71,7 +74,7 @@
 	</string-array>
 
 	<string name="pref_title_system_sync_settings">System sync settings</string>
-	<string name="action_clear">Clear</string>
+
 	<string name="title_activity_movie_detail">MovieDetailActivity</string>
 
 	<string name="pref_key_movies_to_download" translatable="false">movies_to_download</string>
@@ -93,10 +96,6 @@
 		<item>80</item>
 		<item>100</item>
 	</string-array>
-	<string name="title_activity_main2">Main2Activity</string>
-
-	<!-- TODO: Remove or change this placeholder text -->
-	<string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

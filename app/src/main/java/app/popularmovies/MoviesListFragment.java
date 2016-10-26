@@ -35,6 +35,7 @@ public class MoviesListFragment  extends Fragment implements LoaderManager.Loade
 	private static final Logger log = LoggerFactory.getLogger(MoviesListFragment.class);
 
 	private static final String FILTER_KEY = "filter";
+	private static final String COLUMNS_KEY = "columns";
 	private static final String POSITION_KEY = "selected_position";
 
 	private static final int MOVIES_LOADER = 0;
@@ -50,10 +51,11 @@ public class MoviesListFragment  extends Fragment implements LoaderManager.Loade
 	//TODO move interface here
 	private OnListFragmentInteractionListener mListener;
 
-	public static MoviesListFragment newInstance(MoviesListFilter filter) {
+	public static MoviesListFragment newInstance(MoviesListFilter filter, int gridColumns) {
 		MoviesListFragment fragment = new MoviesListFragment();
 		Bundle args = new Bundle();
 		args.putParcelable(FILTER_KEY, filter);
+		args.putInt(COLUMNS_KEY, gridColumns);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -61,7 +63,7 @@ public class MoviesListFragment  extends Fragment implements LoaderManager.Loade
 	/**
 	 * Do not use this constructor
 	 * <br/>
-	 * To create new instances use {@link #newInstance(MoviesListFilter)}
+	 * To create new instances use {@link #newInstance(MoviesListFilter, int)}
 	 */
 	public MoviesListFragment() {
 	}

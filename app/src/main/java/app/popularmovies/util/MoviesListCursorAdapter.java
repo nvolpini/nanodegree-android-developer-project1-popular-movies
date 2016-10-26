@@ -120,8 +120,6 @@ public class MoviesListCursorAdapter extends CursorRecyclerViewAdapter<MoviesLis
 
 	public class ViewHolder extends RecyclerView.ViewHolder {
 		public final View mView;
-		//public final TextView mIdView;
-		//public final TextView mContentView;
 		public final ImageView mImageView;
 		public Movie mItem;
 
@@ -131,8 +129,6 @@ public class MoviesListCursorAdapter extends CursorRecyclerViewAdapter<MoviesLis
 
 			mView.setClickable(true);
 
-			//mIdView = (TextView) view.findViewById(R.id.id);
-			//mContentView = (TextView) view.findViewById(R.id.content);
 			mImageView = (ImageView) view.findViewById(imageView);
 		}
 

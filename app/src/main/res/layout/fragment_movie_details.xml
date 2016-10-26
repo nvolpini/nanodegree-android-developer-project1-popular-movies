@@ -84,14 +84,18 @@
 					<ImageButton
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:src="@{movie.favorite ? @android:drawable/btn_star_big_on : @android:drawable/btn_star_big_off}"
-						tools:src="@android:drawable/btn_star_big_on"
+						android:src="@{movie.favorite ? @drawable/fav_icon_on : @drawable/fav_icon_off}"
+						tools:src="@drawable/fav_icon_off"
 						android:id="@+id/favoriteIcon"
-						android:adjustViewBounds="true"
+
 						android:background="@android:color/transparent"
 						android:layout_marginBottom="@dimen/activity_vertical_margin"
 						android:layout_marginTop="@dimen/activity_vertical_margin"
-						android:contentDescription="set @string/action_favorites"/>
+						android:contentDescription="@string/action_favorites"
+						android:cropToPadding="false"
+						android:scaleType="centerCrop"
+						android:adjustViewBounds="true"
+						android:maxWidth="@android:dimen/notification_large_icon_width"/>
 
 				</LinearLayout>
 
@@ -140,7 +144,7 @@
 					android:layout_marginLeft="0dp"
 					android:layout_marginRight="0dp"
 					app:layoutManager="LinearLayoutManager"
-					tools:listitem="@layout/fragment_video"/>
+					tools:listitem="@layout/fragment_video_item"/>
 
 			</LinearLayout>
 

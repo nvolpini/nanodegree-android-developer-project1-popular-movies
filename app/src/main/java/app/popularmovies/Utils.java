@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.text.format.Time;
 
 import org.slf4j.Logger;
@@ -79,6 +80,21 @@ public class Utils {
 
 	}
 
+	/**
+	 *
+	 * @param context
+	 * @return time (as long) of the last download. Zero means never downloaded.
+	 */
+	public static long getLastDownloadDate(Context context) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		return prefs.getLong(context.getString(R.string.pref_key_last_download), 0);
+	}
+
+	public static void updateLastDownloadDate(Context context) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		prefs.edit().putLong(context.getString(R.string.pref_key_last_download), new Date().getTime())
+				.commit();
+	}
 
 	public static boolean isOnline(Context context) {
 
@@ -180,16 +196,39 @@ public class Utils {
 
 	public static Intent newVideoIntent(Context context, Video video) {
 
-		String url = null;
-
-		if ("youtube".equalsIgnoreCase(video.getSite())) {
-			url = String.format("https://www.youtube.com/watch?v=%s",video.getKey());
-		}
+		String url = getVideoUrl(video);
 
 		Intent i = null;
 
 		if (url != null) {
 			i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+		}
+
+		return i;
+	}
+
+	@Nullable
+	public static String getVideoUrl(Video video) {
+		String url = null;
+
+		if ("youtube".equalsIgnoreCase(video.getSite())) {
+			url = String.format("https://www.youtube.com/watch?v=%s",video.getKey());
+		}
+		return url;
+	}
+
+	public static Intent newShareVideoIntent(Context context, Video video) {
+
+		String url = getVideoUrl(video);
+
+		Intent i = null;
+
+		if (url != null) {
+			i = new Intent(Intent.ACTION_SEND);
+			i.setType("text/plain");
+			//TODO obter nome do filme
+			i.putExtra(Intent.EXTRA_SUBJECT, String.format("%s",video.getName()));
+			i.putExtra(Intent.EXTRA_TEXT, url);
 		}
 
 		return i;

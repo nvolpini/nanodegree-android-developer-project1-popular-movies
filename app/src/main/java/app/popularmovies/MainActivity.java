@@ -44,15 +44,14 @@ public class MainActivity extends AppCompatActivity implements
 		PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, false);
 
 
+		if (Utils.getLastDownloadDate(this) == 0) {
+			//first time - download
+			startService(FetchMoviesService.newIntent(this, Utils.newSearchParams(this)));
+		}
+
 
 		if (findViewById(R.id.movie_detail_container) != null) {
-			// The detail container view will be present only in the large-screen layouts
-			// (res/layout-sw600dp). If this view is present, then the activity should be
-			// in two-pane mode.
 			mTwoPane = true;
-			// In two-pane mode, show the detail view in this activity by
-			// adding or replacing the detail fragment using a
-			// fragment transaction.
 			if (savedInstanceState == null) {
 				getSupportFragmentManager().beginTransaction()
 						.replace(R.id.movie_detail_container
@@ -71,6 +70,14 @@ public class MainActivity extends AppCompatActivity implements
 
 	}
 
+	@Override
+	public void onAttachFragment(android.support.v4.app.Fragment fragment) {
+
+		if (fragment.getId() == R.id.fragment_movies) {
+			MoviesTabsFragment tabsFragment = (MoviesTabsFragment) fragment;
+			tabsFragment.setTwoPaneLayout(mTwoPane);
+		}
+	}
 
 	@Override
 	protected void onResume() {
@@ -201,6 +208,19 @@ public class MainActivity extends AppCompatActivity implements
 
 		Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(review.getUrl()));
 		startActivity(i);
+	}
+
+	@Override
+	public void onShareVideoInteraction(Video video) {
+		log.trace("iteracao, share video: {}", video.getId());
+
+		Intent i = Utils.newShareVideoIntent(this, video);
+
+		if (i != null) {
+			startActivity(i);
+
+		}
+
 	}
 
 }

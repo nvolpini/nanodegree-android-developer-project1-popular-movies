@@ -35,7 +35,7 @@ public class ReviewListCursorAdapter extends CursorRecyclerViewAdapter<ReviewLis
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_video, parent, false);
+                .inflate(R.layout.fragment_review_item, parent, false);
         return new ViewHolder(view);
     }
 
@@ -46,16 +46,13 @@ public class ReviewListCursorAdapter extends CursorRecyclerViewAdapter<ReviewLis
 
 
         holder.mItem = review;
-		holder.mIdView.setText(Long.toString(review.getId()));
-		holder.mContentView.setText(String.format("%s",review.getAuthor()));
+		holder.mAuthorText.setText(review.getAuthor());
+		holder.mcontentText.setText(review.getContent());
 
-		//TODO mover isso para onCreateViewHolder ???
-        holder.mView.setOnClickListener(new View.OnClickListener() {
+		holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
                     mListener.onReviewInteraction(holder.mItem);
                 }
             }
@@ -64,20 +61,20 @@ public class ReviewListCursorAdapter extends CursorRecyclerViewAdapter<ReviewLis
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
+        public final TextView mAuthorText;
+        public final TextView mcontentText;
         public Review mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.videoId);
-            mContentView = (TextView) view.findViewById(R.id.videoName);
+            mAuthorText = (TextView) view.findViewById(R.id.reviewAuthor);
+            mcontentText = (TextView) view.findViewById(R.id.reviewContent);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            return super.toString() + " '" + mcontentText.getText() + "'";
         }
     }
 }

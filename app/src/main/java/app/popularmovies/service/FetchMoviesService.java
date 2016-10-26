@@ -47,6 +47,8 @@ public class FetchMoviesService extends IntentService {
 
 			fetch.fetchMovies(this, searchParams);
 
+			Utils.updateLastDownloadDate(this);
+
 			Utils.setMoviesLanguageChanged(this,false);
 
 		} catch (Exception e) {

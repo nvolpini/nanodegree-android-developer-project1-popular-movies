@@ -413,6 +413,10 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 
 	public static Movie cursorToMovie(Cursor cursor) {
 
+		if (cursor.isBeforeFirst()) {
+			cursor.moveToFirst();
+		}
+
 		Movie m = new Movie();
 
 		m.setId(cursor.getLong(0));

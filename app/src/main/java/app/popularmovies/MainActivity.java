@@ -47,6 +47,9 @@ public class MainActivity extends AppCompatActivity implements
 		if (Utils.getLastDownloadDate(this) == 0) {
 			//first time - download
 			startService(FetchMoviesService.newIntent(this, Utils.newSearchParams(this)));
+		} else if(Utils.isSyncOnStart(this)) {
+			//always download on start
+			startService(FetchMoviesService.newIntent(this, Utils.newSearchParams(this)));
 		}
 
 
@@ -169,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements
 
 		if (mTwoPane) {
 
-			MovieDetailsFragment df = MovieDetailsFragment.newInstance(movie);
+			MovieDetailsFragment df = MovieDetailsFragment.newInstance(movie.getId());
 
 			findViewById(R.id.movie_detail_container).setVisibility(View.VISIBLE);
 

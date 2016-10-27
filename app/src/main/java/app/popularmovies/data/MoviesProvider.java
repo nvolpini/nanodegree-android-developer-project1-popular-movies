@@ -178,20 +178,19 @@ public class MoviesProvider extends ContentProvider {
 			}
 			case MOVIE_ID:
 			{
-				retCursor = mOpenHelper.getReadableDatabase().query(
-						MovieContract.MovieEntry.TABLE_NAME,
-						projection,
-						selection,
-						selectionArgs,
-						null,
-						null,
-						sortOrder
-				);
+				projection = projection != null ? projection : MoviesDbHelper.DEFAULT_MOVIES_PROJECTION;
+				selection = MovieContract.MovieEntry.TABLE_NAME+"."+ MovieContract.MovieEntry._ID+"=?";
+				selectionArgs = new String[]{Long.toString(MovieContract.MovieEntry.getMovieIdFromUri(uri))};
+
+				log.trace("selection: {}, args: {}", selection, selectionArgs);
+
+				retCursor = getMovies(uri, projection,selection, selectionArgs, sortOrder);
 				break;
 			}
 
 			case MOVIES:
 			{
+				projection = projection != null ? projection : MoviesDbHelper.DEFAULT_MOVIES_PROJECTION;
 				retCursor = getMovies(uri,projection,selection,selectionArgs
 						,sortOrder != null ? sortOrder : MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry.COLUMN_TITLE);
 				break;

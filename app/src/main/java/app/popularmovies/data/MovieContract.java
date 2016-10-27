@@ -81,6 +81,12 @@ public class MovieContract {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
+		public static long getMovieIdFromUri(Uri uri) {
+			log.trace("uri: {}, id: {}", uri, uri.getPathSegments().get(1));
+			return Long.parseLong(uri.getPathSegments().get(1));
+		}
+
+
 	}
 
 	/**

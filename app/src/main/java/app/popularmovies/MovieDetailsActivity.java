@@ -41,7 +41,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements
 
 			log.trace("setting MovieDetailsFragment args... ");
 
-			MovieDetailsFragment f = MovieDetailsFragment.newInstance(getMovieExtra());
+			MovieDetailsFragment f = MovieDetailsFragment.newInstance(getMovieExtra().getId());
 
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, f)

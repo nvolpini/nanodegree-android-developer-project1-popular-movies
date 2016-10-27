@@ -77,6 +77,8 @@ public class MoviesListFragment  extends Fragment implements LoaderManager.Loade
 
 		filter = getArguments().getParcelable(FILTER_KEY);
 
+		gridColumns = getArguments().getInt(COLUMNS_KEY);
+
 		log.trace("onCreate, filter: {}", filter.toString());
 
 	}

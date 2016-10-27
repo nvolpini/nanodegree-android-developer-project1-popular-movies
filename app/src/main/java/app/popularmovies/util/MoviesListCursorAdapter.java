@@ -2,6 +2,7 @@ package app.popularmovies.util;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import app.popularmovies.MoviesListFragment.OnListFragmentInteractionListener;
 import app.popularmovies.R;
 import app.popularmovies.data.MoviesDbHelper;
+import app.popularmovies.databinding.MoviesListFragmentItemBinding;
 import app.popularmovies.model.Movie;
 import app.popularmovies.service.TheMoviesDBService;
 
@@ -44,9 +46,15 @@ public class MoviesListCursorAdapter extends CursorRecyclerViewAdapter<MoviesLis
 
 	@Override
 	public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-		View view = LayoutInflater.from(parent.getContext())
-				.inflate(R.layout.movies_list_fragment_item, parent, false);
-		return new ViewHolder(view);
+
+		/*View view = LayoutInflater.from(parent.getContext())
+				.inflate(R.layout.movies_list_fragment_item, parent, false);*/
+
+
+		MoviesListFragmentItemBinding bind = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext())
+				, R.layout.movies_list_fragment_item, parent, false);
+
+		return new ViewHolder(bind);
 	}
 
 	@Override
@@ -56,14 +64,9 @@ public class MoviesListCursorAdapter extends CursorRecyclerViewAdapter<MoviesLis
 
 		holder.mItem = movie;
 
+		holder.mBind.setMovie(movie);
 
 		//TODO buscar imagens maiores conforme a tela do dispositivo.
-
-		//
-		/**
-		 *TODO REVISOR por favor uma dica para identificar o tamanho da tela e decidir buscar uma imagem maior (maneira recomendada)
-		 * conforme última revisão, ajustei para que a imagem ocupe toda a largura da tela (layout/movies_fragment_item.xml) mas em telas maiores a imagem de tamanho 185 fica muito distorcida.
-		 */
 
 		if (movie.getPosterPath() == null) {
 
@@ -122,14 +125,17 @@ public class MoviesListCursorAdapter extends CursorRecyclerViewAdapter<MoviesLis
 		public final View mView;
 		public final ImageView mImageView;
 		public Movie mItem;
+		public MoviesListFragmentItemBinding mBind;
 
-		public ViewHolder(View view) {
-			super(view);
-			mView = view;
+		//public ViewHolder(View view) {
+		public ViewHolder(MoviesListFragmentItemBinding bind) {
+			super(bind.getRoot());
+			mBind = bind;
+			mView = bind.getRoot();
 
 			mView.setClickable(true);
 
-			mImageView = (ImageView) view.findViewById(imageView);
+			mImageView = (ImageView) mView.findViewById(imageView);
 		}
 
 		@Override

@@ -40,29 +40,35 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
 	private static final Logger log = LoggerFactory.getLogger(MovieDetailsFragment.class);
 
-	private static final String MOVIE_PARAM_KEY = MovieDetailsFragment.class.getName().concat(".movie");
+	private static final String MOVIE_ID_PARAM_KEY = "movie_id";
 
 
-	/**
-	 * The current movie.
-	 * from extras/arguments
-	 */
-	private Movie movie;
+	private FragmentMovieDetailsBinding binding;
+
+	private Long movieId;
 
 	private OnMovieDetailsInteractionListener mListener;
 
-	private static final int VIDEOS_LOADER = 0;
+	private static final int MOVIE_LOADER = 0;
+	private Movie movie;
+
+	private static final int VIDEOS_LOADER = 1;
 	private VideosListCursorAdapter videosListAdapter;
 
-	private static final int REVIEWS_LOADER = 1;
+	private static final int REVIEWS_LOADER = 2;
 	private ReviewListCursorAdapter reviewListAdapter;
+
 
 	public MovieDetailsFragment() {
 	}
 
-	public static MovieDetailsFragment newInstance(Movie movie) {
+	public static MovieDetailsFragment newInstance(Long movieId) {
+
 		Bundle args = new Bundle();
-		args.putParcelable(MOVIE_PARAM_KEY, movie);
+
+		if (movieId != null) {
+			args.putLong(MOVIE_ID_PARAM_KEY, movieId);
+		}
 
 		MovieDetailsFragment df = new MovieDetailsFragment();
 		df.setArguments(args);
@@ -74,21 +80,6 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 		super.onCreate(savedInstanceState);
 
 
-		Bundle arguments = getArguments();
-
-		if (arguments != null) { //Fragment replaced
-
-			movie = arguments.getParcelable(MOVIE_PARAM_KEY);
-		}
-
-		log.trace("movie detail: {}", movie);
-
-		//TODO prefs
-
-		if (movie.getVideosDownloaded() != null && movie.getVideosDownloaded() > 0) {
-			log.trace("auto downloading videos...");
-			downloadVideos();
-		}
 
 
 	}
@@ -98,13 +89,8 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 							 Bundle savedInstanceState) {
 		//View rootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
 
-		FragmentMovieDetailsBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie_details, container, false);
+		binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie_details, container, false);
 		View rootView = binding.getRoot();
-
-
-		if (movie != null) {
-			binding.setMovie(movie);
-		}
 
 		rootView.findViewById(R.id.favoriteIcon).setOnClickListener(this);
 
@@ -191,6 +177,18 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
+
+
+		Bundle arguments = getArguments();
+
+		if (arguments != null && arguments.containsKey(MOVIE_ID_PARAM_KEY)) { //Fragment replaced
+
+			movieId = arguments.getLong(MOVIE_ID_PARAM_KEY);
+		}
+
+		log.trace("onActivityCreated: {}", movieId);
+
+		getLoaderManager().initLoader(MOVIE_LOADER, null, this);
 		getLoaderManager().initLoader(VIDEOS_LOADER, null, this);
 		getLoaderManager().initLoader(REVIEWS_LOADER, null, this);
 		super.onActivityCreated(savedInstanceState);
@@ -199,34 +197,68 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
-		if(movie == null) {
+		if(movieId == null || movieId == 0) {
+			log.error("no movieId");
 			return null;
 		}
 
-		if (id == VIDEOS_LOADER) {
+		if (id == MOVIE_LOADER) {
 
-			Uri uri = MovieContract.VideoEntry.buildVideosUri(movie.getId());
+			Uri uri = MovieContract.MovieEntry.buildMovieUri(movieId);
+
+			log.trace("onCreateLoader({}) - movie, uri: {}", id, uri);
+
+			return new CursorLoader(getActivity(), uri, null, null, null, null);
+
+		} else if (id == VIDEOS_LOADER) {
+
+			Uri uri = MovieContract.VideoEntry.buildVideosUri(movieId);
 			log.trace("onCreateLoader({}) - videos, uri: {}", id, uri);
 
 			return new CursorLoader(getActivity(), uri, null, null, null, null);
 
-		} else {
+		} else if (id == REVIEWS_LOADER) {
 
-			Uri uri = MovieContract.ReviewEntry.buildReviewsUri(movie.getId());
+			Uri uri = MovieContract.ReviewEntry.buildReviewsUri(movieId);
 			log.trace("onCreateLoader({}) - reviews, uri: {}", id, uri);
 
 			return new CursorLoader(getActivity(), uri, null, null, null, null);
 		}
+
+		return null;
 	}
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		log.trace("onLoadFinished, loader: {}", loader.getId());
 
-		if (loader.getId() == VIDEOS_LOADER) {
+		if (loader.getId() == MOVIE_LOADER) {
+
+			movie = MoviesDbHelper.cursorToMovie(data);
+
+			log.trace("movie detail: {}", movie);
+
+			binding.setMovie(movie);
+
+			if (Utils.isAutoDownloadVideos(getActivity()) && (movie.getVideosDownloaded() == null || movie.getVideosDownloaded() == 0)) {
+				log.trace("auto downloading videos...");
+				downloadVideos();
+			}
+
+			if (Utils.isAutoDownloadReviews(getActivity()) && (movie.getReviewsDownloaded() == null || movie.getReviewsDownloaded() == 0)) {
+				log.trace("auto downloading reviews...");
+				downloadReviews();
+			}
+
+
+
+
+		} else if (loader.getId() == VIDEOS_LOADER) {
 			videosListAdapter.swapCursor(data);
-		} else {
+
+		} else if (loader.getId() == REVIEWS_LOADER) {
 			reviewListAdapter.swapCursor(data);
+
 		}
 
 	}
@@ -235,10 +267,16 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 	public void onLoaderReset(Loader<Cursor> loader) {
 		log.trace("onLoaderReset, loader: {}", loader.getId());
 
-		if (loader.getId() == VIDEOS_LOADER) {
+		if (loader.getId() == MOVIE_LOADER) {
+			movie = null;
+			binding.invalidateAll();
+
+		} else if (loader.getId() == VIDEOS_LOADER) {
 			videosListAdapter.swapCursor(null);
-		} else {
+
+		} else if (loader.getId() == REVIEWS_LOADER) {
 			reviewListAdapter.swapCursor(null);
+
 		}
 	}
 

@@ -56,6 +56,17 @@ public class Utils {
 		return prefs.getBoolean(context.getString(R.string.pref_key_sync_on_start), true);
 	}
 
+	public static boolean isAutoDownloadVideos(Context context) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		return prefs.getBoolean(context.getString(R.string.pref_key_auto_download_videos), false);
+	}
+
+	public static boolean isAutoDownloadReviews(Context context) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		return prefs.getBoolean(context.getString(R.string.pref_key_auto_download_reviews), false);
+	}
+
+
 	public static boolean useWifiOnly(Context context) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		return prefs.getBoolean(context.getString(R.string.pref_key_wifi_only), false);

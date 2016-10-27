@@ -14,6 +14,8 @@
 		android:layout_margin="@dimen/text_margin"
 		android:textAppearance="?attr/textAppearanceListItem"
 		android:text="author"
+		android:maxLines="1"
+		android:ellipsize="end"
 		android:layout_weight="1"/>
 
 	<TextView

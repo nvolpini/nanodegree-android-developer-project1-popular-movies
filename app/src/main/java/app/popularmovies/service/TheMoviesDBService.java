@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -100,10 +101,10 @@ public class TheMoviesDBService {
 	public void fetchMovies(Context context, SearchParams params) throws MoviesDataException {
 
 		List<Movie> movies = fetchMovies(MoviesEndPoint.POPULAR, params);
-		saveMovies(context, movies, MoviesEndPoint.POPULAR);
+		saveMovies(context, movies, MoviesEndPoint.POPULAR, params);
 
 		movies = fetchMovies(MoviesEndPoint.TOP_RATED, params);
-		saveMovies(context, movies, MoviesEndPoint.TOP_RATED);
+		saveMovies(context, movies, MoviesEndPoint.TOP_RATED, params);
 
 	}
 
@@ -152,12 +153,17 @@ public class TheMoviesDBService {
 	}
 
 
-	private void saveMovies(Context context, List<Movie> moviesList, MoviesEndPoint endPoint) throws MoviesDataException {
+	private void saveMovies(Context context, List<Movie> moviesList, MoviesEndPoint endPoint
+			, SearchParams params) throws MoviesDataException {
 
 
 		Vector<ContentValues> regs = new Vector<ContentValues>(moviesList.size());
 
 		for (Movie movie : moviesList) {
+
+			//set the control fields
+			movie.setMovieDownloaded(new Date().getTime());
+			movie.setMovieDownloadLanguage(params.getLanguage());
 
 			long movieId = MoviesDbHelper.addMovie(context, movie, moviesLanguageChanged);
 
@@ -234,8 +240,6 @@ public class TheMoviesDBService {
 		Vector<ContentValues> regs = new Vector<ContentValues>(videos.size());
 
 		for (Video video : videos) {
-
-			//long movieId = MoviesDbHelper.addMovie(context,movie, moviesLanguageChanged);
 
 			video.setMovieId(movie.getId());
 

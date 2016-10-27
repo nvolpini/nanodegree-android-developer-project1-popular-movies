@@ -22,24 +22,41 @@
 	</style>
 
 	<style name="MovieTitleStyle" parent="Base.TextAppearance.AppCompat.Large">
-		<item name="android:layout_marginTop">15dp</item>
-		<item name="android:layout_marginBottom">15dp</item>
+		<item name="android:paddingTop">30dp</item>
+		<item name="android:paddingBottom">30dp</item>
+		<item name="android:paddingLeft">@dimen/movie_detail_inner_padding</item>
+		<item name="android:layout_marginBottom">@dimen/movie_detail_outer_margins</item>
 		<item name="android:textSize">30dp</item>
-
+		<item name="android:background">@color/movieTitle</item>
+		<item name="android:textColor">@color/white</item>
 	</style>
 
 	<style name="MovieYearStyle" parent="Base.TextAppearance.AppCompat.Large">
-
 		<item name="android:textSize">15dp</item>
-
+		<item name="android:layout_marginBottom">5dp</item>
 	</style>
 
+	<style name="MovieDurationStyle" parent="Base.TextAppearance.AppCompat.Large">
+		<item name="android:textSize">12dp</item>
+		<item name="android:layout_marginBottom">5dp</item>
+	</style>
+
+	<style name="MovieVotesStyle" parent="Base.TextAppearance.AppCompat.Large">
+		<item name="android:textSize">10dp</item>
+		<item name="android:layout_marginBottom">5dp</item>
+	</style>
+
+
 	<style name="MovieOverviewStyle">
+		<item name="android:paddingLeft">@dimen/movie_detail_inner_padding</item>
+		<item name="android:paddingRight">@dimen/movie_detail_inner_padding</item>
 		<item name="android:layout_marginBottom">@dimen/movie_detail_outer_margins</item>
 
 	</style>
 
 	<style name="MovieOriginalTitleStyle">
+		<item name="android:paddingLeft">@dimen/movie_detail_inner_padding</item>
+		<item name="android:paddingRight">@dimen/movie_detail_inner_padding</item>
 		<item name="android:layout_marginTop">15dp</item>
 		<item name="android:layout_marginBottom">15dp</item>
 		<item name="android:textSize">20dp</item>

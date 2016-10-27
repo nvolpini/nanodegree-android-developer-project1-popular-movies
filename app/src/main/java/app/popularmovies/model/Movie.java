@@ -59,6 +59,25 @@ public class Movie extends BaseObservable implements Parcelable {
     @JsonProperty("poster_path")
     private String posterPath;
 
+	@JsonProperty("video")
+	private boolean video;
+
+	//@JsonProperty("runtime")
+	@JsonIgnore //somente na url de movie details
+	private Integer runtime;
+
+	@JsonIgnore
+	private Long videosDownloaded;
+
+	@JsonIgnore
+	private Long reviewsDownloaded;
+
+	@JsonIgnore
+	private long movieDownloaded;
+
+	@JsonIgnore
+	private String movieDownloadLanguage;
+
 	@JsonIgnore
 	private FavoriteInformation favoriteInformation;
 
@@ -75,6 +94,12 @@ public class Movie extends BaseObservable implements Parcelable {
 		releaseDate = new Date(in.readLong());
         voteAverage = in.readDouble();
         posterPath = in.readString();
+		video = in.readInt() == 1;
+		runtime = in.readInt();
+		videosDownloaded = in.readLong();
+		reviewsDownloaded = in.readLong();
+		movieDownloaded = in.readLong();
+		movieDownloadLanguage = in.readString();
 		favoriteInformation = in.readParcelable(getClass().getClassLoader());
     }
 
@@ -183,6 +208,54 @@ public class Movie extends BaseObservable implements Parcelable {
 		this.releaseDate = releaseDate;
 	}
 
+	public boolean isVideo() {
+		return video;
+	}
+
+	public void setVideo(boolean video) {
+		this.video = video;
+	}
+
+	public Integer getRuntime() {
+		return runtime;
+	}
+
+	public void setRuntime(Integer runtime) {
+		this.runtime = runtime;
+	}
+
+	public Long getVideosDownloaded() {
+		return videosDownloaded;
+	}
+
+	public void setVideosDownloaded(Long videosDownloaded) {
+		this.videosDownloaded = videosDownloaded;
+	}
+
+	public Long getReviewsDownloaded() {
+		return reviewsDownloaded;
+	}
+
+	public void setReviewsDownloaded(Long reviewsDownloaded) {
+		this.reviewsDownloaded = reviewsDownloaded;
+	}
+
+	public long getMovieDownloaded() {
+		return movieDownloaded;
+	}
+
+	public void setMovieDownloaded(long movieDownloaded) {
+		this.movieDownloaded = movieDownloaded;
+	}
+
+	public String getMovieDownloadLanguage() {
+		return movieDownloadLanguage;
+	}
+
+	public void setMovieDownloadLanguage(String movieDownloadLanguage) {
+		this.movieDownloadLanguage = movieDownloadLanguage;
+	}
+
 	@Bindable
 	public FavoriteInformation getFavoriteInformation() {
 		return favoriteInformation;
@@ -233,6 +306,13 @@ public class Movie extends BaseObservable implements Parcelable {
 		dest.writeLong(releaseDate.getTime());
         dest.writeDouble(voteAverage);
         dest.writeString(posterPath);
+		dest.writeInt(video ? 1 : 0);
+		dest.writeInt(runtime);
+		dest.writeLong(videosDownloaded);
+		dest.writeLong(reviewsDownloaded);
+		dest.writeLong(movieDownloaded);
+		dest.writeString(movieDownloadLanguage);
+
 		dest.writeParcelable(favoriteInformation,0);
 
     }

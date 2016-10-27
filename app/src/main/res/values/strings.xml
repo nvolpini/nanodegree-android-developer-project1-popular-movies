@@ -17,6 +17,10 @@
 	<string name="no_internet_connection">No connection available</string>
 	<string name="error_getting_data">Error getting remote data, sorry :-(</string>
 	<string name="cannot_handle_video">Cannot handle video site: %s</string>
+	<string name="videos">Videos</string>
+	<string name="download_videos">Download videos</string>
+	<string name="reviews">Reviews</string>
+	<string name="download_reviews">Download reviews</string>
 
 	<!-- Strings related to Settings -->
 

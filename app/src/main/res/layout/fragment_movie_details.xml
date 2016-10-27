@@ -18,10 +18,6 @@
 					  android:layout_width="match_parent"
 					  android:layout_height="wrap_content"
 					  android:layout_marginBottom="@dimen/movie_detail_outer_margins"
-					  android:layout_marginEnd="@dimen/movie_detail_outer_margins"
-					  android:layout_marginLeft="@dimen/movie_detail_outer_margins"
-					  android:layout_marginRight="@dimen/movie_detail_outer_margins"
-					  android:layout_marginStart="@dimen/movie_detail_outer_margins"
 					  android:orientation="vertical">
 
 
@@ -39,6 +35,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:orientation="horizontal"
+				android:paddingLeft="@dimen/movie_detail_inner_padding_double"
 				>
 
 
@@ -67,15 +64,21 @@
 						style="@style/MovieYearStyle"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:layout_marginBottom="@dimen/activity_vertical_margin"
-						android:layout_marginTop="@dimen/activity_vertical_margin"
 						android:text="@{movie.year}"
 						tools:text="2016"/>
 
 
+					<TextView
+						android:id="@+id/duration"
+						style="@style/MovieDurationStyle"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						tools:text="120min"/>
+
 
 					<TextView
 						android:id="@+id/voteAverage"
+						style="@style/MovieVotesStyle"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:text='@{String.format("%1$.1f/10", movie.voteAverage)}'
@@ -124,15 +127,34 @@
 			<LinearLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:orientation="vertical">
+				android:orientation="vertical"
+				>
 
 
-				<Button
-					android:text="Videos"
+				<LinearLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:id="@+id/downloadVideos"
-					/>
+					android:orientation="horizontal"
+					android:background="@drawable/simple_border"
+					android:gravity="center_vertical">
+
+
+					<TextView
+						android:text="@string/videos"
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:layout_weight="2"
+						/>
+
+					<ImageButton
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						app:srcCompat="@android:drawable/stat_sys_download"
+						android:id="@+id/downloadVideos"
+						android:contentDescription="@string/download_videos"
+						android:adjustViewBounds="true"/>
+
+				</LinearLayout>
 
 				<android.support.v7.widget.RecyclerView
 					xmlns:android="http://schemas.android.com/apk/res/android"
@@ -143,6 +165,7 @@
 					android:layout_height="match_parent"
 					android:layout_marginLeft="0dp"
 					android:layout_marginRight="0dp"
+					android:paddingLeft="@dimen/movie_detail_inner_padding_double"
 					app:layoutManager="LinearLayoutManager"
 					tools:listitem="@layout/fragment_video_item"/>
 
@@ -151,15 +174,34 @@
 			<LinearLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
+				android:layout_marginTop="@dimen/activity_horizontal_margin"
 				android:orientation="vertical">
 
-
-				<Button
-					android:text="Reviews"
+				<LinearLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:id="@+id/downloadReviews"
-					/>
+					android:orientation="horizontal"
+					android:background="@drawable/simple_border"
+					android:gravity="center_vertical">
+
+
+					<TextView
+						android:text="@string/reviews"
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:layout_weight="2"
+						/>
+
+					<ImageButton
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						app:srcCompat="@android:drawable/stat_sys_download"
+						android:id="@+id/downloadReviews"
+						android:contentDescription="@string/download_reviews"
+						android:adjustViewBounds="true"/>
+
+				</LinearLayout>
+
 
 				<android.support.v7.widget.RecyclerView
 					xmlns:android="http://schemas.android.com/apk/res/android"
@@ -171,6 +213,7 @@
 					android:layout_marginLeft="0dp"
 					android:layout_marginRight="0dp"
 					app:layoutManager="LinearLayoutManager"
+					android:paddingLeft="@dimen/movie_detail_inner_padding_double"
 					tools:listitem="@layout/fragment_review_item"/>
 
 			</LinearLayout>

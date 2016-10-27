@@ -50,6 +50,12 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 			,MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry.COLUMN_RELEASE_DATE
 			,MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE
 			,MovieContract.MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry.COLUMN_POSTER_PATH
+			,MovieContract.MovieEntry.TABLE_NAME+"."+ MovieEntry.COLUMN_VIDEO
+			,MovieContract.MovieEntry.TABLE_NAME+"."+ MovieEntry.COLUMN_RUNTIME
+			,MovieContract.MovieEntry.TABLE_NAME+"."+ MovieEntry.COLUMN_DOWNLOADED
+			,MovieContract.MovieEntry.TABLE_NAME+"."+ MovieEntry.COLUMN_VIDEOS_DOWNLOADED
+			,MovieContract.MovieEntry.TABLE_NAME+"."+ MovieEntry.COLUMN_REVIEWS_DOWNLOADED
+			,MovieContract.MovieEntry.TABLE_NAME+"."+ MovieEntry.COLUMN_DOWNLOAD_LANGUAGE
 
 			, FavoriteMoviesEntry.TABLE_NAME+"."+ FavoriteMoviesEntry._ID+" as fav_id "
 			, FavoriteMoviesEntry.TABLE_NAME+"."+ FavoriteMoviesEntry.COLUMN_POSITION
@@ -154,6 +160,12 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
                 MovieEntry.COLUMN_RELEASE_DATE + " INTEGER NOT NULL, " +
                 MovieEntry.COLUMN_VOTE_AVERAGE + " REAL NOT NULL, " +
                 MovieEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL, " +
+				MovieEntry.COLUMN_VIDEO + " INTEGER NOT NULL, " +
+				MovieEntry.COLUMN_RUNTIME + " INTEGER, " +
+				MovieEntry.COLUMN_DOWNLOADED + " INTEGER NOT NULL, " +
+				MovieEntry.COLUMN_VIDEOS_DOWNLOADED + " INTEGER, " +
+				MovieEntry.COLUMN_REVIEWS_DOWNLOADED + " INTEGER, " +
+				MovieEntry.COLUMN_DOWNLOAD_LANGUAGE + " TEXT NOT NULL, " +
 				" UNIQUE (" + MovieEntry.COLUMN_MOVIESDB_ID + ") " +
 				" ON CONFLICT REPLACE" +
                 " );";
@@ -253,29 +265,47 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 		values.put(MovieEntry.COLUMN_VOTE_AVERAGE, movie.getVoteAverage());
 		values.put(MovieEntry.COLUMN_POSTER_PATH, movie.getPosterPath());
 
+		values.put(MovieEntry.COLUMN_VIDEO, movie.isVideo() ? 1 : 0);
+		values.put(MovieEntry.COLUMN_RUNTIME, movie.getRuntime());
+		values.put(MovieEntry.COLUMN_DOWNLOADED, movie.getMovieDownloaded());
+		values.put(MovieEntry.COLUMN_VIDEOS_DOWNLOADED, movie.getVideosDownloaded());
+		values.put(MovieEntry.COLUMN_REVIEWS_DOWNLOADED, movie.getReviewsDownloaded());
+		values.put(MovieEntry.COLUMN_DOWNLOAD_LANGUAGE, movie.getMovieDownloadLanguage());
+
+
+
 		return values;
 
 	}
 
 
+	/**
+	 * TODO REVER LANGUAGE CHANGE
+	 * @param mContext
+	 * @param movie
+	 * @param moviesLanguageChanged
+	 * @return
+	 */
 	public static long addMovie(Context mContext, Movie movie, boolean moviesLanguageChanged) {
 
 		long movieId;
+		String currentLang;
 
 		// First, check if the movie already exists
 		Cursor cursor = mContext.getContentResolver().query(
 				MovieContract.MovieEntry.CONTENT_URI,
-				new String[]{MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry._ID},
+				new String[]{MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry._ID
+						, MovieEntry.TABLE_NAME+"."+ MovieEntry.COLUMN_DOWNLOAD_LANGUAGE},
 				MovieEntry.TABLE_NAME+"."+MovieContract.MovieEntry.COLUMN_MOVIESDB_ID + " = ?",
 				new String[]{Integer.toString(movie.getMoviesDbId())},
 				null);
 
 		if (cursor.moveToFirst()) {
-			int movieIdIndex = cursor.getColumnIndex(MovieContract.MovieEntry._ID);
-			movieId = cursor.getLong(movieIdIndex);
+			movieId = cursor.getLong(cursor.getColumnIndex(MovieContract.MovieEntry._ID));
+			currentLang = cursor.getString(cursor.getColumnIndex(MovieEntry.COLUMN_DOWNLOAD_LANGUAGE));
 			movie.setId(movieId);
 
-			if(moviesLanguageChanged) {
+			if(moviesLanguageChanged || !currentLang.equals(movie.getMovieDownloadLanguage())) {
 
 				log.debug("updating movie data due to language change");
 
@@ -284,6 +314,10 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 				movieValues.put(MovieContract.MovieEntry.COLUMN_TITLE, movie.getTitle());
 				movieValues.put(MovieContract.MovieEntry.COLUMN_OVERVIEW, movie.getOverview());
 				movieValues.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH, movie.getPosterPath());
+
+				movieValues.put(MovieEntry.COLUMN_DOWNLOADED, new Date().getTime());
+				movieValues.put(MovieEntry.COLUMN_DOWNLOAD_LANGUAGE, movie.getMovieDownloadLanguage());
+
 
 				int updatedRows = mContext.getContentResolver().update(MovieContract.MovieEntry.CONTENT_URI, movieValues
 						, MovieContract.MovieEntry._ID+"=?", new String[]{Long.toString(movie.getId())});
@@ -392,6 +426,13 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 		m.setVoteAverage(cursor.getDouble(6));
 		m.setPosterPath(cursor.getString(7));
 
+		m.setVideo(cursor.getInt(8) == 1);
+		m.setRuntime(cursor.getInt(9));
+		m.setMovieDownloaded(cursor.getLong(10));
+		m.setVideosDownloaded(cursor.getLong(11));
+		m.setReviewsDownloaded(cursor.getLong(12));
+		m.setMovieDownloadLanguage(cursor.getString(13));
+
 		FavoriteInformation f = new FavoriteInformation();
 
 		int fidi = cursor.getColumnIndex("fav_id");
@@ -401,9 +442,9 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 		if (fidi >= 0 && !cursor.isNull(fidi)) {
 
 			f.setId(cursor.getLong(fidi));
-			f.setPosition(cursor.getInt(9));
-			f.setDateAdded(new Date(cursor.getLong(10)));
-			f.setVotes(cursor.getInt(11));
+			f.setPosition(cursor.getInt(15));
+			f.setDateAdded(new Date(cursor.getLong(16)));
+			f.setVotes(cursor.getInt(17));
 
 			//log.trace("Movie is a favorite, fid: {}, movieId: {}",f.getId(), m.getId());
 

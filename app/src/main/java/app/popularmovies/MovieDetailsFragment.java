@@ -6,6 +6,7 @@ import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -69,12 +70,9 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-							 Bundle savedInstanceState) {
-		//View rootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
-		FragmentMovieDetailsBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie_details, container, false);
-		View rootView = binding.getRoot();
 
 		Bundle arguments = getArguments();
 
@@ -84,6 +82,25 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 		}
 
 		log.trace("movie detail: {}", movie);
+
+		//TODO prefs
+
+		if (movie.getVideosDownloaded() != null && movie.getVideosDownloaded() > 0) {
+			log.trace("auto downloading videos...");
+			downloadVideos();
+		}
+
+
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+							 Bundle savedInstanceState) {
+		//View rootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
+
+		FragmentMovieDetailsBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie_details, container, false);
+		View rootView = binding.getRoot();
+
 
 		if (movie != null) {
 			binding.setMovie(movie);
@@ -122,24 +139,32 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
 		} else if (v.getId() == R.id.downloadVideos) {
 
-			if (Utils.isOnline(getContext())) {
-
-				FetchVideosTask task = new FetchVideosTask();
-				task.execute();
-
-			} else {
-				toastNoConnection();
-			}
+			downloadVideos();
 
 		} else if (v.getId() == R.id.downloadReviews) {
 
-			if (Utils.isOnline(getContext())) {
-				FetchReviewsTask task = new FetchReviewsTask();
-				task.execute();
+			downloadReviews();
+		}
+	}
 
-			} else {
-				toastNoConnection();
-			}
+	private void downloadReviews() {
+		if (Utils.isOnline(getContext())) {
+			FetchReviewsTask task = new FetchReviewsTask();
+			task.execute();
+
+		} else {
+			toastNoConnection();
+		}
+	}
+
+	private void downloadVideos() {
+		if (Utils.isOnline(getContext())) {
+
+			FetchVideosTask task = new FetchVideosTask();
+			task.execute();
+
+		} else {
+			toastNoConnection();
 		}
 	}
 

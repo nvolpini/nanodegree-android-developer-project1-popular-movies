@@ -54,7 +54,7 @@ public class MovieContract {
 
         public static final String COLUMN_TITLE = "title";
 
-        public static final String COLUMN_ORIGINAL_TITLE = "otiginal_title";
+        public static final String COLUMN_ORIGINAL_TITLE = "original_title";
 
         public static final String COLUMN_OVERVIEW = "overview";
 
@@ -63,6 +63,19 @@ public class MovieContract {
         public static final String COLUMN_VOTE_AVERAGE = "vote_average";
 
         public static final String COLUMN_POSTER_PATH = "poster_path";
+
+		public static final String COLUMN_VIDEO = "video";
+
+		public static final String COLUMN_RUNTIME = "runtime";
+
+		public static final String COLUMN_DOWNLOADED = "downloaded";
+
+		public static final String COLUMN_VIDEOS_DOWNLOADED = "videos_downloaded";
+
+		public static final String COLUMN_REVIEWS_DOWNLOADED = "reviews_downloaded";
+
+		public static final String COLUMN_DOWNLOAD_LANGUAGE = "download_language";
+
 
         public static Uri buildMovieUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);

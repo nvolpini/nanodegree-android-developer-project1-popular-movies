@@ -12,6 +12,8 @@ import android.support.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
+
 /**
  * Created by neimar on 28/09/16.
  */
@@ -462,6 +464,11 @@ public class MoviesProvider extends ContentProvider {
 						if (_id != -1) {
 							returnCount++;
 						}
+
+						//update download date
+						ContentValues updateValues = new ContentValues();
+						updateValues.put(MovieContract.MovieEntry.COLUMN_VIDEOS_DOWNLOADED, new Date().getTime());
+						db.update(MovieContract.MovieEntry.TABLE_NAME,updateValues,MovieContract.MovieEntry._ID+"=?", new String[]{value.getAsString(MovieContract.VideoEntry.COLUMN_MOVIE_ID)});
 					}
 					db.setTransactionSuccessful();
 				} finally {
@@ -482,6 +489,12 @@ public class MoviesProvider extends ContentProvider {
 						if (_id != -1) {
 							returnCount++;
 						}
+
+						//update download date
+						ContentValues updateValues = new ContentValues();
+						updateValues.put(MovieContract.MovieEntry.COLUMN_REVIEWS_DOWNLOADED, new Date().getTime());
+						db.update(MovieContract.MovieEntry.TABLE_NAME,updateValues,MovieContract.MovieEntry._ID+"=?", new String[]{value.getAsString(MovieContract.ReviewEntry.COLUMN_MOVIE_ID)});
+
 					}
 					db.setTransactionSuccessful();
 				} finally {

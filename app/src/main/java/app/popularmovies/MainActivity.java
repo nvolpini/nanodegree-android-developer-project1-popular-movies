@@ -26,8 +26,11 @@ public class MainActivity extends AppCompatActivity implements
 	private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
 
 	private static final String DETAILFRAGMENT_TAG = "DFTAG";
+	private static final String ALREADY_DOWNLOADED_KEY = "alreadyDownloaded";
 
-	private boolean mTwoPane;
+	private boolean twoPaneLayout;
+	
+	private boolean alreadyDownloaded;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +38,10 @@ public class MainActivity extends AppCompatActivity implements
 		setContentView(R.layout.activity_main);
 
 		log.trace("onCreate");
+
+		if (savedInstanceState != null) {
+			alreadyDownloaded = savedInstanceState.getInt(ALREADY_DOWNLOADED_KEY) == 1;
+		}
 
 		//reset all prefs
 		//PreferenceManager.getDefaultSharedPreferences(this).edit().clear().apply();
@@ -47,14 +54,17 @@ public class MainActivity extends AppCompatActivity implements
 		if (Utils.getLastDownloadDate(this) == 0) {
 			//first time - download
 			startService(FetchMoviesService.newIntent(this, Utils.newSearchParams(this)));
-		} else if(Utils.isSyncOnStart(this)) {
+			alreadyDownloaded = true;
+
+		} else if(!alreadyDownloaded && Utils.isSyncOnStart(this)) {
 			//always download on start
 			startService(FetchMoviesService.newIntent(this, Utils.newSearchParams(this)));
+			alreadyDownloaded = true;
 		}
 
 
 		if (findViewById(R.id.movie_detail_container) != null) {
-			mTwoPane = true;
+			twoPaneLayout = true;
 			if (savedInstanceState == null) {
 				getSupportFragmentManager().beginTransaction()
 						.replace(R.id.movie_detail_container
@@ -66,22 +76,23 @@ public class MainActivity extends AppCompatActivity implements
 				findViewById(R.id.movie_detail_container).setVisibility(View.INVISIBLE);
 			}
 		} else {
-			mTwoPane = false;
+			twoPaneLayout = false;
 			getSupportActionBar().setElevation(0f);
 		}
 
 
+		MoviesTabsFragment tabsFragment = (MoviesTabsFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_movies);
+		tabsFragment.setTwoPaneLayout(twoPaneLayout);
+
 	}
 
 	@Override
-	public void onAttachFragment(android.support.v4.app.Fragment fragment) {
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
 
+		outState.putInt(ALREADY_DOWNLOADED_KEY,alreadyDownloaded ? 1: 0);
 
-		if (fragment instanceof MoviesTabsFragment) {
-
-			MoviesTabsFragment tabsFragment = (MoviesTabsFragment) fragment;
-			tabsFragment.setTwoPaneLayout(mTwoPane);
-		}
+		log.trace("onsave");
 	}
 
 	@Override
@@ -149,6 +160,10 @@ public class MainActivity extends AppCompatActivity implements
 
 	}
 
+	public boolean isTwoPaneLayout() {
+		return twoPaneLayout;
+	}
+
 	private void downloadMovies() {
 
 		SearchParams searchParams = Utils.newSearchParams(this);
@@ -172,7 +187,7 @@ public class MainActivity extends AppCompatActivity implements
 
 		log.trace("iteracao, movie: {}", movie.getOriginalTitle());
 
-		if (mTwoPane) {
+		if (twoPaneLayout) {
 
 			MovieDetailsFragment df = MovieDetailsFragment.newInstance(movie.getId());
 

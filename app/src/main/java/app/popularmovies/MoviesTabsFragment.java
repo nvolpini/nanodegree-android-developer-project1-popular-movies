@@ -26,11 +26,14 @@ public class MoviesTabsFragment extends Fragment {
 
 	private static final Logger log = LoggerFactory.getLogger(MoviesTabsFragment.class);
 
-	private static final String PAGER_SELECTED_POSITION_KEY = "selected_position";
+	private static final String SELECTED_TAB_KEY = "selected_tab";
+	private static final String TWO_PANE_LAYOUT_KEY = "two_pane";
 
 	private ViewPager viewPager;
 
 	private boolean twoPaneLayout = false;
+
+	private int selectedTab = 0;
 
 	public MoviesTabsFragment() {
 		// Required empty public constructor
@@ -45,7 +48,12 @@ public class MoviesTabsFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		log.trace("onCreate, pos: {}", savedInstanceState != null ? savedInstanceState.getInt(PAGER_SELECTED_POSITION_KEY) : null);
+		if (savedInstanceState != null) {
+		 	selectedTab = savedInstanceState.getInt(SELECTED_TAB_KEY);
+			twoPaneLayout = savedInstanceState.getInt(TWO_PANE_LAYOUT_KEY) == 1;
+		}
+
+		log.trace("onCreate, twoPane: {}, selectedTab: {}", twoPaneLayout, selectedTab);
 
 	}
 
@@ -53,17 +61,16 @@ public class MoviesTabsFragment extends Fragment {
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 
-		outState.putInt(PAGER_SELECTED_POSITION_KEY, viewPager.getCurrentItem());
+		outState.putInt(SELECTED_TAB_KEY, viewPager.getCurrentItem());
 
-		log.trace("onSave, pos: {}",viewPager.getCurrentItem());
+		outState.putInt(TWO_PANE_LAYOUT_KEY, twoPaneLayout ? 1 : 0);
+
+		log.trace("onSave, tab: {}, twoPane: {}",viewPager.getCurrentItem(), twoPaneLayout);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
-
-		log.trace("onCreateView, pos: {}", savedInstanceState != null ? savedInstanceState.getInt(PAGER_SELECTED_POSITION_KEY) : null);
-
 
 		// Inflate the layout for this fragment
 		View root = inflater.inflate(R.layout.fragment_movies_tabs, container, false);
@@ -72,27 +79,17 @@ public class MoviesTabsFragment extends Fragment {
 
 		setupViewPager(viewPager);
 
-		/*
-		PagerTabStrip pagerTabStrip = (PagerTabStrip) root.findViewById(R.id.pagerTabStrip);
-		//pagerTabStrip.setDrawFullUnderline(true);
-		//pagerTabStrip.setGravity(Gravity.LEFT);
-		pagerTabStrip.setTextColor(Color.WHITE);
-		pagerTabStrip.setTabIndicatorColor(Color.RED);
-		*/
-
 		TabLayout tabs = (TabLayout) root.findViewById(R.id.tabs);
 		tabs.setupWithViewPager(viewPager);
 
-		if (savedInstanceState != null) {
-			viewPager.setCurrentItem(savedInstanceState.getInt(PAGER_SELECTED_POSITION_KEY));
-		}
+		viewPager.setCurrentItem(selectedTab);
 
 		return root;
 	}
 
 	private void setupViewPager(ViewPager viewPager) {
 
-		log.trace("twoPane: {}", twoPaneLayout);
+		log.trace("setup pager, twoPane: {}", twoPaneLayout);
 
 		int cols = twoPaneLayout ? 3 : 2;
 

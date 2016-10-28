@@ -13,9 +13,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -71,14 +68,11 @@ public class MoviesListFragment  extends Fragment implements LoaderManager.Loade
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-
-		//setHasOptionsMenu(true);
-
 		filter = getArguments().getParcelable(FILTER_KEY);
 
 		gridColumns = getArguments().getInt(COLUMNS_KEY);
 
-		log.trace("onCreate, filter: {}", filter.toString());
+		log.trace("onCreate, filter: {}, cols: {}", filter.toString(), gridColumns);
 
 	}
 
@@ -95,6 +89,9 @@ public class MoviesListFragment  extends Fragment implements LoaderManager.Loade
 			if (gridColumns <= 1) {
 				recyclerView.setLayoutManager(new LinearLayoutManager(context));
 			} else {
+
+				log.trace("onCreateView(), cols: {}",gridColumns);
+
 				recyclerView.setLayoutManager(new GridLayoutManager(context, gridColumns));
 			}
 
@@ -112,73 +109,30 @@ public class MoviesListFragment  extends Fragment implements LoaderManager.Loade
 	}
 
 
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-
-		//inflater.inflate(R.menu.movies,menu);
-
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		int id = item.getItemId();
-/*
-
-		if (id == R.id.action_refresh) {
-
-			downloadMovies();
-
-			//getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
-
-			return true;
-
-		} else if (id == R.id.action_sort_by_popularity) {
-
-			searchParams.setSortBy(SearchParams.SORT_BY_POPULARITY);
-			getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
-			//downloadMovies();
-
-			return true;
-
-		} else if (id == R.id.action_sort_by_rating) {
-
-			searchParams.setSortBy(SearchParams.SORT_BY_RATING);
-			getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
-			//downloadMovies();
-
-			return true;
-
-		} else if (id == R.id.action_favorites) {
-
-			searchParams.setSortBy(SearchParams.SORT_BY_FAVORITES);
-			getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
-			//downloadMovies();
-
-			return true;
-
-
-		} else if (id == R.id.action_clear) { //DEBUG purposes
-
-			//moviesList.clear();
-			//moviesListAdapter.downloadMovies(moviesList);
-
-			return true;
-		}
-*/
-
-		return super.onOptionsItemSelected(item);
-	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-		getLoaderManager().initLoader(MOVIES_LOADER, null, this);
 		super.onActivityCreated(savedInstanceState);
+
+		log.trace("onActivityCreated()");
+
+		getLoaderManager().initLoader(MOVIES_LOADER, null, this);
+
 	}
 
 
 	@Override
 	public void onAttach(Context context) {
 		super.onAttach(context);
+
+		log.trace("onAttach(), context: {}", context.getClass());
+
+		if (context instanceof MainActivity) {
+			if (((MainActivity) context).isTwoPaneLayout()) {
+				gridColumns = 3;
+			}
+		}
+
 		if (context instanceof OnListFragmentInteractionListener) {
 			mListener = (OnListFragmentInteractionListener) context;
 		} else {

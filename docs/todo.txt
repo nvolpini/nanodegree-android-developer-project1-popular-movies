@@ -2,33 +2,9 @@ stage2
 
 - application class com debug options
 - picasso logar no stheto - mover codigo para o TheMoviesDbService 
+- picasso offline images
 
-- criar/upload das estrelas para icone favorito
 
 movies list
-- marcar na imagem os favoritos - uma estrela em overlay
-- marcar filme selecionado com contorno ou opacidade na imagem
 - 3 colunas para tablets, 2 para outros
-
-Details
-
-- definir estilos conforme mocks
-
-Videos/reviews
-- botão para atualizar/recarregar do site
-- pref para baixar automatico ao entrar no filme
-- controlar se já baixou - com campo na tabela
-- mostrar duração do filme
-
-- talvez usar tabs para reviews e videos
-
-reviews
-- mostrar N caracteres do review (gravar apenas N no banco)
-- link para ir pro site
-
-videos
-- mostrar icone
-- botão para compartilhar no menu de detalhes.
-
-
-
+NAO ESTA FUNCIONANDO - rever a ciclo de criação e passagem de parametros

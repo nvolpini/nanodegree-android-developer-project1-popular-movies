@@ -304,17 +304,6 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 	}
 
 
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-
-		log.trace("saving movie details state...");
-
-
-		super.onSaveInstanceState(outState);
-
-
-	}
-
 
 	public class FetchVideosTask extends AsyncTask<Void, Void, Void> {
 

@@ -352,8 +352,6 @@ public class MoviesProvider extends ContentProvider {
 						MovieContract.ReviewEntry.TABLE_NAME, selection, selectionArgs);
 				break;
 
-			//TODO OTHERS
-
 			default:
 				throw new UnsupportedOperationException("Unknown uri: " + uri);
 		}
@@ -416,7 +414,7 @@ public class MoviesProvider extends ContentProvider {
 				return returnCount;
 			case POPULAR_MOVIES:
 				db.beginTransaction();
-				//clear first TODO tratar limpeza antes do download... no insert também
+				//clear first
 				db.delete(MovieContract.PopularMoviesEntry.TABLE_NAME,"1",null);
 				try {
 					for (ContentValues value : values) {

@@ -66,8 +66,6 @@ public class MoviesListCursorAdapter extends CursorRecyclerViewAdapter<MoviesLis
 
 		holder.mBind.setMovie(movie);
 
-		//TODO buscar imagens maiores conforme a tela do dispositivo.
-
 		if (movie.getPosterPath() == null) {
 
 			Picasso.with(holder.mView.getContext())

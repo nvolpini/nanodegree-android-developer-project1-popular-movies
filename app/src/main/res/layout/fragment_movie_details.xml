@@ -165,7 +165,7 @@
 					android:layout_height="match_parent"
 					android:layout_marginLeft="0dp"
 					android:layout_marginRight="0dp"
-					android:paddingLeft="@dimen/movie_detail_inner_padding_double"
+					android:paddingLeft="@dimen/movie_detail_inner_padding"
 					app:layoutManager="LinearLayoutManager"
 					tools:listitem="@layout/fragment_video_item"/>
 
@@ -213,7 +213,7 @@
 					android:layout_marginLeft="0dp"
 					android:layout_marginRight="0dp"
 					app:layoutManager="LinearLayoutManager"
-					android:paddingLeft="@dimen/movie_detail_inner_padding_double"
+					android:paddingLeft="@dimen/movie_detail_inner_padding"
 					tools:listitem="@layout/fragment_review_item"/>
 
 			</LinearLayout>

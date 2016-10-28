@@ -280,7 +280,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 
 
 	/**
-	 * TODO REVER LANGUAGE CHANGE
+
 	 * @param mContext
 	 * @param movie
 	 * @param moviesLanguageChanged

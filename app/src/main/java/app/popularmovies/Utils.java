@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -18,6 +19,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import app.popularmovies.data.MovieContract;
 import app.popularmovies.model.SearchParams;
 import app.popularmovies.model.Video;
 
@@ -224,6 +226,8 @@ public class Utils {
 
 		if ("youtube".equalsIgnoreCase(video.getSite())) {
 			url = String.format("https://www.youtube.com/watch?v=%s",video.getKey());
+		} else {
+			log.error("video site not known: {}", video.getSite());
 		}
 		return url;
 	}
@@ -235,11 +239,21 @@ public class Utils {
 		Intent i = null;
 
 		if (url != null) {
+
+			//load the movie to get the name
+			Cursor movieNameCursor = context.getContentResolver().query(MovieContract.MovieEntry.buildMovieUri(video.getMovieId())
+					, new String[]{MovieContract.MovieEntry.COLUMN_TITLE}, null, null, null
+			);
+
+			movieNameCursor.moveToFirst();
+			String movieTitle = movieNameCursor.getString(0);
+
 			i = new Intent(Intent.ACTION_SEND);
 			i.setType("text/plain");
-			//TODO obter nome do filme
+
+			//subject is not used in some apps.
 			i.putExtra(Intent.EXTRA_SUBJECT, String.format("%s",video.getName()));
-			i.putExtra(Intent.EXTRA_TEXT, url);
+			i.putExtra(Intent.EXTRA_TEXT, String.format("%s - %s - %s",movieTitle, video.getName(), url));
 		}
 
 		return i;

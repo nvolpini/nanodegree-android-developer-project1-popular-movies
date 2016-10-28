@@ -209,8 +209,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
     /**
-     * TODO top bar back button in the other fragments are not reached with this override
-	 * When inside general prefs and hit back it goes back to the MainActivity instead of main prefs screen.
      *
      * @param item
      * @return

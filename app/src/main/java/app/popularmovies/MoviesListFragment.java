@@ -48,7 +48,6 @@ public class MoviesListFragment  extends Fragment implements LoaderManager.Loade
 
 	private int currentPosition = RecyclerView.NO_POSITION;
 
-	//TODO move interface here
 	private OnListFragmentInteractionListener mListener;
 
 	public static MoviesListFragment newInstance(MoviesListFilter filter, int gridColumns) {

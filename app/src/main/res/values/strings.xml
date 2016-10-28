@@ -108,6 +108,8 @@
 	<string name="pref_key_auto_download_reviews" translatable="false">autodownload_reviews</string>
 	<string name="pref_title_auto_download_reviews">Auto download reviews</string>
 	<string name="pref_description_auto_download_reviews">Automatically download reviews when first accessing movie details</string>
+	<string name="read_review">Click to read the full review</string>
+	<string name="watch_video">Click to watch the video</string>
 
 
 </resources>

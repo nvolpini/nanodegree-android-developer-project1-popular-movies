@@ -76,7 +76,9 @@ public class MainActivity extends AppCompatActivity implements
 	@Override
 	public void onAttachFragment(android.support.v4.app.Fragment fragment) {
 
-		if (fragment.getId() == R.id.fragment_movies) {
+
+		if (fragment instanceof MoviesTabsFragment) {
+
 			MoviesTabsFragment tabsFragment = (MoviesTabsFragment) fragment;
 			tabsFragment.setTwoPaneLayout(mTwoPane);
 		}

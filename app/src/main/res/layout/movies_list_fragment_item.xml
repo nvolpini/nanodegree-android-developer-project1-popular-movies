@@ -1,0 +1,66 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+
+	<data>
+
+		<variable
+			name="movie"
+			type="app.popularmovies.model.Movie"/>
+	</data>
+
+
+	<RelativeLayout
+				android:layout_width="match_parent"
+	             android:layout_height="wrap_content">
+
+
+		<ImageView
+			android:id="@+id/imageView"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_centerHorizontal="false"
+			android:layout_centerInParent="false"
+			android:layout_centerVertical="false"
+			android:adjustViewBounds="true"
+			android:contentDescription="Movie poster"
+			android:padding="0dp"
+			android:scaleType="centerCrop"
+			android:src="@drawable/no_poster_185"
+			tools:ignore="HardcodedText"
+			/>
+
+
+		<ImageView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignTop="@id/imageView"
+			android:layout_alignRight="@id/imageView"
+			android:src="@{movie.favorite ? @drawable/fav_icon_on : null}"
+			tools:src="@drawable/fav_icon_on"
+			android:maxWidth="50dp"
+			android:maxHeight="50dp"
+			android:scaleType="fitCenter"
+			android:adjustViewBounds="true"/>
+
+	</RelativeLayout>
+</layout>
+
+	<!--
+	<ImageView
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:tools="http://schemas.android.com/tools"
+		android:id="@+id/imageView"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_centerHorizontal="false"
+		android:layout_centerInParent="false"
+		android:layout_centerVertical="false"
+		android:adjustViewBounds="true"
+		android:scaleType="centerCrop"
+		android:contentDescription="Movie poster"
+		android:src="@drawable/no_poster_185"
+		android:padding="0dp"
+		tools:ignore="HardcodedText"
+		/>
+
+	-->

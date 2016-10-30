@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			  xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal"
+              tools:ignore="HardcodedText"
+				android:divider="@color/grey">
+	<ImageView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		app:srcCompat="@android:drawable/ic_menu_info_details"
+		android:id="@+id/reviewIcon"
+		android:adjustViewBounds="true"
+		android:layout_gravity="center_vertical"/>
+
+	<TextView
+		android:id="@+id/reviewAuthor"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_margin="@dimen/text_margin"
+		android:textAppearance="?attr/textAppearanceListItem"
+		android:text="author"
+		android:maxLines="1"
+		android:ellipsize="end"
+		/>
+
+	<TextView
+		android:id="@+id/reviewContent"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_margin="@dimen/text_margin"
+		android:textAppearance="?attr/textAppearanceListItem"
+		android:text="review content sample..."
+		android:contentDescription="@string/read_review"
+		android:layout_weight="1"/>
+</LinearLayout>

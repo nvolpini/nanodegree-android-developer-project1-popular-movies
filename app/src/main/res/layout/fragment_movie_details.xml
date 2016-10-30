@@ -1,0 +1,225 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:tools="http://schemas.android.com/tools"
+		xmlns:app="http://schemas.android.com/apk/res-auto" >
+
+	<data>
+
+		<variable
+			name="movie"
+			type="app.popularmovies.model.Movie"/>
+	</data>
+
+	<ScrollView android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				tools:context="app.popularmovies.MovieDetailsFragment"
+				tools:ignore="HardcodedText">
+
+		<LinearLayout style="@style/MovieDetailStyle"
+					  android:layout_width="match_parent"
+					  android:layout_height="wrap_content"
+					  android:layout_marginBottom="@dimen/movie_detail_outer_margins"
+					  android:orientation="vertical">
+
+
+			<TextView
+				android:id="@+id/title"
+				style="@style/MovieTitleStyle"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:text="@{movie.title}"
+			    tools:text="Movie Title Goes Here"
+				/>
+
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:paddingLeft="@dimen/movie_detail_inner_padding_double"
+				>
+
+
+				<ImageView
+					android:id="@+id/posterImage"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:adjustViewBounds="true"
+					android:scaleType="centerCrop"
+					android:layout_weight="1"
+					android:contentDescription="Movie poster"
+					android:src="@drawable/no_poster_185"
+					app:moviePoster="@{movie}"/>
+
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:layout_weight="2"
+					android:orientation="vertical"
+					android:paddingLeft="@dimen/movie_detail_inner_padding"
+					android:paddingRight="@dimen/movie_detail_inner_padding">
+
+
+					<TextView
+						android:id="@+id/releaseDateString"
+						style="@style/MovieYearStyle"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="@{movie.year}"
+						tools:text="2016"/>
+
+
+					<TextView
+						android:id="@+id/duration"
+						style="@style/MovieDurationStyle"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						tools:text="120min"/>
+
+
+					<TextView
+						android:id="@+id/voteAverage"
+						style="@style/MovieVotesStyle"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text='@{String.format("%1$.1f/10", movie.voteAverage)}'
+						tools:text="5/10"/>
+
+					<ImageButton
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:src="@{movie.favorite ? @drawable/fav_icon_on : @drawable/fav_icon_off}"
+						tools:src="@drawable/fav_icon_off"
+						android:id="@+id/favoriteIcon"
+
+						android:background="@android:color/transparent"
+						android:layout_marginBottom="@dimen/activity_vertical_margin"
+						android:layout_marginTop="@dimen/activity_vertical_margin"
+						android:contentDescription="@string/action_favorites"
+						android:cropToPadding="false"
+						android:scaleType="centerCrop"
+						android:adjustViewBounds="true"
+						android:maxWidth="@android:dimen/notification_large_icon_width"/>
+
+				</LinearLayout>
+
+
+			</LinearLayout>
+
+
+			<TextView
+				android:id="@+id/originalTitle"
+				style="@style/MovieOriginalTitleStyle"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@{movie.originalTitle}"
+				tools:text="Original Movie Title Goes Here"/>
+
+			<TextView
+				android:id="@+id/overview"
+				style="@style/MovieOverviewStyle"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@{movie.overview}"
+				tools:text="Movie overview goes here and usually contains a long text, so scrollview is needed to avoid text to be truncated. That being said..."
+				/>
+
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				>
+
+
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="horizontal"
+					android:background="@drawable/simple_border"
+					android:gravity="center_vertical">
+
+
+					<TextView
+						android:text="@string/videos"
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:layout_weight="2"
+						/>
+
+					<ImageButton
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						app:srcCompat="@android:drawable/stat_sys_download"
+						android:id="@+id/downloadVideos"
+						android:contentDescription="@string/download_videos"
+						android:adjustViewBounds="true"/>
+
+				</LinearLayout>
+
+				<android.support.v7.widget.RecyclerView
+					xmlns:android="http://schemas.android.com/apk/res/android"
+					xmlns:app="http://schemas.android.com/apk/res-auto"
+					xmlns:tools="http://schemas.android.com/tools"
+					android:id="@+id/videoListView"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:layout_marginLeft="0dp"
+					android:layout_marginRight="0dp"
+					android:paddingLeft="@dimen/movie_detail_inner_padding"
+					app:layoutManager="LinearLayoutManager"
+					tools:listitem="@layout/fragment_video_item"/>
+
+			</LinearLayout>
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="@dimen/activity_horizontal_margin"
+				android:orientation="vertical">
+
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="horizontal"
+					android:background="@drawable/simple_border"
+					android:gravity="center_vertical">
+
+
+					<TextView
+						android:text="@string/reviews"
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:layout_weight="2"
+						/>
+
+					<ImageButton
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						app:srcCompat="@android:drawable/stat_sys_download"
+						android:id="@+id/downloadReviews"
+						android:contentDescription="@string/download_reviews"
+						android:adjustViewBounds="true"/>
+
+				</LinearLayout>
+
+
+				<android.support.v7.widget.RecyclerView
+					xmlns:android="http://schemas.android.com/apk/res/android"
+					xmlns:app="http://schemas.android.com/apk/res-auto"
+					xmlns:tools="http://schemas.android.com/tools"
+					android:id="@+id/reviewListView"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:layout_marginLeft="0dp"
+					android:layout_marginRight="0dp"
+					app:layoutManager="LinearLayoutManager"
+					android:paddingLeft="@dimen/movie_detail_inner_padding"
+					tools:listitem="@layout/fragment_review_item"/>
+
+			</LinearLayout>
+
+		</LinearLayout>
+
+
+	</ScrollView>
+</layout>

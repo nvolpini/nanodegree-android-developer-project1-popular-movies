@@ -3,4 +3,9 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="popularmovies_light_blue">#3F51ff</color>
+    <color name="lightgrey">#eee</color>
+	<color name="grey">#ccc</color>
+	<color name="movieTitle">#FF40A386</color>
+	<color name="white">#fff</color>
 </resources>

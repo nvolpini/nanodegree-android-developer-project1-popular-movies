@@ -6,28 +6,24 @@
         android:summary="@string/pref_description_sync_on_start"
         android:title="@string/pref_title_sync_on_start" />
 
-    <SwitchPreference
+	<SwitchPreference
+		android:defaultValue="false"
+		android:key="@string/pref_key_auto_download_videos"
+		android:summary="@string/pref_description_auto_download_videos"
+		android:title="@string/pref_title_auto_download_videos" />
+
+	<SwitchPreference
+		android:defaultValue="false"
+		android:key="@string/pref_key_auto_download_reviews"
+		android:summary="@string/pref_description_auto_download_reviews"
+		android:title="@string/pref_title_auto_download_reviews" />
+
+	<SwitchPreference
         android:defaultValue="false"
         android:key="@string/pref_key_wifi_only"
         android:summary="@string/pref_description_wifi_only"
         android:title="@string/pref_title_wifi_only" />
 
-    <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
-         dismiss it. -->
-    <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
-    <ListPreference
-        android:defaultValue="180"
-        android:entries="@array/pref_sync_frequency_titles"
-        android:entryValues="@array/pref_sync_frequency_values"
-        android:key="@string/pref_key_sync_frequency"
-        android:negativeButtonText="@null"
-        android:positiveButtonText="@null"
-        android:title="@string/pref_title_sync_frequency" />
 
-    <!-- This preference simply launches an intent when selected. Use this UI sparingly, per
-         design guidelines. -->
-    <Preference android:title="@string/pref_title_system_sync_settings">
-        <intent android:action="android.settings.SYNC_SETTINGS" />
-    </Preference>
 
 </PreferenceScreen>

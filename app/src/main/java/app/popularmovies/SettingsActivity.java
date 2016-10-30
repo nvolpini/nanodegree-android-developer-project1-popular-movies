@@ -191,7 +191,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // updated to reflect the new value, per the Android Design
             // guidelines.
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_movies_language)));
-            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_default_sorting)));
+            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_movies_to_download)));
 
         }
 
@@ -209,8 +209,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
     /**
-     * TODO top bar back button in the other fragments are not reached with this override
-	 * When inside general prefs and hit back it goes back to the MainActivity instead of main prefs screen.
      *
      * @param item
      * @return
@@ -245,11 +243,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_data_sync);
             setHasOptionsMenu(true);
 
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_sync_frequency)));
 
             //bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_sync_on_start)));
         }

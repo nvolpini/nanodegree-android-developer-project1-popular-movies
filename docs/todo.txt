@@ -1,0 +1,10 @@
+stage2
+
+- application class com debug options
+- picasso logar no stheto - mover codigo para o TheMoviesDbService 
+- picasso offline images
+
+
+movies list
+- 3 colunas para tablets, 2 para outros
+NAO ESTA FUNCIONANDO - rever a ciclo de criação e passagem de parametros

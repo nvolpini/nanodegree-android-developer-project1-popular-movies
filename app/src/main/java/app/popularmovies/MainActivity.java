@@ -15,9 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import app.popularmovies.model.Movie;
 import app.popularmovies.model.Review;
-import app.popularmovies.model.SearchParams;
 import app.popularmovies.model.Video;
-import app.popularmovies.service.FetchMoviesService;
 
 public class MainActivity extends AppCompatActivity implements
 		MoviesListFragment.OnListFragmentInteractionListener
@@ -26,22 +24,18 @@ public class MainActivity extends AppCompatActivity implements
 	private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
 
 	private static final String DETAILFRAGMENT_TAG = "DFTAG";
-	private static final String ALREADY_DOWNLOADED_KEY = "alreadyDownloaded";
+	private static final String TABS_FRAGMENT_TAG = "TFTAG";
 
 	private boolean twoPaneLayout;
-	
-	private boolean alreadyDownloaded;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		log.trace("onCreate");
+		log.trace("onCreate() savedState null: {}", (savedInstanceState == null));
 
-		if (savedInstanceState != null) {
-			alreadyDownloaded = savedInstanceState.getInt(ALREADY_DOWNLOADED_KEY) == 1;
-		}
 
 		//reset all prefs
 		//PreferenceManager.getDefaultSharedPreferences(this).edit().clear().apply();
@@ -51,38 +45,28 @@ public class MainActivity extends AppCompatActivity implements
 		PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, false);
 
 
-		if (Utils.getLastDownloadDate(this) == 0) {
-			//first time - download
-			startService(FetchMoviesService.newIntent(this, Utils.newSearchParams(this)));
-			alreadyDownloaded = true;
-
-		} else if(!alreadyDownloaded && Utils.isSyncOnStart(this)) {
-			//always download on start
-			startService(FetchMoviesService.newIntent(this, Utils.newSearchParams(this)));
-			alreadyDownloaded = true;
-		}
-
-
 		if (findViewById(R.id.movie_detail_container) != null) {
 			twoPaneLayout = true;
+
+
 			if (savedInstanceState == null) {
+
+
+				MoviesTabsFragment tabsFragment = MoviesTabsFragment.newInstance(3);
+
 				getSupportFragmentManager().beginTransaction()
-						.replace(R.id.movie_detail_container
-								, MovieDetailsFragment.newInstance(null)
-								, DETAILFRAGMENT_TAG)
+						.replace(R.id.tabs_container
+								, tabsFragment
+								, TABS_FRAGMENT_TAG)
 						.commit();
 
-				//do not show yet
-				findViewById(R.id.movie_detail_container).setVisibility(View.INVISIBLE);
 			}
+
 		} else {
 			twoPaneLayout = false;
 			getSupportActionBar().setElevation(0f);
 		}
 
-
-		MoviesTabsFragment tabsFragment = (MoviesTabsFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_movies);
-		tabsFragment.setTwoPaneLayout(twoPaneLayout);
 
 	}
 
@@ -90,9 +74,9 @@ public class MainActivity extends AppCompatActivity implements
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 
-		outState.putInt(ALREADY_DOWNLOADED_KEY,alreadyDownloaded ? 1: 0);
+		//outState.putInt(ALREADY_DOWNLOADED_KEY,alreadyDownloaded ? 1: 0);
 
-		log.trace("onsave");
+		//log.trace("onsave");
 	}
 
 	@Override
@@ -152,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements
 			return true;
 
 		} else if (id == R.id.action_download) {
-			downloadMovies();
+			Utils.downloadMovies(this);
 			return true;
 		}
 
@@ -164,23 +148,6 @@ public class MainActivity extends AppCompatActivity implements
 		return twoPaneLayout;
 	}
 
-	private void downloadMovies() {
-
-		SearchParams searchParams = Utils.newSearchParams(this);
-
-
-		log.trace("downloading movies, params: {}", searchParams);
-
-		if (Utils.isOnline(this)) {
-
-			Intent intent = FetchMoviesService.newIntent(this, searchParams);
-			startService(intent);
-
-		} else {
-			log.trace("no internet access.");
-			Toast.makeText(this, getString(R.string.no_internet_connection), Toast.LENGTH_LONG).show();
-		}
-	}
 
 	@Override
 	public void onListFragmentInteraction(Movie movie) {

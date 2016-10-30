@@ -4,15 +4,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,48 +61,8 @@ public class MoviesListCursorAdapter extends CursorRecyclerViewAdapter<MoviesLis
 
 		holder.mBind.setMovie(movie);
 
-		if (movie.getPosterPath() == null) {
+		TheMoviesDBService.renderImage(holder.mView.getContext(), holder.mImageView, movie);
 
-			Picasso.with(holder.mView.getContext())
-					.load(R.drawable.no_poster_185)
-					.into(holder.mImageView);
-
-		} else {
-
-			final String imageUrl = TheMoviesDBService.getMoviePosterUrl(mContext, movie);
-
-			Picasso.with(holder.mView.getContext())
-					.load(imageUrl)
-					.networkPolicy(NetworkPolicy.OFFLINE)
-					.placeholder(R.drawable.loading_poster_185)
-					.error(R.drawable.no_poster_185)
-					.into(holder.mImageView, new Callback() {
-						@Override
-						public void onSuccess() {
-
-						}
-
-						@Override
-						public void onError() {
-							//Try again online if cache failed
-							Picasso.with(holder.mView.getContext())
-									.load(imageUrl)
-									.placeholder(R.drawable.loading_poster_185)
-									.error(R.drawable.no_poster_185)
-									.into(holder.mImageView, new Callback() {
-										@Override
-										public void onSuccess() {
-
-										}
-
-										@Override
-										public void onError() {
-											Log.v("Picasso", "Could not fetch image");
-										}
-									});
-						}
-					});
-		}
 
 		holder.mView.setOnClickListener(new View.OnClickListener() {
 			@Override

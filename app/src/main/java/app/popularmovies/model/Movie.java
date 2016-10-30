@@ -12,11 +12,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.squareup.picasso.Picasso;
 
 import java.util.Date;
 
-import app.popularmovies.R;
 import app.popularmovies.Utils;
 import app.popularmovies.service.TheMoviesDBService;
 
@@ -114,18 +112,7 @@ public class Movie extends BaseObservable implements Parcelable {
         this.voteAverage = voteAverage;
     }
 
-	@BindingAdapter({"bind:moviePoster"})
-	public static void loadImage(ImageView view, Movie movie) {
 
-		String imageUrl = TheMoviesDBService.getMoviePosterUrl(view.getContext(), movie);
-
-		Picasso.with(view.getContext())
-				.load(imageUrl)
-				.placeholder(R.drawable.loading_poster_185)
-				.error(R.drawable.no_poster_185)
-				.into(view);
-
-	}
 
     public String getYear() {
         //return releaseDateString.substring(0,4);

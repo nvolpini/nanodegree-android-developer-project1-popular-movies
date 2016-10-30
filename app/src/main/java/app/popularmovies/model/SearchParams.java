@@ -17,7 +17,7 @@ public class SearchParams implements Parcelable {
 
 	private String sortBy;
 
-	private int moviesToDownload;
+	private int moviesToDownload = 20;
 
 	public SearchParams() {
 

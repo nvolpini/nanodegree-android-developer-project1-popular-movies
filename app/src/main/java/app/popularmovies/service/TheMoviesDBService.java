@@ -2,8 +2,15 @@ package app.popularmovies.service;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.databinding.BindingAdapter;
+import android.util.Log;
+import android.widget.ImageView;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
+import com.jakewharton.picasso.OkHttp3Downloader;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 import org.slf4j.Logger;
 
@@ -14,6 +21,7 @@ import java.util.List;
 import java.util.Vector;
 
 import app.popularmovies.BuildConfig;
+import app.popularmovies.R;
 import app.popularmovies.Utils;
 import app.popularmovies.data.MovieContract;
 import app.popularmovies.data.MoviesDbHelper;
@@ -65,6 +73,8 @@ public class TheMoviesDBService {
 	private static final MoviesDBService service;
 
 
+	private static final OkHttpClient client;
+
 	private boolean moviesLanguageChanged = false;
 
 	static {
@@ -72,31 +82,128 @@ public class TheMoviesDBService {
 		HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
 
 
-		OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+		OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder();
 		// add your other interceptors …
 
 		if (BuildConfig.DEBUG) {
 			logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
-			httpClient.addNetworkInterceptor(new StethoInterceptor()); //TODO
+			httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
 		} else {
 			logging.setLevel(HttpLoggingInterceptor.Level.NONE);
 		}
 
 		// add logging as last interceptor
-		httpClient.addInterceptor(logging);
+		httpClientBuilder.addInterceptor(logging);
 
+		client = httpClientBuilder.build();
 
 		Retrofit retrofit = new Retrofit.Builder()
 				.baseUrl(API_URL)
 				.addConverterFactory(JacksonConverterFactory.create())
-				.client(httpClient.build())
+				.client(client)
 				.build();
 
 
 		service = retrofit.create(MoviesDBService.class);
 
+
+
+
 	}
 
+	public static void renderImage(final Context context, final ImageView imageView, Movie movie) {
+
+		if (movie == null) {
+			log.warn("cannot render image for null movie");
+			return;
+		}
+
+		Picasso picasso = new Picasso.Builder(context)
+				.downloader(new OkHttp3Downloader(client))
+				.build();
+
+		try {
+			Picasso.setSingletonInstance(picasso);
+		} catch (IllegalStateException ignored) {
+			// Picasso instance was already set
+			// cannot set it after Picasso.with(Context) was already in use
+		}
+
+		if (movie.getPosterPath() == null) {
+
+			Picasso.with(context)
+					.load(R.drawable.no_poster_185)
+					.into(imageView);
+
+		} else {
+
+			final String imageUrl = TheMoviesDBService.getMoviePosterUrl(context, movie);
+
+			Picasso.with(context)
+
+					.load(imageUrl)
+					.networkPolicy(NetworkPolicy.OFFLINE)
+					.placeholder(R.drawable.loading_poster_185)
+					.error(R.drawable.no_poster_185)
+					.into(imageView, new Callback() {
+						@Override
+						public void onSuccess() {
+
+						}
+
+						@Override
+						public void onError() {
+							//Try again online if cache failed
+							Picasso.with(context)
+									.load(imageUrl)
+									.placeholder(R.drawable.loading_poster_185)
+									.error(R.drawable.no_poster_185)
+									.into(imageView, new Callback() {
+										@Override
+										public void onSuccess() {
+
+										}
+
+										@Override
+										public void onError() {
+											Log.v("Picasso", "Could not fetch image");
+										}
+									});
+						}
+					});
+		}
+	}
+
+	@BindingAdapter({"bind:moviePoster"})
+	public static void loadImage(ImageView view, Movie movie) {
+
+		log.trace("moviePoster: {}", movie);
+
+		String imageUrl = TheMoviesDBService.getMoviePosterUrl(view.getContext(), movie);
+
+		Picasso.with(view.getContext())
+				.load(imageUrl)
+				.placeholder(R.drawable.loading_poster_185)
+				.error(R.drawable.no_poster_185)
+				.into(view);
+
+		//TODO null pointer
+		//TheMoviesDBService.renderImage(view.getContext(), view, movie);
+
+	}
+
+
+	public static String getMoviePosterUrl(Context context, Movie movie) {
+
+		String screenSize = Utils.getSizeName(context);
+
+		log.trace("screen size is: {}",screenSize);
+
+		//TODO testar tamanho da tela do dispositivo e baixar a imagem do tamanho mais adequado
+
+		return movie == null ? null : String.format("http://image.tmdb.org/t/p/w500/%s"
+				,movie.getPosterPath());
+	}
 
 	public void fetchMovies(Context context, SearchParams params) throws MoviesDataException {
 
@@ -110,7 +217,7 @@ public class TheMoviesDBService {
 
 	private List<Movie> fetchMovies(MoviesEndPoint endPoint, SearchParams params) throws MoviesDataException {
 
-		if (params.getMoviesToDownload()==0) { //TODO VALIDAR RESTO DE 20 == 0
+		if (params.getMoviesToDownload()==0 || params.getMoviesToDownload()%20 != 0) {
 			params.setMoviesToDownload(20);
 		}
 
@@ -351,11 +458,4 @@ public class TheMoviesDBService {
 		this.moviesLanguageChanged = moviesLanguageChanged;
 	}
 
-	public static String getMoviePosterUrl(Context context, Movie movie) {
-
-		//TODO testar tamanho da tela do dispositivo e baixar a imagem do tamanho mais adequado
-
-		return movie == null ? null : String.format("http://image.tmdb.org/t/p/w500/%s"
-				,movie.getPosterPath());
-	}
 }

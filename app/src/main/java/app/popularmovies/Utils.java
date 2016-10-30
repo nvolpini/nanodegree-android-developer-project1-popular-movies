@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.text.format.Time;
+import android.widget.Toast;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import java.util.Date;
 import app.popularmovies.data.MovieContract;
 import app.popularmovies.model.SearchParams;
 import app.popularmovies.model.Video;
+import app.popularmovies.service.FetchMoviesService;
 
 /**
  * Created by neimar on 24/09/16.
@@ -269,4 +271,24 @@ public class Utils {
 		return searchParams;
 
 	}
+
+
+	public static void downloadMovies(Context context) {
+
+		SearchParams searchParams = Utils.newSearchParams(context);
+
+
+		log.trace("downloading movies, params: {}", searchParams);
+
+		if (Utils.isOnline(context)) {
+
+			Intent intent = FetchMoviesService.newIntent(context, searchParams);
+			context.startService(intent);
+
+		} else {
+			log.trace("no internet access.");
+			Toast.makeText(context, context.getString(R.string.no_internet_connection), Toast.LENGTH_LONG).show();
+		}
+	}
+
 }

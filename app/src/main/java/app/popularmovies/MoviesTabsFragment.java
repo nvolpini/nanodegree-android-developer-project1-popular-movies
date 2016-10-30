@@ -27,11 +27,9 @@ public class MoviesTabsFragment extends Fragment {
 	private static final Logger log = LoggerFactory.getLogger(MoviesTabsFragment.class);
 
 	private static final String SELECTED_TAB_KEY = "selected_tab";
-	private static final String TWO_PANE_LAYOUT_KEY = "two_pane";
+	private static final String GRID_COLUMNS_KEY = "gridColumns";
 
 	private ViewPager viewPager;
-
-	private boolean twoPaneLayout = false;
 
 	private int selectedTab = 0;
 
@@ -39,8 +37,11 @@ public class MoviesTabsFragment extends Fragment {
 		// Required empty public constructor
 	}
 
-	public static MoviesTabsFragment newInstance() {
+	public static MoviesTabsFragment newInstance(int gridColumns) {
 		MoviesTabsFragment fragment = new MoviesTabsFragment();
+		Bundle args = new Bundle();
+		args.putInt(GRID_COLUMNS_KEY, gridColumns);
+		fragment.setArguments(args);
 		return fragment;
 	}
 
@@ -50,10 +51,27 @@ public class MoviesTabsFragment extends Fragment {
 
 		if (savedInstanceState != null) {
 		 	selectedTab = savedInstanceState.getInt(SELECTED_TAB_KEY);
-			twoPaneLayout = savedInstanceState.getInt(TWO_PANE_LAYOUT_KEY) == 1;
 		}
 
-		log.trace("onCreate, twoPane: {}, selectedTab: {}", twoPaneLayout, selectedTab);
+
+		if (savedInstanceState == null) {
+
+			log.trace("auto update check...");
+
+
+			if (Utils.getLastDownloadDate(getActivity()) == 0) {
+				//first time - download
+				Utils.downloadMovies(getActivity());
+
+			} else if(Utils.isSyncOnStart(getActivity())) {
+				//always download on start
+				Utils.downloadMovies(getActivity());
+
+			}
+
+		}
+
+		log.trace("onCreate, selectedTab: {}", selectedTab);
 
 	}
 
@@ -63,9 +81,7 @@ public class MoviesTabsFragment extends Fragment {
 
 		outState.putInt(SELECTED_TAB_KEY, viewPager.getCurrentItem());
 
-		outState.putInt(TWO_PANE_LAYOUT_KEY, twoPaneLayout ? 1 : 0);
-
-		log.trace("onSave, tab: {}, twoPane: {}",viewPager.getCurrentItem(), twoPaneLayout);
+		log.trace("onSave, tab: {}",viewPager.getCurrentItem());
 	}
 
 	@Override
@@ -89,17 +105,17 @@ public class MoviesTabsFragment extends Fragment {
 
 	private void setupViewPager(ViewPager viewPager) {
 
-		log.trace("setup pager, twoPane: {}", twoPaneLayout);
+		int gridColumns = getArguments() != null && getArguments().containsKey(GRID_COLUMNS_KEY) ? getArguments().getInt(GRID_COLUMNS_KEY) : 2;
 
-		int cols = twoPaneLayout ? 3 : 2;
+		log.trace("setup pager, cols: {}", gridColumns);
 
 		viewPager.setOffscreenPageLimit(2);
 
 		MyAdapter adapter = new MyAdapter(getChildFragmentManager());
 
-		adapter.addFragment(MoviesListFragment.newInstance(MoviesListFilter.POPULAR, cols), getString(R.string.popular));
-		adapter.addFragment(MoviesListFragment.newInstance(MoviesListFilter.TOP_RATED, cols), getString(R.string.topRated));
-		adapter.addFragment(MoviesListFragment.newInstance(MoviesListFilter.FAVORITES, cols), getString(R.string.favorites));
+		adapter.addFragment(MoviesListFragment.newInstance(MoviesListFilter.POPULAR, gridColumns), getString(R.string.popular));
+		adapter.addFragment(MoviesListFragment.newInstance(MoviesListFilter.TOP_RATED, gridColumns), getString(R.string.topRated));
+		adapter.addFragment(MoviesListFragment.newInstance(MoviesListFilter.FAVORITES, gridColumns), getString(R.string.favorites));
 
 		viewPager.setAdapter(adapter);
 
@@ -136,7 +152,4 @@ public class MoviesTabsFragment extends Fragment {
 		}
 	}
 
-	public void setTwoPaneLayout(boolean twoPaneLayout) {
-		this.twoPaneLayout = twoPaneLayout;
-	}
 }

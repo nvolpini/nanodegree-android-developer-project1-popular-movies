@@ -25,6 +25,8 @@ android {
             applicationIdSuffix ".debug"
         }
     }
+
+
     buildTypes.each {
         it.buildConfigField 'String', 'MOVIESDB_API_KEY', MyMoviesDBApiKey
     }
@@ -65,19 +67,6 @@ repositories {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    //debug
-    //TODO ver build variants - deve ser apenas para debug
-
-    //already included on both deps bellow
-    //compile 'com.fasterxml.jackson.core:jackson-databind:2.7.2'
-
-    //used in TheMovieDBAPISearchImpl
-    compile group: 'info.movito', name: 'themoviedbapi', version: '1.4'
-
-    //used in TheMoviesDBService
-    //for logging
-
-    //compile 'org.slf4j:slf4j-android:1.7.21'
     compile('com.github.tony19:logback-android-classic:1.1.1-6') {
         // workaround issue #73
         exclude group: 'com.google.android', module: 'android'
@@ -89,6 +78,9 @@ dependencies {
     compile 'com.github.tony19:logback-android-core:1.1.1-6'
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
+
+    compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.0.2'
+
     compile 'com.android.support:support-v4:23.4.0'
     compile 'com.android.support:recyclerview-v7:23.4.0'
     compile 'com.android.support:design:23.4.0'

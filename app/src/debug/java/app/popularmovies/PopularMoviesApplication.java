@@ -20,8 +20,6 @@ public class PopularMoviesApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 
-		//TODO ver sobre build variantes e incluir isso apenas para debug
-		//TODO REVISOR como usar um application diferente para debug/producao
 		initializeStetho(this);
 
 	}

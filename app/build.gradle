@@ -1,17 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
-
+    compileSdkVersion 25
+    buildToolsVersion '25.0.0'
     dataBinding {
         enabled = true
     }
-
     defaultConfig {
         applicationId "app.popularmovies"
         minSdkVersion 15
-        targetSdkVersion 23
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
     }
@@ -25,12 +23,9 @@ android {
             applicationIdSuffix ".debug"
         }
     }
-
-
     buildTypes.each {
         it.buildConfigField 'String', 'MOVIESDB_API_KEY', MyMoviesDBApiKey
     }
-
     testOptions {
 
         unitTests.all {
@@ -45,7 +40,6 @@ android {
 
 
     }
-
     packagingOptions {
         exclude 'META-INF/NOTICE' // will not include NOTICE file
         exclude 'META-INF/LICENSE' // will not include LICENSE file
@@ -57,6 +51,8 @@ android {
         exclude 'META-INF/license'
         exclude 'META-INF/license.txt'
     }
+    productFlavors {
+    }
 }
 
 repositories {
@@ -65,8 +61,7 @@ repositories {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile('com.github.tony19:logback-android-classic:1.1.1-6') {
         // workaround issue #73
         exclude group: 'com.google.android', module: 'android'
@@ -76,14 +71,12 @@ dependencies {
     compile 'com.squareup.okhttp3:logging-interceptor:3.3.1'
     compile 'org.slf4j:slf4j-api:1.7.21'
     compile 'com.github.tony19:logback-android-core:1.1.1-6'
-    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:appcompat-v7:25.0.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
-
     compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.0.2'
-
-    compile 'com.android.support:support-v4:23.4.0'
-    compile 'com.android.support:recyclerview-v7:23.4.0'
-    compile 'com.android.support:design:23.4.0'
+    compile 'com.android.support:support-v4:25.0.0'
+    compile 'com.android.support:recyclerview-v7:25.0.0'
+    compile 'com.android.support:design:25.0.0'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
     debugCompile 'com.facebook.stetho:stetho:1.4.1'

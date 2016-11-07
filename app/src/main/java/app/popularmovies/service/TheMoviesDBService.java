@@ -26,6 +26,7 @@ import app.popularmovies.Utils;
 import app.popularmovies.data.MovieContract;
 import app.popularmovies.data.MoviesDbHelper;
 import app.popularmovies.model.Movie;
+import app.popularmovies.model.MovieDetails;
 import app.popularmovies.model.ResultsPage;
 import app.popularmovies.model.Review;
 import app.popularmovies.model.SearchParams;
@@ -439,13 +440,23 @@ public class TheMoviesDBService {
 	public interface MoviesDBService {
 
 		@GET("movie/{end_point}")
-		Call<ResultsPage<Movie>> movies(@Path("end_point") String endPoint, @Query("api_key") String apiKey, @Query("language") String language, @Query("page") int page);
+		Call<ResultsPage<Movie>> movies(@Path("end_point") String endPoint, @Query("api_key") String apiKey
+				, @Query("language") String language, @Query("page") int page);
 
 		@GET("movie/{movie_id}/videos")
-		Call<Video.Results> videos(@Path("movie_id") String movieId, @Query("api_key") String apiKey, @Query("language") String language);
+		Call<Video.Results> videos(@Path("movie_id") String movieId, @Query("api_key") String apiKey
+				, @Query("language") String language);
 
 		@GET("movie/{movie_id}/reviews")
-		Call<ResultsPage<Review>> reviews(@Path("movie_id") String movieId, @Query("api_key") String apiKey, @Query("language") String language, @Query("page") int page);
+		Call<ResultsPage<Review>> reviews(@Path("movie_id") String movieId, @Query("api_key") String apiKey
+				, @Query("language") String language, @Query("page") int page);
+
+		//TODO
+		@GET("movie/{movie_id}")
+		Call<MovieDetails> movieDetails(@Path("movie_id") String movieId, @Query("api_key") String apiKey
+				, @Query("language") String language
+				, @Query("append_to_response") String appendToResponse
+				, @Query("page") int page);
 
 	}
 

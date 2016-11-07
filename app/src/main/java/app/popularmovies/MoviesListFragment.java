@@ -95,6 +95,9 @@ public class MoviesListFragment  extends Fragment implements LoaderManager.Loade
 				recyclerView.setLayoutManager(new GridLayoutManager(context, gridColumns));
 			}
 
+
+
+
 			moviesListAdapter = new MoviesListCursorAdapter(getActivity(), null, mListener) ;
 
 			recyclerView.setAdapter(moviesListAdapter);

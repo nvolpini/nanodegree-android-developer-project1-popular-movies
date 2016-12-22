@@ -111,5 +111,6 @@
 	<string name="read_review">Click to read the full review</string>
 	<string name="watch_video">Click to watch the video</string>
 
+	<string name="empty_movies_list">No movies available</string>
 
 </resources>

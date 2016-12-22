@@ -36,7 +36,7 @@ public class MoviesListFragment  extends Fragment implements LoaderManager.Loade
 	private static final String POSITION_KEY = "selected_position";
 
 	private static final int MOVIES_LOADER = 0;
-
+	private int mChoiceMode;
 	private MoviesListCursorAdapter moviesListAdapter;
 
 	private MoviesListFilter filter;
@@ -81,7 +81,10 @@ public class MoviesListFragment  extends Fragment implements LoaderManager.Loade
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
 
-		View view = inflater.inflate(R.layout.movies_list_fragment, container, false);
+		View rootView = inflater.inflate(R.layout.movies_list_fragment, container, false);
+
+		View view = rootView.findViewById(R.id.moviesListView);
+
 		// Set the adapter
 		if (view instanceof RecyclerView) {
 			Context context = view.getContext();
@@ -95,10 +98,24 @@ public class MoviesListFragment  extends Fragment implements LoaderManager.Loade
 				recyclerView.setLayoutManager(new GridLayoutManager(context, gridColumns));
 			}
 
+			View emptyView = rootView.findViewById(R.id.recyclerview_empty_list);
 
 
+			moviesListAdapter = new MoviesListCursorAdapter(getActivity(), null, mListener
+					, new MoviesListCursorAdapter.ForecastAdapterOnClickHandler() {
+				@Override
+				public void onClick(Movie movie, MoviesListCursorAdapter.ViewHolder vh) {
 
-			moviesListAdapter = new MoviesListCursorAdapter(getActivity(), null, mListener) ;
+					mListener.onListFragmentInteraction(movie);
+/*
+					String locationSetting = Utility.getPreferredLocation(getActivity());
+					((Callback) getActivity())
+							.onItemSelected(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
+									locationSetting, date)
+							);
+					mPosition = vh.getAdapterPosition();*/
+				}
+			}, emptyView, mChoiceMode) ;
 
 			recyclerView.setAdapter(moviesListAdapter);
 		}
@@ -111,7 +128,16 @@ public class MoviesListFragment  extends Fragment implements LoaderManager.Loade
 		return view;
 	}
 
-
+/*
+	@Override
+	public void onInflate(Activity activity, AttributeSet attrs, Bundle savedInstanceState) {
+		super.onInflate(activity, attrs, savedInstanceState);
+		TypedArray a = activity.obtainStyledAttributes(attrs, R.styleable.Movies,
+				0, 0);
+		mChoiceMode = a.getInt(R.styleable.ForecastFragment_android_choiceMode, AbsListView.CHOICE_MODE_NONE);
+		mAutoSelectView = a.getBoolean(R.styleable.ForecastFragment_autoSelectView, false);
+		a.recycle();
+	}*/
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
